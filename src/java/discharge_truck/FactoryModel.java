@@ -42,7 +42,7 @@ public class FactoryModel extends GridWorldModel{
     {
     	//Try to read an existing file with have the matrix
     	try {
-    	      FileReader arq = new FileReader("C:\\\\Users\\\\Luan\\\\Desktop\\\\tab" + type + ".txt");
+    	      FileReader arq = new FileReader("tab" + type + ".txt");
     	      BufferedReader lerArq = new BufferedReader(arq);
     	      String linha = lerArq.readLine(); 
     	      int i = 0;
@@ -82,7 +82,7 @@ public class FactoryModel extends GridWorldModel{
     {
     	
     	int n = type;
-	    FileWriter arq = new FileWriter("C:\\Users\\Luan\\Desktop\\tab" + n + ".txt");
+	    FileWriter arq = new FileWriter("tab" + n + ".txt");
 	    PrintWriter gravarArq = new PrintWriter(arq);   
         for (int linha = 0; linha< GSize; linha++) {
  	        for (int coluna = 0; coluna < GSize; coluna++) {
