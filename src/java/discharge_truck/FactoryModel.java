@@ -119,7 +119,7 @@ public class FactoryModel extends GridWorldModel{
 
         // initial location of robot (column 1, line 1)
         // ag code 0 means the robot
-        setAgPos(0, 1, 1);  
+        setAgPos(0, 6, 5);  
         
         //Build the matrices
         buildTable(tabDrop1, ldrop1, 0);
@@ -135,7 +135,7 @@ public class FactoryModel extends GridWorldModel{
     }
 
     //Do the agent drive on the board 
-    public boolean moveTowards(Location dest) {
+	public boolean moveTowards(Location dest) {
     	
         Location r1 = getAgPos(0); //Get the current agent location 
         
@@ -146,13 +146,12 @@ public class FactoryModel extends GridWorldModel{
         {
         	tab = tabDrop1;
         }
-        else if(dest.equals(ldrop1))
+        else if(dest.equals(ldrop2))
         {
         	tab = tabDrop2;
         }
         else if(dest.equals(ltruck))
         {
-        	
         	tab = tabTruck;
         }
         else if(dest.equals(lgarage))
@@ -171,7 +170,7 @@ public class FactoryModel extends GridWorldModel{
         Location oeste;
         
         //Define the current position. Used for to dont get a invaliable position out of the matrice
-        Location minimo = r1 ;
+        Location out = new Location(-1,-1); ;
         
         //Build the 4 posibilites
         if ( (r1.y - 1) >= 0)
@@ -180,7 +179,8 @@ public class FactoryModel extends GridWorldModel{
         }
         else
         {
-        	norte = r1;
+        	norte = out;
+        	
         }
         
         if ( (r1.y + 1) < GSize)
@@ -190,7 +190,8 @@ public class FactoryModel extends GridWorldModel{
         }
         else
         {
-        	sul = r1;        
+        	sul = out;
+        	
         }
         
         if ( (r1.x - 1) >= 0)
@@ -199,7 +200,8 @@ public class FactoryModel extends GridWorldModel{
         }
         else
         {
-        	oeste = r1;
+        	oeste = out;
+        	
         }
         
         if ( (r1.x + 1) < GSize)
@@ -208,69 +210,71 @@ public class FactoryModel extends GridWorldModel{
         }
         else
         {
-        	leste = r1;
+        	leste = out;
+        	
         }
     
-        //Get the value to the matrix
-        int vSul = tab[sul.y][sul.x];
-        int vNorte = tab[norte.y][norte.x];
-        int vOeste = tab[oeste.y][oeste.x];
-        int vLeste = tab[leste.y][leste.x];
+      //Get the value to the matrix
+        int qtd = 0;
+        Location[] posibilidades = {out, out, out, out};
+        int[] valores = {100000, 10000, 10000, 10000};
         
-       //Selects the lowest value from the 4 found
-        if (vSul <= vNorte)
+        if (!(sul == out))
         {
-        	if (vSul <= vOeste)
+        	 int vSul = tab[sul.y][sul.x];
+        	 valores[qtd] = vSul;
+        	 posibilidades[qtd] = sul;
+        	 qtd++;
+        }
+        
+        if (!(norte == out))
+        {
+        	int vNorte = tab[norte.y][norte.x];
+        	valores[qtd] = vNorte;
+        	posibilidades[qtd] = norte;
+        	qtd++;
+        }
+        
+        if (!(oeste == out))
+        {
+        	int vOeste = tab[oeste.y][oeste.x];
+        	valores[qtd] = vOeste;
+        	posibilidades[qtd] = oeste;
+        	qtd++;
+        }
+        
+        if (!(leste == out))
+        {
+        	 int vLeste = tab[leste.y][leste.x];
+        	 valores[qtd] = vLeste;
+        	 posibilidades[qtd] = leste;
+        	 qtd++;
+        }
+        int minimo = valores[0];
+        Location posMin = posibilidades[0];
+        
+        
+        int aux = 0;
+        while (aux < qtd)
+        {
+        	if(valores[aux] < minimo)
         	{
-        		if (vSul <= vLeste)
-        		{
-        			 minimo = sul;
-        		}
-        		
+        		minimo = valores[aux];
+        		posMin = posibilidades[aux];
         	}
-        }			
-        if (minimo.equals(r1))
-        {
-        	 if (vNorte <= vSul)
-        	 {
-             	if (vNorte <= vOeste)
-             	{
-             		if (vNorte <= vLeste)
-             		{
-             			minimo = norte;
-             		}
-             	}
-        	 }
-        }    
-        if (minimo.equals(r1))
-        {
-             if (vOeste <= vNorte)
-             {
-             	if (vOeste <= vSul)
-             	{
-             		if (vOeste <= vLeste)
-             		{
-             			minimo = oeste;
-             		}
-             	}
-             }
+        	aux++;
         }
-        if (minimo.equals(r1))
+        
+        if (tab[r1.y][r1.x] > 0)
         {
-             if (vLeste <= vNorte)
-             {
-             	if (vLeste <= vOeste)
-             	{
-             		if (vLeste <= vSul)
-             		{
-             			minimo = leste;
-             		}
-             	}
-             }
+        	//Add one to the place witch have the minimum value
+            tab[r1.y][r1.x] = minimo + 1;
         }
-             			
-        //Add one to the place witch have the minimum value
-        tab[r1.y][r1.x] = tab[minimo.y][minimo.x] + 1;
+        else
+        {
+        	System.out.print("PULOUUUUU");
+        }
+       
         
         //Save the update on the file
         int typeSalv = 999;
@@ -302,7 +306,7 @@ public class FactoryModel extends GridWorldModel{
 		}
      
         //Update the agent position
-        setAgPos(0, minimo);
+        setAgPos(0, posMin);
         
         if (view != null) {
             view.update(ldrop1.x,ldrop1.y);

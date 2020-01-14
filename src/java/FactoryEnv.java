@@ -34,7 +34,7 @@ public class FactoryEnv extends Environment {
     	 // add agent location to its percepts
         if (lworker.equals(model.ltruck)) {
             addPercept("worker", at);
-            int weigth = generatorCharge.nextInt(10);
+            int weigth = generatorCharge.nextInt(10); 
             if(generatorCharge.nextInt(10) > 4)
             {
             	addPercept("worker", Literal.parseLiteral("box("+ weigth +", drop1)"));

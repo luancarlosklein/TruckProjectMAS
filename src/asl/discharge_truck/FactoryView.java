@@ -31,9 +31,7 @@ public class FactoryView extends GridWorldView{
         while(itr.hasNext()) {
         	Location element = (Location) itr.next();
         	super.drawObstacle(g, element.x, element.y);
-           
         }
-        
         
         switch (object) {
             case FactoryModel.TRUCK: 

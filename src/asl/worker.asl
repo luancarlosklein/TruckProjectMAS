@@ -8,6 +8,7 @@ qtdGoal(10). //Quantity of objects it have the goal to discharge
 qtdDischarge(0). //Quantity of objects it have already discharge until now
 truckStatus(full). //Each agent have your own truck to discharge, and this parameter informs how the truck is in the current moment
 hand_in(none). //If the agent is carrying something
+dropLocal(none). //The rigth place to drop the box
 
 /*Initial rules */
 
@@ -22,15 +23,15 @@ lowBatery :- batery(Y) & Y < 40.
 /* Initial goals */
 
 //Worker arrived to the drop 1
-+at(worker, drop1): true 
++at(worker, drop1): dropLocal(drop1)  
 	<- ?qtdDischarge(X);
 		Y = X + 1;
 		-+qtdDischarge(Y);
 		-+hand_in(none);
 		-dropLocal(drop1).
 	
-//Worker arrived to the drop 1	
-+at(worker, drop2): true 
+//Worker arrived to the drop 2	
++at(worker, drop2): dropLocal(drop2) 
 	<- ?qtdDischarge(X);
 		Y = X + 1;
 		-+qtdDischarge(Y);
@@ -56,14 +57,15 @@ lowBatery :- batery(Y) & Y < 40.
 +!at(worker,P) : not at(worker,P)
   <- move_towards(P);
   	?batery(X);
-	Y = X - 0.1;
+	Y = X - 0.3;
   	-+batery(Y);
     !at(worker,P).
 
 //Recharge batery
-+!goToRecharge: lowBatery
++!goToRecharge: lowBatery 
 				<- !at(worker, garage);
 				   -+batery(100).
+				   
 +!goToRecharge: not lowBatery <- true.
 
 
