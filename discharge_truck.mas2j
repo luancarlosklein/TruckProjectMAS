@@ -1,0 +1,18 @@
+MAS discharge_truck {
+
+	infrastructure: Centralised
+
+	environment: FactoryEnv(gui)
+
+	agents:
+		
+		truck;
+		drop;
+		garage;
+		worker;
+		//worker2;
+		sample_agent;
+
+	aslSourcePath:
+		"src/asl";
+}
