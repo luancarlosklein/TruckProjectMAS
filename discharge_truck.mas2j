@@ -10,7 +10,7 @@ MAS discharge_truck {
 		drop;
 		garage;
 		worker;
-		
+		//worker2;
 		sample_agent;
 
 	aslSourcePath:
