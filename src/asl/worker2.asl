@@ -46,6 +46,11 @@ lowBatery :- batery(Y) & Y < 40.
 +batery(X) : lowBatery
 	<- !goToRecharge.
 	
++qtdTruck(X)[source(percept)]:true
+<- 
+	-+truckStatus(X).
+	
+	
 /* Plans */
 
 //Check if the agent arrived to the right place

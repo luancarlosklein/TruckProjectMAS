@@ -9,6 +9,7 @@ qtdDischarge(0). //Quantity of objects it have already discharge until now
 truckStatus(full). //Each agent have your own truck to discharge, and this parameter informs how the truck is in the current moment
 hand_in(none). //If the agent is carrying something
 dropLocal(none). //The rigth place to drop the box
+qtdTruckDischarge(0).
 
 /*Initial rules */
 
@@ -28,7 +29,7 @@ lowBatery :- batery(Y) & Y < 40.
 		Y = X + 1;
 		-+qtdDischarge(Y);
 		-+hand_in(none);
-		-dropLocal(drop1).
+		-+dropLocal(none).
 	
 //Worker arrived to the drop 2	
 +at(worker, drop2): dropLocal(drop2) 
@@ -36,7 +37,7 @@ lowBatery :- batery(Y) & Y < 40.
 		Y = X + 1;
 		-+qtdDischarge(Y);
 		-+hand_in(none);
-		-dropLocal(drop2).
+		-+dropLocal(none).
 		
 //Go to the truck
 +batery(X): not lowBatery & hand_in(none)
@@ -46,6 +47,11 @@ lowBatery :- batery(Y) & Y < 40.
 +batery(X) : lowBatery
 	<- !goToRecharge.
 	
++qtdTruck(X)[source(percept)]:true
+<- 
+	-+truckStatus(X).
+
+
 /* Plans */
 
 //Check if the agent arrived to the right place
@@ -57,7 +63,7 @@ lowBatery :- batery(Y) & Y < 40.
 +!at(worker,P) : not at(worker,P)
   <- move_towards(P, 0);
   	?batery(X);
-	Y = X - 0.3;
+	Y = X - 1;
   	-+batery(Y);
     !at(worker,P).
 
@@ -68,21 +74,33 @@ lowBatery :- batery(Y) & Y < 40.
 				   
 +!goToRecharge: not lowBatery <- true.
 
-
 //In the truck
 +!goToTruck: not lowBatery & hand_in(none)
 			<- !at(worker, truck);
-			   ?box(WeightBox, Local);
-			   +dropLocal(Local); 
+				?box(WeightBox, Local);
+			   -+dropLocal(Local); 
 			   !getBox(WeightBox).
-		
+			 
 +!goToTruck: lowBatery 
 	<- !goToRecharge.	   
 
+
+
+/* 
++mand(WeightBox, Local)[source(Truck)]: true
+<-   +box(5, drop2);
+	//?box(WeightBox, Local);
+	-+dropLocal(Local); 
+	!getBox(WeightBox);
+	-mand(WeightBox, Local)[source(Truck)].	
+	
+	
+	*/
 +!getBox(Weight): canGetBox(Weight)
 				<- -+hand_in(box);
 				   ?dropLocal(Local);
 				   !at(worker, Local).
+
 
 
 

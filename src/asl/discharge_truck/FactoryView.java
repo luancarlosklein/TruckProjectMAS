@@ -31,13 +31,11 @@ public class FactoryView extends GridWorldView{
         Location lRobot2 = hmodel.getAgPos(1);
         
         //super.drawAgent(g, x, y, Color.lightGray, -1);
-        
-        
+              
         Iterator<Location> itr = FactoryModel.obstacles.iterator();
         while(itr.hasNext()) {
         	Location element = (Location) itr.next();
         	super.drawObstacle(g, element.x, element.y);
-        
         }
         
         switch (object) {
@@ -92,11 +90,7 @@ public class FactoryView extends GridWorldView{
                 g.setColor(Color.black);
                 drawString(g, x, y, defaultFont, "Drop2");  
                 break;  
-        }
-         
-        
-        
-              
+        }      
     }
 
     @Override
@@ -108,9 +102,7 @@ public class FactoryView extends GridWorldView{
             super.drawAgent(g, x, y, c, -1);
             g.setColor(Color.black);
             super.drawString(g, x, y, defaultFont, "Worker");
-        }
-        
-       
+        }       
     }
 
 }

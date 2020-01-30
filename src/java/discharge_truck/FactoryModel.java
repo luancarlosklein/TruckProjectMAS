@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
 
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
@@ -32,6 +35,21 @@ public class FactoryModel extends GridWorldModel{
     public Location lgarage  = new Location(GSize-1,GSize-1);
     public static ArrayList<Location> obstacles = new ArrayList<Location>();
     
+    
+    public Queue<Integer> truckCargo = new LinkedList<Integer>();
+    public Queue<String> truckCargoDrop = new LinkedList<String>();
+    public int qtdTruck = 0;
+    
+    
+    public Queue<Integer> truck2Cargo = new LinkedList<Integer>();
+    public Queue<String> truck2CargoDrop = new LinkedList<String>();
+    public int qtdTruck2 = 0;
+    
+    
+    public Queue<Integer> truck3Cargo = new LinkedList<Integer>();
+    public Queue<String> truck3CargoDrop = new LinkedList<String>();
+    public int qtdTruck3 = 0;
+    
     //Matrices for the RLTA*
     public int [][] tabDrop1 = new int[GSize][GSize];
     public int [][] tabDrop2 = new int[GSize][GSize];
@@ -48,6 +66,37 @@ public class FactoryModel extends GridWorldModel{
     public int [][] tabTruck2S = new int[GSize][GSize];
     public int [][] tabTruck3S = new int[GSize][GSize];
     public int [][] tabGarageS = new int[GSize][GSize];
+    
+    ////////////////////////////////////////////////////////////
+    //Function to generate the load of truck//
+    public int generateNewTruck(Queue<Integer> truck, Queue<String> truckDrops)
+    {
+    	Random generatorCharge = new Random();
+    	int qtd = 0;
+    	while (qtd == 0)
+    	{
+    		qtd = generatorCharge.nextInt(20);
+    	}
+    	int aux = 0;
+    	
+    	while (aux < qtd)
+    	{
+    		//The weights and the place to drop is randon
+    		truck.add(generatorCharge.nextInt(10));
+    		if(generatorCharge.nextInt(100) > 50)
+    		{
+    			truckDrops.add("drop1");
+    		}
+    		else
+    		{
+    			truckDrops.add("drop2");
+    		}
+    		aux += 1;
+    	}
+    	return qtd;
+    	
+    }
+    
     
     ////////////////////////////////////////////////////////////
     //Functions for the costruction the matrices and the grid//
@@ -165,11 +214,8 @@ public class FactoryModel extends GridWorldModel{
         add(GARAGE, lgarage);
     }
 
-    public boolean request_box_t1()
-    {
-    	return true;
-    }
-    
+   
+
     //Do the agent drive on the board 
 	public boolean moveTowards(Location dest, int code) {
     	
@@ -257,7 +303,7 @@ public class FactoryModel extends GridWorldModel{
             Location sul;
             Location leste;
             Location oeste;
-            
+   
             //Define the current position. Used for to dont get a invaliable position out of the matrice
             Location out = new Location(-1,-1); ;
             
@@ -341,8 +387,7 @@ public class FactoryModel extends GridWorldModel{
             }
             int minimo = valores[0];
             Location posMin = posibilidades[0];
-            
-            
+                    
             int aux = 0;
             while (aux < qtd)
             {
@@ -359,9 +404,6 @@ public class FactoryModel extends GridWorldModel{
             	//Add one to the place witch have the minimum value
                 tab[r1.y][r1.x] = minimo + 1;
             }
-    
-            
-            
             
             //Save the update on the file
             int typeSalv = 999;
@@ -469,4 +511,5 @@ public class FactoryModel extends GridWorldModel{
         return true;
     }
    
+
 }

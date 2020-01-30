@@ -25,9 +25,6 @@ public class FactoryEnv extends Environment {
 	public static final Literal at3S = Literal.parseLiteral("at(worker2,truck3)");
 	public static final Literal aswS = Literal.parseLiteral("at(worker2, somewhere)");
 	
-	
-	
-	
     FactoryModel model; // the model of the grid
     
     @Override
@@ -40,93 +37,103 @@ public class FactoryEnv extends Environment {
         updatePercepts();
     }
     
-    void generateNewTruck()
-    {
-    	Random generatorCharge = new Random();
-    	int qtd = generatorCharge.nextInt(100);
-    	int[] weigths = {};
-    	int aux = 0;
-    	while (aux < qtd)
-    	{
-    		weigths[aux]  = generatorCharge.nextInt(100);
-    		aux += 1;
-    	}
-    	
-    	
-    }
     
     /** creates the agents percepts based on the HouseModel */
     void updatePercepts() {
     	Random generatorCharge = new Random();
     	clearPercepts("worker");
     	Location lworker = model.getAgPos(0);
+    	int place = 0;
     	
     	 // add agent location to its percepts
         if (lworker.equals(model.ltruck)) {
             addPercept("worker", at);
-            int weigth = generatorCharge.nextInt(10); 
-            if(generatorCharge.nextInt(10) > 4)
+            
+            //If the truck is empty, generate a new
+            if(model.qtdTruck == 0)
             {
-            	addPercept("worker", Literal.parseLiteral("box("+ weigth +", drop1)"));
-            }
-            else
-            {
-            	addPercept("worker", Literal.parseLiteral("box("+ weigth +", drop2)"));
-            	
+            	model.qtdTruck = model.generateNewTruck(model.truckCargo, model.truckCargoDrop);
             }
             
+            //Get the box
+            int weigth = model.truckCargo.remove();
+            String drop = model.truckCargoDrop.remove();
+            model.qtdTruck -= 1;
+            
+            //Informes to agent the informations about the box
+            addPercept("worker", Literal.parseLiteral("box("+ weigth + "," + drop + ")"));
+            addPercept("worker", Literal.parseLiteral("qtdTruck("+ model.qtdTruck +")"));
+            
+            place = 1;   
         } 
         if (lworker.equals(model.lgarage)) {
             addPercept("worker", ag);
+            place = 1;
         }
         if (lworker.equals(model.ldrop1)) {
             addPercept("worker", ad1);
+            place = 1;
         }
         if (lworker.equals(model.ldrop2)) {
             addPercept("worker", ad2);
+            place = 1;
         }
-        else
+        if (place == 0)
         {
         	addPercept("worker", asw);
         }
         
-        
-        
-      
     	clearPercepts("worker2");
     	Location lworker2 = model.getAgPos(1);
-    	
+    	place = 0;    	
     	 // add agent location to its percepts
     	
         if (lworker2.equals(model.ltruck2)) {
-        	System.out.print("VAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
             addPercept("worker2", at2S);
-            int weigth = generatorCharge.nextInt(10); 
-            if(generatorCharge.nextInt(10) > 4)
+            
+            
+            //If the truck is empty, generate a new
+            if(model.qtdTruck2 == 0)
             {
-            	addPercept("worker2", Literal.parseLiteral("box("+ weigth +", drop1)"));
-            }
-            else
-            {
-            	addPercept("worker2", Literal.parseLiteral("box("+ weigth +", drop2)"));
-            	
+            	model.qtdTruck2 = model.generateNewTruck(model.truck2Cargo, model.truck2CargoDrop);
             }
             
+            //Get the box
+            int weigth = model.truck2Cargo.remove();
+            String drop = model.truck2CargoDrop.remove();
+            model.qtdTruck2 -= 1;
+            
+            //Informes to agent the informations about the box
+            addPercept("worker2", Literal.parseLiteral("box("+ weigth + "," + drop + ")"));
+            addPercept("worker2", Literal.parseLiteral("qtdTruck("+ model.qtdTruck2 +")"));
+            
+            
+            place = 1;
         }
         
         if (lworker2.equals(model.lgarage)) {
             addPercept("worker2", agS);
+            place = 1;
         }
         if (lworker2.equals(model.ldrop1)) {
             addPercept("worker2", ad1S);
+            place = 1;
         }
         if (lworker2.equals(model.ldrop2)) {
             addPercept("worker2", ad2S);
+            place = 1;
         }
-        else
+        if (place == 0)
         {
         	addPercept("worker2", aswS);
         }
+        
+        
+        
+        
+        
+        
+        
     }
     
     @Override
@@ -136,7 +143,6 @@ public class FactoryEnv extends Environment {
         if (action.getFunctor().equals("move_towards")) {
             String l = action.getTerm(0).toString();
             int code = Integer.parseInt(action.getTerm(1).toString());
-            
             Location dest = null;
             
             if (l.equals("drop1")) {

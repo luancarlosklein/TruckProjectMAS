@@ -10,9 +10,10 @@ qtdThings(0).//Qtd inside of this truck
 /* Plans */
 
 
-+needBox[source(A)]
-<- request_box_t1;
-   ?qtdThings(X);
-   .send(A, tell, doBox).
++!needBox[source(Ag)]: true
+<- //request_box_t1;
+   
+   .print("MANDEI UMA CAIXAAAAAAAAAA.");
+   .send(Ag, tell, mand(5, drop2)).
 
 +!start : true <- .print("hello world.").
