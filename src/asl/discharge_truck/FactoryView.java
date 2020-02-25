@@ -3,12 +3,10 @@ package discharge_truck;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.util.ArrayList;
 import java.util.Iterator;
-
 import jason.environment.grid.GridWorldView;
 import jason.environment.grid.Location;
-
-
 
 public class FactoryView extends GridWorldView{
 	private static final long serialVersionUID = 1L;
@@ -27,10 +25,14 @@ public class FactoryView extends GridWorldView{
     @Override
     public void draw(Graphics g, int x, int y, int object) {
     	
-        Location lRobot = hmodel.getAgPos(0);
-        Location lRobot2 = hmodel.getAgPos(1);
-        
-        //super.drawAgent(g, x, y, Color.lightGray, -1);
+    	int qtdAgents = FactoryModel.qtdAgents;
+    	ArrayList<Location> posAgents = new ArrayList<Location>();
+    	int cont = 0;
+    	while (cont < qtdAgents)
+    	{
+    		posAgents.add(hmodel.getAgPos(cont));
+    		cont ++;
+    	}
               
         Iterator<Location> itr = FactoryModel.obstacles.iterator();
         while(itr.hasNext()) {
@@ -41,7 +43,7 @@ public class FactoryView extends GridWorldView{
         switch (object) {
             case FactoryModel.TRUCK: 
             	super.drawAgent(g, x, y, Color.red, -1);
-                if (lRobot.equals(hmodel.ltruck) || lRobot2.equals(hmodel.ltruck)) {
+                if (posAgents.contains(hmodel.ltruck)){
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -50,7 +52,7 @@ public class FactoryView extends GridWorldView{
                 
             case FactoryModel.TRUCK2: 
             	super.drawAgent(g, x, y, Color.red, -1);
-                if (lRobot.equals(hmodel.ltruck2) || lRobot2.equals(hmodel.ltruck2)) {
+                if (posAgents.contains(hmodel.ltruck2)) {
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -59,7 +61,7 @@ public class FactoryView extends GridWorldView{
                 
             case FactoryModel.TRUCK3: 
             	super.drawAgent(g, x, y, Color.red, -1);
-                if (lRobot.equals(hmodel.ltruck3) || lRobot2.equals(hmodel.ltruck3)) {
+                if (posAgents.contains(hmodel.ltruck3)) {
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -68,7 +70,7 @@ public class FactoryView extends GridWorldView{
                 
             case FactoryModel.DROP1:
             	super.drawAgent(g, x, y, Color.orange, -1);
-                if (lRobot.equals(hmodel.ldrop1) || lRobot2.equals(hmodel.ldrop1)) {
+                if (posAgents.contains(hmodel.ldrop1)) {
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -76,7 +78,7 @@ public class FactoryView extends GridWorldView{
                 break;
             case FactoryModel.GARAGE:
             	super.drawAgent(g, x, y, Color.green, -1);
-                if (lRobot.equals(hmodel.lgarage) || lRobot2.equals(hmodel.lgarage)) {
+                if (posAgents.contains(hmodel.lgarage)) {
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -84,7 +86,7 @@ public class FactoryView extends GridWorldView{
                 break;    
             case FactoryModel.DROP2:
             	super.drawAgent(g, x, y, Color.orange, -1);
-                if (lRobot.equals(hmodel.ldrop2) || lRobot2.equals(hmodel.ldrop2)) {
+                if (posAgents.contains(hmodel.ldrop2)) {
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -93,16 +95,16 @@ public class FactoryView extends GridWorldView{
         }      
     }
 
+   
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        Location lRobot = hmodel.getAgPos(0);
-        if (!(lRobot.equals(hmodel.ltruck) ||  lRobot.equals(hmodel.ltruck2) ||  lRobot.equals(hmodel.ltruck3)) && !lRobot.equals(hmodel.ldrop1) && !lRobot.equals(hmodel.ldrop2)) {
-            c = Color.yellow;
-            //if (hmodel.carryingBeer) c = Color.orange;
-            super.drawAgent(g, x, y, c, -1);
+        	c = Color.yellow;
+            super.drawAgent(g, x, y, c, id);
             g.setColor(Color.black);
-            super.drawString(g, x, y, defaultFont, "Worker");
-        }       
+            super.drawString(g, x, y, defaultFont, "W.......");
+        
+       
+        
     }
 
 }

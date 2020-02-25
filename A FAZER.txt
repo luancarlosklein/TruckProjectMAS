@@ -1,0 +1,3 @@
+*****************Lista de tarefas a realizar no sistema ainda*************************
+--> Fazer uma comunicação eficiente entre eles (para que eles possam conversar entre si)
+--> Fazer com que ao ser chamado, ele mude sua rota, e va até onde está outro agente.

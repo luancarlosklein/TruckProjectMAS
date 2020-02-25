@@ -61,7 +61,7 @@ lowBatery :- batery(Y) & Y < 40.
 //Take a step towards
 @m2
 +!at(P) : not at(P)
-  <- move_towards(P, 2);
+  <- move_towards(P, 0);
   	?batery(X);
 	Y = X - 1;
   	-+batery(Y);

@@ -24,7 +24,7 @@ lowBatery :- batery(Y) & Y < 40.
 /* Initial goals */
 
 //Worker arrived to the drop 1
-+at(worker, drop1): dropLocal(drop1)  
++at(drop1): dropLocal(drop1)  
 	<- ?qtdDischarge(X);
 		Y = X + 1;
 		-+qtdDischarge(Y);
@@ -32,7 +32,7 @@ lowBatery :- batery(Y) & Y < 40.
 		-+dropLocal(none).
 	
 //Worker arrived to the drop 2	
-+at(worker, drop2): dropLocal(drop2) 
++at(drop2): dropLocal(drop2) 
 	<- ?qtdDischarge(X);
 		Y = X + 1;
 		-+qtdDischarge(Y);
@@ -56,27 +56,27 @@ lowBatery :- batery(Y) & Y < 40.
 
 //Check if the agent arrived to the right place
 @m1
-+!at(worker,P) : at(worker,P) <- true.
++!at(P) : at(P) <- true.
 
 //Take a step towards
 @m2
-+!at(worker,P) : not at(worker,P)
-  <- move_towards(P, 0);
++!at(P) : not at(P)
+  <- move_towards(P, 5);
   	?batery(X);
 	Y = X - 1;
   	-+batery(Y);
-    !at(worker,P).
+    !at(P).
 
 //Recharge batery
 +!goToRecharge: lowBatery 
-				<- !at(worker, garage);
+				<- !at(garage);
 				   -+batery(100).
 				   
 +!goToRecharge: not lowBatery <- true.
 
 //In the truck
 +!goToTruck: not lowBatery & hand_in(none)
-			<- !at(worker, truck);
+			<- !at(truck);
 				?box(WeightBox, Local);
 			   -+dropLocal(Local); 
 			   !getBox(WeightBox).
@@ -99,9 +99,15 @@ lowBatery :- batery(Y) & Y < 40.
 +!getBox(Weight): canGetBox(Weight)
 				<- -+hand_in(box);
 				   ?dropLocal(Local);
-				   !at(worker, Local).
+				   !at(Local).
 
-
+-!goToTruck: not lowBatery & hand_in(none)
+			<-  .print("FALHOU NO CHECK");
+				!at(truck);
+				?box(WeightBox, Local);
+			    -+dropLocal(Local); 
+			    !getBox(WeightBox).
+			   			 
 
 
 

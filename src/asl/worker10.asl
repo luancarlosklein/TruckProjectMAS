@@ -61,7 +61,7 @@ lowBatery :- batery(Y) & Y < 40.
 //Take a step towards
 @m2
 +!at(P) : not at(P)
-  <- move_towards(P, 2);
+  <- move_towards(P, 10);
   	?batery(X);
 	Y = X - 1;
   	-+batery(Y);
@@ -81,6 +81,13 @@ lowBatery :- batery(Y) & Y < 40.
 			   -+dropLocal(Local); 
 			   !getBox(WeightBox).
 			 
+-!goToTruck: not lowBatery & hand_in(none)
+			<-  .print("FALHOU NO CHECK");
+				!at(truck);
+				?box(WeightBox, Local);
+			    -+dropLocal(Local); 
+			    !getBox(WeightBox).
+			   			 
 +!goToTruck: lowBatery 
 	<- !goToRecharge.	   
 
@@ -102,13 +109,7 @@ lowBatery :- batery(Y) & Y < 40.
 				   !at(Local).
 
 
--!goToTruck: not lowBatery & hand_in(none)
-			<-  .print("FALHOU NO CHECK");
-				!at(truck);
-				?box(WeightBox, Local);
-			    -+dropLocal(Local); 
-			    !getBox(WeightBox).
-			   			 
+
 
 
 //The plan ask for help for other agent, if the Box Weight (W) is bigger than the agent capacity(C)
