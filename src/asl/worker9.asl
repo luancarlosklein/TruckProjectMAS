@@ -1,7 +1,7 @@
 // Agent worker in project unloading_truck
 
 /* Initial beliefs*/
-capacity(1). //Maximum weight the agent can carry
+capacity(0). //Maximum weight the agent can carry
 batery(100). //Agent batery level, between 0 to 100 (0% - 100%)
 positionDrop(0,0). //The position on the board for the discharge the box
 qtdGoal(10). //Quantity of objects it have the goal to discharge
@@ -12,8 +12,7 @@ dropLocal(none). //The rigth place to drop the box
 qtdTruckDischarge(0).
 truckGet(truck).
 capacityHelper(0).
-busy(no).
-
+helper(true).
 
 /*Initial rules */
 
@@ -34,57 +33,49 @@ lowBatery :- batery(Y) & Y < 40.
 //	<- !goToTruck.
 
 //Go to the recharge
-+batery(X) : lowBatery
++batery(X) : lowBatery & hand_in(none)
 	<- !goToRecharge.
 	
 +qtdTruck(X)[source(percept)]:true
 <- 
 	-+truckStatus(X).
 
+//Worker arrived to the drop D with help. In this case, the agent need the confirmation the Helper is arrived to the drop too.
++helper(true): dropLocal(D) & hand_in(box) & at(D)
+	<- ?qtdDischarge(X);
+		Y = X + 1;
+		-+qtdDischarge(Y);
+		-+hand_in(none);	
+		-+capacityHelper(0);
+		-+dropLocal(none);
+		!goToTruck.
 
 /* Plans */
 
-//Check if the agent arrived to the right place
+//Worker arrived to the drop D without help 	
++!at(D): at(D) & dropLocal(D) & hand_in(box) & helper(true)
+	<- ?qtdDischarge(X);
+		Y = X + 1;
+		-+qtdDischarge(Y);
+		-+hand_in(none);
+		-+dropLocal(none);
+		-+capacityHelper(0);
+		.print("SAIDAAAAAAA 333333333333333333333");
+		!goToTruck.
 
-//The drop is a special case, because with the end of this, we need to call de goToTruck
-@m1
-+!at(P) : at(P) & dropLocal(P) <-
-	-+dropLocal(none);
-	!goToTruck. 
-	
 //For general cases
-@m2
-+!at(P) : at(P) & not dropLocal(P) <-
+@m1
++!at(P) : at(P)  <-
 	true.
-	
-
 //Take a step towards
-@m3
+@m2
 +!at(P) : not at(P)
   <- move_towards(P, 9);
   	//?batery(X);
 	//Y = X;
   	//-+batery(Y);
     !at(P).
-
-
-//Worker arrived to the drop 1
-+at(drop1): dropLocal(drop1) & hand_in(box)
-	<- ?qtdDischarge(X);
-		Y = X + 1;
-		-+qtdDischarge(Y);
-		-+hand_in(none);	
-		-+capacityHelper(0).
-		
-	
-//Worker arrived to the drop 2	
-+at(drop2): dropLocal(drop2) & hand_in(box)
-	<- ?qtdDischarge(X);
-		Y = X + 1;
-		-+qtdDischarge(Y);
-		-+hand_in(none);
-		-+capacityHelper(0).
-	
+			
 //Recharge batery
 +!goToRecharge: lowBatery 
 				<- !at(garage);
@@ -101,8 +92,6 @@ lowBatery :- batery(Y) & Y < 40.
 			 
 +!goToTruck: lowBatery 
 	<- !goToRecharge.	   
-
-
 
 /* 
 +mand(WeightBox, Local)[source(Truck)]: true
@@ -132,26 +121,19 @@ lowBatery :- batery(Y) & Y < 40.
 //The plan ask for help for other agent, if the Box Weight (W) is bigger than the agent capacity(C)
 +!getBox(Weight): not canGetBox(Weight)
 <-  ?truckGet(T);
-    .send(worker11,tell,msg(T));
+	?box(WeightBox, Local);
+    .send(worker11,tell,msg(T, Local));
 	.print("Preciso de ajuda!").
 
 +msg(M)[source(Ag)] : at(truck)
 	<- .print("O ajudande chegou!!!!");
+		-+helper(false);
 		-+capacityHelper(M);
-		-msg(M)[source(Ag)];
 		?box(WeightBox, Local);
-		-+dropLocal(Local); 
-		!tellDropPlace(Local);
-		-+dropLocal(Local); 
-		!getBox(WeightBox).
+		!getBox(WeightBox);
+		-msg(M)[source(Ag)].
 		
-
-
-+!tellDropPlace(Place): true
-<-  
-    .send(worker11,tell,msg(Place));
-	.print("HEY AJUDANTE. ESTOU TE INFORMANDO O DROP").
-
-
-
++msg(M)[source(Ag)] : at(drop1) | at(drop2)
+<- -+helper(true);
+	-msg(M)[source(Ag)].
 

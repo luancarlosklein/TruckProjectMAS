@@ -9,12 +9,15 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Scanner;
 
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
+
+import discharge_truck.Planner;
 
 public class FactoryModel extends GridWorldModel{
 	 // constants for the grid objects
@@ -66,6 +69,12 @@ public class FactoryModel extends GridWorldModel{
     //Variable used to verify all movements were done
     public int qtdPassos = 0;
     
+    ///Plan helper
+    public List<String> plan = new ArrayList();;
+    public int stepPlan = 0;
+    /////////////////
+    
+    
     ////////////////////////////////////////////////////////////
     //Function to generate the load of truck//
     public int generateNewTruck(Queue<Integer> truck, Queue<String> truckDrops)
@@ -88,7 +97,7 @@ public class FactoryModel extends GridWorldModel{
     		}
     		else
     		{
-    			truckDrops.add("drop2");
+    			truckDrops.add("drop1");
     		}
     		aux += 1;
     	}
@@ -480,5 +489,23 @@ public class FactoryModel extends GridWorldModel{
         return true;
     }
    
-
+	public boolean generatePlan(int id) throws Exception
+	{
+		  
+	    Planner planner = new Planner();
+	    plan = planner.sendingPostRequest();
+	    for (int i = 0; i < plan.size(); i++)
+	    {
+	    	  System.out.println(plan.get(i));
+	    }
+	    stepPlan = 0;
+		return true;
+	}
+	
+	public boolean nextStep(int id)
+	{
+		stepPlan += 1;
+		return true;
+	}
+	
 }

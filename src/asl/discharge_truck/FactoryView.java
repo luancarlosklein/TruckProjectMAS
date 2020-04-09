@@ -3,6 +3,7 @@ package discharge_truck;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import jason.environment.grid.GridWorldView;
@@ -19,6 +20,7 @@ public class FactoryView extends GridWorldView{
         defaultFont = new Font("Arial", Font.BOLD, 16); // change default font
         setVisible(true);
         repaint();
+        
     }
 
     /** draw application objects */

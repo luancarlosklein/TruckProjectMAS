@@ -52,12 +52,13 @@ lowBatery :- batery(Y) & Y < 40.
 	-+dropLocal(none);
 	!goToTruck. 
 	
+	
+	
 //For general cases
 @m2
 +!at(P) : at(P) & not dropLocal(P) <-
 	true.
 	
-
 //Take a step towards
 @m3
 +!at(P) : not at(P)

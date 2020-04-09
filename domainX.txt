@@ -1,0 +1,60 @@
+(define (domain hanoi)
+
+
+  (:requirements
+    :strips                 
+    :negative-preconditions 
+    :equality               
+  )
+  (:predicates
+    (at ?x)    
+    (carregando ?x)
+    (ajudado ?x)
+  )
+
+  
+  (:action move
+    :parameters (?from ?to)
+    :precondition (and
+      (at ?from)
+
+    )
+
+    :effect (and
+
+      (at ?to)
+      (not (at ?from))
+    )
+  )
+  
+ 
+  (:action carregar
+    :parameters ()
+
+    :precondition (and
+      (at truck)
+      (carregando false)
+
+    )
+ 
+    :effect (and
+      (carregando true)
+      (not (carregando false))
+    )
+  )
+
+  (:action descarregar
+    :parameters ()
+    :precondition (and
+      (at drop)
+      (carregando true)
+
+    )
+    :effect (and
+      (carregando false)
+      (ajudado true)
+      (not (carregando false))
+    )
+  )
+
+)
