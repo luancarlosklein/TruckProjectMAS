@@ -11,6 +11,8 @@ ajudado(false).
 carregando(null).
 havePlan(false).
 lengthPlan(0).
+stepPlan(0).
+plan(none).
 
 podeCarregar :- truck(X) & at(Y) & (X == Y) & carregando(false).
 
@@ -22,8 +24,9 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 //Check if the agent arrived to the right place
 @m1
 +!at(P) : at(P) <-
-	nextStep(11);
-	.print("FINALIZADO").
+	//nextStep(11);
+	.print("FINALIZADO");
+	discharge_truck.DoAction.
 
 //Take a step towards
 @m2
@@ -44,8 +47,10 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    -+ ajudado(false);
    ?agenteAjudado(Ag);
    .print("Carreguei. Agora Vamos!");
-    nextStep(11);
-   .send(Ag,tell,msg(10)).
+    //nextStep(11);
+   .send(Ag,tell,msg(10));
+   discharge_truck.DoAction.
+   
    
 +descarregar(X) : true
 <-  
@@ -54,8 +59,14 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
     -+ ajudado(true);
     ?agenteAjudado(Ag);
     .print("DESCARREGANDO");
-    .send(Ag,tell,msg("Arrived")).
+    .send(Ag,tell,msg("Arrived"));
+    discharge_truck.DoAction.
    
++havePlan(true): true
+
+<-  .print("UNA NPTJE LOKAAAAAAAAAAAAA");
+	discharge_truck.DoAction.
+      
     
 +msg(M, Drop)[source(Ag)] : true
 	<- 
@@ -66,6 +77,6 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 		-+truck(M);
 		-msg(M, Drop)[source(Ag)];
 		-+agenteAjudado(Ag);
-		generatePlan(11).
+		discharge_truck.GeneratePlan.
 		
 	
