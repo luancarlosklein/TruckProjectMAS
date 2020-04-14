@@ -1,4 +1,3 @@
 *****************Lista de tarefas a realizar no sistema ainda*************************
---> Fazer uma comunicação eficiente entre eles (para que eles possam conversar entre si)
---> Colocar o POP (planning) no ajudante (worker 11)
---> 
+--> Fazer o contract net
+--> Criar mais ajudantes
