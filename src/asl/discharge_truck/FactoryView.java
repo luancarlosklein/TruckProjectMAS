@@ -3,7 +3,6 @@ package discharge_truck;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import jason.environment.grid.GridWorldView;
@@ -27,7 +26,7 @@ public class FactoryView extends GridWorldView{
     @Override
     public void draw(Graphics g, int x, int y, int object) {
     	
-    	int qtdAgents = FactoryModel.qtdAgents;
+    	int qtdAgents = FactoryModel.qtdWorkers + FactoryModel.qtdHelpers;
     	ArrayList<Location> posAgents = new ArrayList<Location>();
     	int cont = 0;
     	while (cont < qtdAgents)
@@ -100,12 +99,24 @@ public class FactoryView extends GridWorldView{
    
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
-        	c = Color.yellow;
-            super.drawAgent(g, x, y, c, id);
-            g.setColor(Color.black);
-            super.drawString(g, x, y, defaultFont, "W.......");
-        
-       
+    	
+    		//Worker color
+    		if (id < 1)
+    		{
+    			c = Color.yellow;
+                super.drawAgent(g, x, y, c, id);
+                g.setColor(Color.black);
+                super.drawString(g, x, y, defaultFont, "W.......");		
+    		}
+            
+            //Helper color
+    		else if (id >= 1)
+            {
+            	c = Color.blue;
+                super.drawAgent(g, x, y, c, id);
+                g.setColor(Color.white);
+                super.drawString(g, x, y, defaultFont, "H.......");
+            }
         
     }
 

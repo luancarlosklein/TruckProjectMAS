@@ -38,8 +38,8 @@ public class FactoryEnv extends Environment {
     	int agent = 0;
     	int weigth;
     	String drop;
-    	//Atualize the percepts for all agents
-    	while (agent < FactoryModel.qtdAgents)
+    	//Atualize the percepts for all workers
+    	while (agent < FactoryModel.qtdWorkers)
     	{
     		clearPercepts("worker" + agent);
     		lworker = model.getAgPos(agent);
@@ -47,7 +47,11 @@ public class FactoryEnv extends Environment {
     		 // add agent location to its percepts
     		//Check if the agent is in one of the principal places, and add to it the information about this place
             if (lworker.equals(model.ltruck)) {
-                addPercept("worker" + agent, at);
+                addPercept("worker" + agent, at); 
+            }
+            
+            else if (lworker.equals(model.ltruck2)) {
+                addPercept("worker" + agent, at2);
                
                 
                 //If the truck is empty, generate a new
@@ -67,53 +71,63 @@ public class FactoryEnv extends Environment {
                 
                 place = 1;   
             } 
-            if (lworker.equals(model.lgarage)) {
+            
+            else  if (lworker.equals(model.lgarage)) {
                 addPercept("worker" + agent, ag);
                 place = 1;
             }
-            if (lworker.equals(model.ldrop1)) {
+            else if (lworker.equals(model.ldrop1)) {
                 addPercept("worker" + agent, ad1);
                 place = 1;
             }
-            if (lworker.equals(model.ldrop2)) {
+            else if (lworker.equals(model.ldrop2)) {
                 addPercept("worker" + agent, ad2);
                 place = 1;
             }
-            if (place == 0)
+            else  if (place == 0)
             {
             	addPercept("worker" + agent, asw);
             }
             agent += 1;
     	}
     	
-    	if (model.stepPlan < model.plan.size())
+    	
+    	agent = 0;
+    	//Atualize the percepts for all helpers
+    	while (agent < FactoryModel.qtdHelpers)
     	{
-    		String acao = model.plan.get(model.stepPlan);
-    		acao = acao.substring(1, acao.length() - 1);
-    		String[] act = acao.split(" ");
-    		Literal saida;
-    		boolean i = false;
-    		if (act[0].equals("move"))
-    		{
-    			if ((act[2].equals("drop")))
-    			{
-    				i = true;
-    				System.out.println("ADICIOU PRO DROP AGORAAAAAA--->>>>>>>>>" + "move(" + act[2] +"1)");
-    				saida = Literal.parseLiteral("move(" + act[2] +"1)");
-    			}
-    			else
-    			{
-    				saida = Literal.parseLiteral("move(" + act[2] +")");
-    			}
-    		}
-
-    		else
-    		{
-    			saida = Literal.parseLiteral(act[0]+"(true)");
-    		}
-    		addPercept("worker11",saida);
-    		addPercept("worker11",Literal.parseLiteral("step(" + model.stepPlan +")"));
-    		model.plan.set(model.stepPlan, "done");
+    		clearPercepts("helper" + agent);
+    		lworker = model.getAgPos(agent + FactoryModel.qtdWorkers);
+    		place = 0;
+    		 // add agent location to its percepts
+    		//Check if the agent is in one of the principal places, and add to it the information about this place
+            if (lworker.equals(model.ltruck)) {
+                addPercept("helper" + agent, at);
+                place = 1;   
+            } 
+            
+            else if (lworker.equals(model.ltruck2)) {
+                addPercept("helper" + agent, at2);
+                place = 1;   
+            } 
+            
+            else if (lworker.equals(model.lgarage)) {
+                addPercept("helper" + agent, ag);
+                place = 1;
+            }
+            else if (lworker.equals(model.ldrop1)) {
+                addPercept("helper" + agent, ad1);
+                place = 1;
+            }
+            else if (lworker.equals(model.ldrop2)) {
+                addPercept("helper" + agent, ad2);
+                place = 1;
+            }
+            if (place == 0)
+            {
+            	addPercept("helper" + agent, asw);
+            }
+            agent += 1;
     	}
     }
     
@@ -140,32 +154,10 @@ public class FactoryEnv extends Environment {
                 dest = model.ldrop2;
             }     
             result = model.moveTowards(dest, code);
-        }
-        else if(action.getFunctor().equals("generatePlan"))
-        {
-        	int id = Integer.parseInt(action.getTerm(0).toString());
-        	try {
-				result = model.generatePlan(id);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        
-        else if(action.getFunctor().equals("nextStep"))
-        {
-        	int id = Integer.parseInt(action.getTerm(0).toString());
-        	try {
-				result = model.nextStep(id);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-        }
-        	
+        }	
         if (result) {
             updatePercepts();
-            try { Thread.sleep(350); } catch (Exception e) {}
+            try { Thread.sleep(30); } catch (Exception e) {}
         }
         return result;
     }

@@ -9,15 +9,12 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Scanner;
 
 import jason.environment.grid.GridWorldModel;
 import jason.environment.grid.Location;
-
-import discharge_truck.Planner;
 
 public class FactoryModel extends GridWorldModel{
 	 // constants for the grid objects
@@ -32,7 +29,8 @@ public class FactoryModel extends GridWorldModel{
     public static final int GSize = 10;
     
     //Quantities of agents in the scenario
-    public static final int qtdAgents = 12;
+    public static final int qtdWorkers = 1;
+    public static final int qtdHelpers = 3;
     
     //Variables
     public Location ldrop1 = new Location(2,0);
@@ -43,16 +41,13 @@ public class FactoryModel extends GridWorldModel{
     public Location lgarage  = new Location(6,4);
     public static ArrayList<Location> obstacles = new ArrayList<Location>();
     
-    
     public Queue<Integer> truckCargo = new LinkedList<Integer>();
     public Queue<String> truckCargoDrop = new LinkedList<String>();
     public int qtdTruck = 0;
     
-    
     public Queue<Integer> truck2Cargo = new LinkedList<Integer>();
     public Queue<String> truck2CargoDrop = new LinkedList<String>();
     public int qtdTruck2 = 0;
-    
     
     public Queue<Integer> truck3Cargo = new LinkedList<Integer>();
     public Queue<String> truck3CargoDrop = new LinkedList<String>();
@@ -68,13 +63,7 @@ public class FactoryModel extends GridWorldModel{
     
     //Variable used to verify all movements were done
     public int qtdPassos = 0;
-    
-    ///Plan helper
-    public List<String> plan = new ArrayList();;
-    public int stepPlan = 0;
-    /////////////////
-    
-    
+        
     ////////////////////////////////////////////////////////////
     //Function to generate the load of truck//
     public int generateNewTruck(Queue<Integer> truck, Queue<String> truckDrops)
@@ -97,7 +86,7 @@ public class FactoryModel extends GridWorldModel{
     		}
     		else
     		{
-    			truckDrops.add("drop1");
+    			truckDrops.add("drop2");
     		}
     		aux += 1;
     	}
@@ -141,9 +130,9 @@ public class FactoryModel extends GridWorldModel{
     	    	        			//***********************************************//
     	    	        		
     	    	        			//Calculate the Manhattan distance
-    	    	        			//matriz [linha] [coluna] = Math.abs(loca.x - coluna) + Math.abs(loca.y - linha);
+    	    	        			matriz[linha][coluna] = Math.abs(loca.x - coluna) + Math.abs(loca.y - linha);
     	    	        			//Use the Null Heuristic
-    	    	        			matriz [linha] [coluna] = 0;
+    	    	        			//matriz [linha] [coluna] = 0;
     	    	        		}
     	    	        	else
     	    	        	{
@@ -223,7 +212,7 @@ public class FactoryModel extends GridWorldModel{
     
     public FactoryModel() {
         // create a GSize x GSize grid with one mobile agent
-        super(GSize, GSize, qtdAgents);
+        super(GSize, GSize, (qtdHelpers + qtdWorkers) );
         buildStruture();
 
         //Build the matrices
@@ -238,7 +227,8 @@ public class FactoryModel extends GridWorldModel{
         // Every agent have a code (0, 1, 2, 3...)
         Random generator = new Random();
         int cont = 0;
-        while (cont < qtdAgents)
+       
+        while (cont < qtdWorkers)
         {
         	//Generate the initial position. It is random 
             int x = generator.nextInt(GSize - 1);
@@ -250,7 +240,17 @@ public class FactoryModel extends GridWorldModel{
             	cont += 1;
             }
         }
-       
+     
+        cont = 0;
+        while (cont < qtdHelpers)
+        {
+        	//Generate the initial position. It is random 
+            setAgPos(qtdWorkers + cont, lgarage.x, lgarage.y); 
+            cont += 1;
+            
+        }
+        
+        
         // initial location of drop1, drop2, truck and garage
         add(DROP1, ldrop1);
         add(DROP2, ldrop2);
@@ -487,25 +487,5 @@ public class FactoryModel extends GridWorldModel{
             view.update(lgarage.x,lgarage.y);
         }
         return true;
-    }
-   
-	public boolean generatePlan(int id) throws Exception
-	{
-		  
-	    Planner planner = new Planner();
-	    plan = planner.sendingPostRequest();
-	    for (int i = 0; i < plan.size(); i++)
-	    {
-	    	  System.out.println(plan.get(i));
-	    }
-	    stepPlan = 0;
-		return true;
-	}
-	
-	public boolean nextStep(int id)
-	{
-		stepPlan += 1;
-		return true;
-	}
-	
+    }	
 }

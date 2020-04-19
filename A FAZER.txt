@@ -1,3 +1,8 @@
 *****************Lista de tarefas a realizar no sistema ainda*************************
---> Fazer o contract net
---> Criar mais ajudantes
+--> Arrumar o caso em que tem 2 agentes solicitando ajuda;
+	- Ambos solicitam,ambos tem as mesmas repostas, e ambos selecionam o mesmo agente. E ai fica esperando a chegada dele, mas ele só vai para um, o outro
+	fica parado para sempre
+--> Verificar a questão da parte grafica. Mostra meio devagar depois de passar o tempo
+--> Mostrou alguns erros, tem que verificar isso
+	- Com velocidade muito rápida, 2 agentes começam a ajudar, mas nem terminou a ação
+	- Deu um problema de falta de plano. Mas isso ocorreu poucas vezes. Tem que verificar

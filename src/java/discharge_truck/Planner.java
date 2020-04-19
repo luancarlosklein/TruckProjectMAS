@@ -42,7 +42,7 @@ public class Planner {
 		  wr.flush();
 		  wr.close();
 		 
-		  int responseCode = con.getResponseCode();
+		  //int responseCode = con.getResponseCode();
 		  //System.out.println("nSending 'POST' request to URL : " + url);
 		  //System.out.println("Post Data : " + postJsonData);
 		  //System.out.println("Response Code : " + responseCode);
@@ -66,16 +66,13 @@ public class Planner {
 				 FileWriter arq = new FileWriter("saida.txt");
 				 PrintWriter gravarArq = new PrintWriter(arq);   
 			     JSONObject jsonObject1 = new JSONObject(result);
-			     System.out.println("RESULTADOOOOOOOOOOOOOOOOOOOOOOOOOOO CAYYYYY");
 			     //System.out.println(jsonObject1);
 				 JSONObject resultadoJson = new JSONObject(jsonObject1.get("result").toString());
 				 JSONArray jArray = (JSONArray) resultadoJson.get("plan");
 				 for(int i = 0; i < jArray.length(); i++){
 		                JSONObject o = jArray.getJSONObject(i);
 		                gravarArq.printf(o.get("name").toString());
-		                plano.add(o.get("name").toString());
-		              
-		               
+		                plano.add(o.get("name").toString());   
 		            }
 				 arq.close();
 			}catch (JSONException err){

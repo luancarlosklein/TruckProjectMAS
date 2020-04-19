@@ -45,7 +45,7 @@ public class GeneratePlan extends DefaultInternalAction {
 		   }
          }
 	   
-	   ts.getAg().delBel(Literal.parseLiteral("plan(" + plano +")"));
+	   ts.getAg().delBel(Literal.parseLiteral("plan(_)"));
 	   ts.getAg().delBel(Literal.parseLiteral("lengthPlan(" + lengthPlan +")"));
 	   ts.getAg().delBel(Literal.parseLiteral("havePlan(false)"));
 	   ts.getAg().addBel(Literal.parseLiteral("havePlan(true)"));
@@ -54,7 +54,7 @@ public class GeneratePlan extends DefaultInternalAction {
 	   ts.getAg().addBel(Literal.parseLiteral("plan("+ planStr.substring(1, planStr.length() - 1) +")"));
 	   
 	   int tam = planStr.split(",").length;
-	   System.out.print(tam);
+	   //System.out.print(tam);
 		   
 	   ts.getAg().addBel(Literal.parseLiteral("lengthPlan(" + tam +")"));
 	  
