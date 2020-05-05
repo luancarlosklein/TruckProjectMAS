@@ -1,10 +1,10 @@
 // Agent ajudante in project discharge_truck
 
 /* Initial beliefs and rules */
-
+id(4).
 drop(dropIr).
 truck(truckIr).
-capacity(X) :- .random(R) & X = (10*R) + 5.
+capacity(20). // :- .random(R) & X = (10*R) + 5.
 ajudado(false).
 carregando(null).
 havePlan(false).
@@ -13,7 +13,7 @@ stepPlan(0).
 plan(none).
 busy(false).
 plays(initiator,worker0). 
-//plays(initiator,worker1). 
+plays(initiator,worker1). 
 agenteAjudado(none).
 
 
@@ -37,16 +37,18 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 //Take a step towards
 @m2
 +!at(P) : not at(P)
-  <- move_towards(P, 3);
+  <- 
+  ?id(ID);
+  move_towards(P, ID);
   !at(P).
 
 ////////////////////////////////////
 //Arrived in the position of the worker
-@car[atomic]    
+@car  
 +carregar(X) : true
 <- 
-   -+ carregando(true);
-   -+ ajudado(false);
+   -+carregando(true);
+   -+ajudado(false);
    ?agenteAjudado(Ag);
    .print("Carreguei. Agora Vamos!");
    ?capacity(Y);
@@ -54,14 +56,14 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    discharge_truck.DoAction.
 ////////////////////////////////////////
       
-@des[atomic]      
+@des      
 +descarregar(X) : true
 <-  
-	-+ carregando(false);
-    -+ ajudado(true);
+	-+carregando(false);
+    -+ajudado(true);
     ?agenteAjudado(Ag);
     .print("DESCARREGANDO");
-    .send(Ag,tell,msg("Arrived"));
+    .send(Ag,tell,arrived(true));
     discharge_truck.DoAction.
     
 /////////////////////////////
@@ -79,13 +81,11 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    <- .send(In,tell,introduction(participant,Me)).
 
 // answer to Call For Proposal   
-@c1[atomic] 
+@c1
 +cfp(CNPId)[source(A)]
    :  plays(initiator,A) & busy(false) & capacity(Offer)
    <- +proposal(CNPId,Offer); // remember my proposal
-      
       .send(A,tell,propose(CNPId,Offer));
-      -+busy(true);
       -cfp(CNPId)[source(A)].
 
 
@@ -96,13 +96,25 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    .print("EU ME RECUSEI!");
       -cfp(CNPId)[source(A)].
 
-@r1 +accept_proposal(CNPId, Truck, Drop)[source(A)]
+
+@r1Busy
++accept_proposal(CNPId, Truck, Drop)[source(A)]
+   :  proposal(CNPId, Offer) & busy(true)
+   <- 
+   		.send(A, tell, failureCnp(true));
+   		-accept_proposal(CNPId, Truck, Drop)[source(A)];
+   		.print("My proposal '",Offer,"' won CNP ",CNPId,
+             " for! BUT I'm busy now. Sorry!'").
+
+@r1
++accept_proposal(CNPId, Truck, Drop)[source(A)]
    :  proposal(CNPId, Offer)
-   <- .print("My proposal '",Offer,"' won CNP ",CNPId,
+   <-
+   		-+busy(true); 
+   		.print("My proposal '",Offer,"' won CNP ",CNPId,
              " for!");        
         -+drop(Drop);
-		-+truck(Truck);
-		-+busy(true);
+		-+truck(Truck);	
 		-accept_proposal(CNPId, Truck, Drop)[source(A)];
 		-proposal(CNPId, Offer);
 		-+agenteAjudado(A);

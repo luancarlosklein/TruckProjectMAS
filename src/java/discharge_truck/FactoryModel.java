@@ -20,7 +20,7 @@ public class FactoryModel extends GridWorldModel{
 	 // constants for the grid objects
     public static final int DROP1 = 256;
     public static final int DROP2 = 128;
-    public static final int TRUCK  = 64;
+    public static final int TRUCK1  = 64;
     public static final int TRUCK2  = 32;
     public static final int TRUCK3  = 16;
     public static final int GARAGE  = 8;
@@ -29,20 +29,20 @@ public class FactoryModel extends GridWorldModel{
     public static final int GSize = 10;
     
     //Quantities of agents in the scenario
-    public static final int qtdWorkers = 1;
+    public static final int qtdWorkers = 2;
     public static final int qtdHelpers = 3;
     
     //Variables
     public Location ldrop1 = new Location(2,0);
     public Location ldrop2 = new Location(7,0);
-    public Location ltruck  = new Location(0,GSize-1);
+    public Location ltruck1  = new Location(0,GSize-1);
     public Location ltruck2  = new Location(4,GSize-1);
     public Location ltruck3  = new Location(GSize-1,GSize-1);
     public Location lgarage  = new Location(6,4);
     public static ArrayList<Location> obstacles = new ArrayList<Location>();
     
-    public Queue<Integer> truckCargo = new LinkedList<Integer>();
-    public Queue<String> truckCargoDrop = new LinkedList<String>();
+    public Queue<Integer> truck1Cargo = new LinkedList<Integer>();
+    public Queue<String> truck1CargoDrop = new LinkedList<String>();
     public int qtdTruck = 0;
     
     public Queue<Integer> truck2Cargo = new LinkedList<Integer>();
@@ -86,11 +86,10 @@ public class FactoryModel extends GridWorldModel{
     		}
     		else
     		{
-    			truckDrops.add("drop2");
+    			truckDrops.add("drop1");
     		}
     		aux += 1;
-    	}
-    	
+    	}	
     	return qtd;
     }
     
@@ -218,7 +217,7 @@ public class FactoryModel extends GridWorldModel{
         //Build the matrices
         buildTable(tabDrop1, ldrop1, 0);
         buildTable(tabDrop2, ldrop2, 1);
-        buildTable(tabTruck, ltruck, 2);
+        buildTable(tabTruck, ltruck1, 2);
         buildTable(tabTruck2, ltruck2, 3);
         buildTable(tabTruck3, ltruck3, 4);
         buildTable(tabGarage, lgarage, 5);
@@ -236,31 +235,29 @@ public class FactoryModel extends GridWorldModel{
             if ( !obstacles.contains(new Location(x,y)) )
             {
             	System.out.println("X: " + x + " Y: " + y);
+            	System.out.println("POSIÇÕES INICIALIZADAS");
             	setAgPos(cont, x, y); 
             	cont += 1;
             }
         }
-     
+       
         cont = 0;
         while (cont < qtdHelpers)
         {
         	//Generate the initial position. It is random 
             setAgPos(qtdWorkers + cont, lgarage.x, lgarage.y); 
             cont += 1;
-            
         }
-        
         
         // initial location of drop1, drop2, truck and garage
         add(DROP1, ldrop1);
         add(DROP2, ldrop2);
-        add(TRUCK, ltruck);
+        add(TRUCK1, ltruck1);
         add(TRUCK2, ltruck2);
         add(TRUCK3, ltruck3);
         add(GARAGE, lgarage);
     }
 
-   
     //Do the agent drive on the board 
 	public boolean moveTowards(Location dest, int code) {
 			Location r1 = getAgPos(code); //Get the current agent location 
@@ -280,7 +277,7 @@ public class FactoryModel extends GridWorldModel{
             else if(dest.equals(ldrop2)){
             	tab = tabDrop2;
             }
-            else if(dest.equals(ltruck)){
+            else if(dest.equals(ltruck1)){
             	tab = tabTruck;
             	local = "truck";
             }
@@ -449,7 +446,7 @@ public class FactoryModel extends GridWorldModel{
             	tabDrop2 =  tab;
             	typeSalv = 1;
             }
-            else if(dest.equals(ltruck)){
+            else if(dest.equals(ltruck1)){
             	tabTruck = tab;
             	typeSalv = 2;
             }
@@ -481,7 +478,7 @@ public class FactoryModel extends GridWorldModel{
         if (view != null) {
             view.update(ldrop1.x,ldrop1.y);
             view.update(ldrop2.x,ldrop2.y);
-            view.update(ltruck.x,ltruck.y);
+            view.update(ltruck1.x,ltruck1.y);
             view.update(ltruck2.x,ltruck2.y);
             view.update(ltruck3.x,ltruck3.y);
             view.update(lgarage.x,lgarage.y);

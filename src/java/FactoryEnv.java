@@ -13,7 +13,7 @@ public class FactoryEnv extends Environment {
 	public static final Literal ag = Literal.parseLiteral("at(garage)");
 	public static final Literal ad1 = Literal.parseLiteral("at(drop1)");
 	public static final Literal ad2 = Literal.parseLiteral("at(drop2)");
-	public static final Literal at = Literal.parseLiteral("at(truck)");
+	public static final Literal at = Literal.parseLiteral("at(truck1)");
 	public static final Literal at2 = Literal.parseLiteral("at(truck2)");
 	public static final Literal at3 = Literal.parseLiteral("at(truck3)");
 	public static final Literal asw = Literal.parseLiteral("at(somewhere)");
@@ -44,30 +44,18 @@ public class FactoryEnv extends Environment {
     		clearPercepts("worker" + agent);
     		lworker = model.getAgPos(agent);
     		place = 0;
+    		addPercept("worker"+ agent, Literal.parseLiteral("pos(" + lworker.x + "," + lworker.y +")"));
     		 // add agent location to its percepts
     		//Check if the agent is in one of the principal places, and add to it the information about this place
-            if (lworker.equals(model.ltruck)) {
+            if (lworker.equals(model.ltruck1)) {
                 addPercept("worker" + agent, at); 
+                place = 1;
             }
             
             else if (lworker.equals(model.ltruck2)) {
                 addPercept("worker" + agent, at2);
                
                 
-                //If the truck is empty, generate a new
-                if(model.qtdTruck == 0)
-                {
-                	model.qtdTruck = model.generateNewTruck(model.truckCargo, model.truckCargoDrop);
-                }
-                
-                //Get the box
-                weigth = model.truckCargo.remove();
-                drop = model.truckCargoDrop.remove();
-                model.qtdTruck -= 1;
-                
-                //Informes to agent the informations about the box
-                addPercept("worker" + agent, Literal.parseLiteral("box("+ weigth + "," + drop + ")"));
-                addPercept("worker" + agent, Literal.parseLiteral("qtdTruck("+ model.qtdTruck +")"));
                 
                 place = 1;   
             } 
@@ -101,7 +89,7 @@ public class FactoryEnv extends Environment {
     		place = 0;
     		 // add agent location to its percepts
     		//Check if the agent is in one of the principal places, and add to it the information about this place
-            if (lworker.equals(model.ltruck)) {
+            if (lworker.equals(model.ltruck1)) {
                 addPercept("helper" + agent, at);
                 place = 1;   
             } 
@@ -142,8 +130,8 @@ public class FactoryEnv extends Environment {
             
             if (l.equals("drop1")) {
                 dest = model.ldrop1;
-            } else if (l.equals("truck")) {
-                dest = model.ltruck;
+            } else if (l.equals("truck1")) {
+                dest = model.ltruck1;
             } else if (l.equals("truck2")) {
                 dest = model.ltruck2;
             } else if (l.equals("truck3")) {
@@ -157,7 +145,7 @@ public class FactoryEnv extends Environment {
         }	
         if (result) {
             updatePercepts();
-            try { Thread.sleep(30); } catch (Exception e) {}
+            try { Thread.sleep(400); } catch (Exception e) {}
         }
         return result;
     }

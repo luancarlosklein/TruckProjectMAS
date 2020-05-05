@@ -1,10 +1,10 @@
 MAS discharge_truck {
 
-	infrastructure: Centralised
 
 	environment: FactoryEnv(gui)
 
 	agents:
+		truck1;
 		helper2;
 		helper1;
 		helper0 ;
@@ -13,11 +13,11 @@ MAS discharge_truck {
 	
 		truck3;
 		truck2;
-		truck;
+		
 		drop;
 		garage;
 		worker0;
-		//worker1;
+		worker1;
 		//worker2;
 		//worker3;
 		//worker4;

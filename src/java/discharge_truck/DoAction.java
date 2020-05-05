@@ -103,9 +103,6 @@ public class DoAction extends DefaultInternalAction {
 	   ts.getAg().delBel(Literal.parseLiteral("stepPlan("+ step  +")"));
 	   ts.getAg().addBel(saida);
 	   ts.getAg().addBel(Literal.parseLiteral("stepPlan("+ nextStep  +")"));
-	     
-	   
-	   
       return true;
    }
 }

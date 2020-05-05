@@ -42,9 +42,9 @@ public class FactoryView extends GridWorldView{
         }
         
         switch (object) {
-            case FactoryModel.TRUCK: 
+            case FactoryModel.TRUCK1: 
             	super.drawAgent(g, x, y, Color.red, -1);
-                if (posAgents.contains(hmodel.ltruck)){
+                if (posAgents.contains(hmodel.ltruck1)){
                     super.drawAgent(g, x, y, Color.pink, -1);
                 }
                 g.setColor(Color.black);
@@ -101,7 +101,7 @@ public class FactoryView extends GridWorldView{
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
     	
     		//Worker color
-    		if (id < 1)
+    		if (id < 2)
     		{
     			c = Color.yellow;
                 super.drawAgent(g, x, y, c, id);
@@ -110,7 +110,7 @@ public class FactoryView extends GridWorldView{
     		}
             
             //Helper color
-    		else if (id >= 1)
+    		else if (id >= 2)
             {
             	c = Color.blue;
                 super.drawAgent(g, x, y, c, id);

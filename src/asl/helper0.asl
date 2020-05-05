@@ -1,10 +1,10 @@
 // Agent ajudante in project discharge_truck
 
 /* Initial beliefs and rules */
-
+id(2).
 drop(dropIr).
 truck(truckIr).
-capacity(X) :- .random(R) & X = (10*R) + 5.
+capacity(10). //:- .random(R) & X = (10*R) + 5.
 ajudado(false).
 carregando(null).
 havePlan(false).
@@ -13,7 +13,7 @@ stepPlan(0).
 plan(none).
 busy(false).
 plays(initiator,worker0). 
-//plays(initiator,worker1). 
+plays(initiator,worker1). 
 agenteAjudado(none).
 
 
@@ -37,12 +37,14 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 //Take a step towards
 @m2
 +!at(P) : not at(P)
-  <- move_towards(P, 1);
+  <- 
+  ?id(ID);
+  move_towards(P, ID);
   !at(P).
 
 ////////////////////////////////////
 //Arrived in the position of the worker
-@car[atomic]    
+@car
 +carregar(X) : true
 <- 
    -+ carregando(true);
@@ -54,14 +56,14 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    discharge_truck.DoAction.
 ////////////////////////////////////////
       
-@des[atomic]      
+@des
 +descarregar(X) : true
 <-  
 	-+ carregando(false);
     -+ ajudado(true);
     ?agenteAjudado(Ag);
     .print("DESCARREGANDO");
-    .send(Ag,tell,msg("Arrived"));
+    .send(Ag,tell,arrived(true));
     discharge_truck.DoAction.
     
 /////////////////////////////
@@ -79,22 +81,23 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    		.send(In,tell,introduction(participant,Me)).
 
 // answer to Call For Proposal   
-@c1[atomic] 
+@c1
 +cfp(CNPId)[source(A)]:  plays(initiator,A) & busy(false) & capacity(Offer)
    <- 
    	  +proposal(CNPId,Offer); // remember my proposal
       .send(A,tell,propose(CNPId,Offer));
-      -+busy(true);
+      
       -cfp(CNPId)[source(A)].
 
 // Refuse a Call for Proposal
-+cfp(CNPId)[source(A)]:   plays(initiator,A) & busy(true)
++cfp(CNPId)[source(A)]: plays(initiator,A) & busy(true)
    <- 
    	  .send(A,tell,refuse(CNPId));
       .print("EU ME RECUSEI!");
       -cfp(CNPId)[source(A)].
 
-@r1 +accept_proposal(CNPId, Truck, Drop)[source(A)]:  proposal(CNPId, Offer)
+@r1
++accept_proposal(CNPId, Truck, Drop)[source(A)]:  proposal(CNPId, Offer)
    <- 
    		.print("My proposal '",Offer,"' won CNP ",CNPId,
              " for!");        
