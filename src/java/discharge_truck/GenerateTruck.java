@@ -34,7 +34,7 @@ public class GenerateTruck extends DefaultInternalAction {
    	int weight = 0;
    	while (aux < qtd)
    	{
-   		//The weights and the place to drop is randon
+   		//The weights and the place to drop is random
    		weight = generatorCharge.nextInt(10);
    		if(generatorCharge.nextInt(100) > 50)
    		{
@@ -52,7 +52,7 @@ public class GenerateTruck extends DefaultInternalAction {
    	  ts.getAg().delBel(Literal.parseLiteral("qtdThings(_)"));
 
       // ts.getAg().delBel(Literal.parseLiteral("qtdTruck(_)"));
-       //ts.getAg().addBel(Literal.parseLiteral("box(" + weigth + "," + drop +")"));
+       //ts.getAg().addBel(Literal.parseLiteral("boxDelivered(true)"));
       ts.getAg().addBel(Literal.parseLiteral("truckloadCurrently("+ boxes +")"));
       ts.getAg().addBel(Literal.parseLiteral("truckload("+ boxes +")"));
       ts.getAg().addBel(Literal.parseLiteral("qtdThings("+ qtd +")"));

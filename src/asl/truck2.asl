@@ -1,11 +1,12 @@
 // Agent truck in project discharge_truck
 /* Initial beliefs and rules */
 qtdThings(0).//Qtd inside of this truck
-//truckloadCurrently([]).
-myPos(0, 9).
-startP(true).
-start(true).
-boxDelivered(true). 
+myPos(4, 9).//The agent position 
+start(true).//Generate the truck
+startP(true).//Make a delay to call a CNP
+boxDelivered(true).
+confiability(100,100).//Worker0, worker1...
+
 //For the call for helper (contract net)
 all_proposals_received(CNPId) :- 
   .count(introduction(participant,_),NP) & // number of participants
@@ -15,32 +16,29 @@ all_proposals_received(CNPId) :-
 
 /* Initial goals */
 
+//Make a delay, for to avoid the conflict to the other truck
 +startP(true): true
 <- 	.wait(3000).
-	//!startCNP(4).
 	
 +start(X): true
 <- discharge_truck.GenerateTruck.
 
-/* 
+/* To a infinite
 //Generate a new truck
 @emptyTruck[atomic]
 +truckloadCurrently([]): true
 <- .print("Caminhão Vazio!");
 	discharge_truck.GenerateTruck.
 */
-
 //The winner is already busy, do a new cnp
 @puBack[atomic]
 +failureCnpForTruck(X, Y)[source(Ag)]: true
 <-	+boxPutBack(X, Y, Ag);
+	-proposalWin(_, _, _, Ag);
 	!putBoxBack;
-	-failureCnpForTruck(X, Y)[source(Ag)];
-	.print("PRECISO DE UMA NOVA CNP!");
+	-failureCnpForTruck(_,_)[source(Ag)];
+	.print("I need a new CNP!(T2)");
 	.wait(3000).
-	//!startCNP(4).
-
-//Send the first box in the list
 
 +!sendBox([box(W,D)|T], WAg, CNPId): true
 <- 	-+box(W,D);
@@ -48,9 +46,9 @@ all_proposals_received(CNPId) :-
 	Y = Z - 1;
 	-+qtdThings(Y);
 	.send(WAg,tell,accept_proposal(CNPId, truck2, box(W, D)));
-	.print("MANDEI UMA CAIXAsssssssssssssssssssssssssssssssssssssssssssss");
-   -+truckloadCurrently(T).
-   				 
+	.print("I send a box!(T2)");
+     -+truckloadCurrently(T).
+				 				 
 //Get the box, and put it in the charge, again
 +!putBoxBack: true
 <- 
@@ -60,21 +58,28 @@ all_proposals_received(CNPId) :-
 	discharge_truck.PutBoxBack.
 
 //Make this fot call a worker
++truckloadCurrently(X): qtdThings(Y) & Y == 0
+<-  .print("The truck is empty now! Nothing tho discharge here (T2)!").
 
-+truckloadCurrently(X): qtdThings(Y) & Y > 0 & boxDelivered(true)
-<-  .print("Alguem ai pra descarregar?");
+//Make this fot call a worker
++truckloadCurrently(X): qtdThings(Y) & Y > 0
+<-  .print("I have a box! Is someone to discharge?(T2)");
 	.wait(7000);
-	-+boxDelivered(false); 
+	-+boxDelivered(false);
 	!startCNP(4).
+
+//Make the truck fanatic to discharge
++truckloadCurrently(X): true
+<- .wait(5000);
+   -+truckloadCurrently(X).
 	
 // start the CNP
 @cnp9
 +!startCNP(Id) 
 <-  -+cnp_state(Id,propose);   // remember the state of the CNP
     .findall(Name,introduction(participant,Name),LP);
-    .print("Sending CFP to ",LP);
-     ?myPos(X, Y);
-    .send(LP,tell,cfp(Id, X, Y));
+    //.print("Sending CFP to ",LP);
+    .send(LP,tell,cfp(Id));
     .concat("+!contract(",Id,")",Event);
     // the deadline of the CNP is now + 4 seconds, so
     // the event +!contract(Id) is generated at that time
@@ -83,10 +88,24 @@ all_proposals_received(CNPId) :-
 -!startCNP(Id) <- 
   !startCNP(Id).
  
++!selectWorker: true
+<- discharge_truck.SelectForCnp.
+
 // receive proposal 
 // if all proposal have been received, don't wait for the deadline
-@r1 +propose(CNPId,Offer):  cnp_state(CNPId,propose) & all_proposals_received(CNPId)
-<- !contract(CNPId).
+@r1 
++propose(CNPId,Offer,Time)[source(A)]:  
+cnp_state(CNPId,propose) & all_proposals_received(CNPId)
+<- 
+  -propose(CNPId,Offer, Time)[source(A)];
+  +proposeA(CNPId, Offer, Time, A);
+  !contract(CNPId).
+
+@r1T[atomic] 
++propose(CNPId,Offer, Time)[source(A)]: true
+<- 
+ -propose(CNPId,Offer, Time)[source(A)];
+ +proposeA(CNPId, Offer, Time, A).
 
 // receive refusals   
 @r2 +refuse(CNPId):  cnp_state(CNPId,propose) & all_proposals_received(CNPId)
@@ -97,57 +116,82 @@ all_proposals_received(CNPId) :-
 @lc1[atomic]
 +!contract(CNPId)
 <- -+cnp_state(CNPId,contract);
-   .findall(offer(O,A),propose(CNPId,O)[source(A)],L);
-   //.print("Offers are ",L);
+   .findall(offer(O,A),proposeA(CNPId,O,T,A),L);
    .length(L, S);
    -+qtdOffers(S);
-   L \== []; // constraint the plan execution to at least one offer
-   .max(L,offer(WOf,WAg)); // sort offers, the first is the best
-   .print("Winner is ",WAg," with ",WOf);
-   !announce_result(CNPId,L,WAg); 
-   -+cnp_state(CNPId,finished);
-   .abolish(propose(4,_));
-   .abolish(refuse(4,_)).
+    if(S > 0)
+    {
+    	!selectWorker;
+    	?winnerCnp(WAg, WOf);
+    	?proposeA(CNPId, P, Time, WAg);
+    	+proposalWin(CNPId, P, Time, WAg);
+   		.print("Winner is ",WAg," with ",WOf, " Time: ", Time, " T2");
+   		!announce_result(CNPId,L,WAg); 
+   		-+cnp_state(CNPId,finished);
+    }   
+   -winnerCnp(_,_);
+   .abolish(proposeA(4,_,_,_));
+   .abolish(propose(4,_,_));
+   .abolish(refuse(4)).
 
 // nothing todo, the current phase is not 'propose'
 @lc2 +!contract(CNPId) <- true.
 
--!contract(CNPId): qtdThings(Y) & Y > 0
-<- //.print("CNP ",CNPId," has failed!");
-   .wait(7000); 
++qtdOffers(0): qtdThings(Y) & Y > 0
+<- .print("CNP ",CNPId," has failed!: No prosose (T2)");
+   .wait(7000);
    -+boxDelivered(true); 
    !startCNP(4).
 
+-!contract(CNPId): qtdThings(Y) & Y > 0
+<- .print("CNP ",CNPId," has failed! (T2)");
+   .wait(7000);
+   -+boxDelivered(true); 
+   !startCNP(4).
+ 
 -!contract(CNPId): qtdThings(Y) & Y <= 0
-<- .print("ACABOUUUUUUUUUUUUU TUDO POR").
+<- .print("CNP ",CNPId," has failed! Stop now!(T2)").
 
 +!announce_result(_,[],_).
 // announce to the winner
 
 +!announce_result(CNPId,[offer(O,WAg)|T],WAg) 
 <-  ?truckloadCurrently(L);
-	!sendBox(L, WAg, CNPId); 
-	 -+boxDelivered(true);      
-    //?box(X, Y);
-    //.send(WAg,tell,accept_proposal(CNPId, truck2, box(X, Y)));
-    !announce_result(CNPId,T,WAg);
-   .
+	!sendBox(L, WAg, CNPId);      
+    -+boxDelivered(true)
+    !announce_result(CNPId,T,WAg).
       
 // announce to others
 +!announce_result(CNPId,[offer(O,LAg)|T],WAg) 
 <- .send(LAg,tell,reject_proposal(CNPId));
    !announce_result(CNPId,T,WAg).
 
-/*    
-+going(indo)[source(A)]: true
-<- .time(H, M, S);
-	+hourToGo(H, M, S);
-	-going(indo)[source(A)].
-	
-+going(saindo)[source(A)]: true
-<- .time(H, M, S);
-	?hourToGo(Hs, Ms, Ss);
+
+@com[atomic]
++coming(H, M, S)[source(A)]: true
+<- 	+hourToGo(H, M, S, A);
+	-coming(H, M, S)[source(A)].
+
+@gos[atomic]	
++leaving(H, M, S)[source(A)]: true
+<- 	
+	?proposalWin(CNPId, P, Time, A)
+	?hourToGo(Hs, Ms, Ss, A);
 	X = (H - Hs)*3600 + (M - Ms)*60 + (S - Ss);
-	.print(" O CORNO DEMOROU ", X, " segundos PARA CHEGAR E IR EMBORA");
-	-going(saindo)[source(A)].
-*/
+	.print("The agent has to spend ", X, " seconds to get the box");
+	if (A == worker0)
+	{
+		?confiability(W0, W1);
+		Z = W0 + (Time - X);
+		-+confiability(Z, W1);
+	}
+	if (A == worker1)
+	{
+		?confiability(W0, W1);
+		K = W1 + (Time - X);
+		-+confiability(W0, K);
+	}
+	-proposalWin(CNPId, P, Time, A);
+	-hourToGo(Hs, Ms, Ss, A);
+	-+leaving(H, M, S)[source(A)].
+

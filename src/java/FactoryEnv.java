@@ -6,8 +6,6 @@ import jason.environment.grid.Location;
 import discharge_truck.FactoryModel;
 import discharge_truck.FactoryView;
 
-
-
 public class FactoryEnv extends Environment {
 	//The location percepts 
 	public static final Literal ag = Literal.parseLiteral("at(garage)");
@@ -36,8 +34,6 @@ public class FactoryEnv extends Environment {
     	Location lworker;
     	int place;
     	int agent = 0;
-    	int weigth;
-    	String drop;
     	//Atualize the percepts for all workers
     	while (agent < FactoryModel.qtdWorkers)
     	{
@@ -54,9 +50,6 @@ public class FactoryEnv extends Environment {
             
             else if (lworker.equals(model.ltruck2)) {
                 addPercept("worker" + agent, at2);
-               
-                
-                
                 place = 1;   
             } 
             
@@ -78,7 +71,6 @@ public class FactoryEnv extends Environment {
             }
             agent += 1;
     	}
-    	
     	
     	agent = 0;
     	//Atualize the percepts for all helpers
