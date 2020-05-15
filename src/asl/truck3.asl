@@ -118,15 +118,7 @@ all_proposals_received(CNPId) :-
 	//.send(WAg,tell,accept_proposal(CNPId, truck2, box(W, D)));
 	.print("I send a box!(T2)");
      -+truckloadCurrently(T).
-				 				 
-//Get the box, and put it in the charge, again
-+!putBoxBack: true
-<- 
-	?qtdThings(Z);
-	Y = Z + 1;
-	-+qtdThings(Y);
-	discharge_truck.PutBoxBack.
-	
+
 // start the CNP
 @cnp9
 +!startCNP(Id) 

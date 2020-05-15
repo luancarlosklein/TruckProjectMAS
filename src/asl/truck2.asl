@@ -123,14 +123,6 @@ all_proposals_received(CNPId) :-
 	.print("I send a box!(T2)");
      -+truckloadCurrently(T).
 				 				 
-//Get the box, and put it in the charge, again
-+!putBoxBack: true
-<- 
-	?qtdThings(Z);
-	Y = Z + 1;
-	-+qtdThings(Y);
-	discharge_truck.PutBoxBack.
-	
 // start the CNP
 @cnp9
 +!startCNP(Id) 
