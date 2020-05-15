@@ -18,7 +18,7 @@ MAS discharge_truck {
 		garage;
 		worker0;
 		worker1;
-		//worker2;
+		worker2;
 		//worker3;
 		//worker4;
 		//worker5;

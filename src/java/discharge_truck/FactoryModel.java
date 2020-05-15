@@ -29,7 +29,7 @@ public class FactoryModel extends GridWorldModel{
     public static final int GSize = 10;
     
     //Quantities of agents in the scenario
-    public static final int qtdWorkers = 2;
+    public static final int qtdWorkers = 3;
     public static final int qtdHelpers = 3;
     
     //Variables

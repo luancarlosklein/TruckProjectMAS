@@ -85,8 +85,8 @@ public class GenerateProposeWorkerToTruck extends DefaultInternalAction {
  	      //If the file did not exist, the matrix is build from to zero
  	    	} catch (IOException e) {
  	    }
-	   //Get the distance to the truck, and multiply by the time of one step (defined in the FactoryEnvoriment Class)
-	   int estimateTime = (int) Math.ceil(dist * 0.4);
+	   //Get the distance to the truck
+	   int estimateTime = dist;
  	   ts.getAg().delBel(Literal.parseLiteral("myOffer(_,_)"));
    	   ts.getAg().addBel(Literal.parseLiteral("myOffer("+capacity+"," + estimateTime + ")"));
       return true;

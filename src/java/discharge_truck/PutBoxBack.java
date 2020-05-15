@@ -10,14 +10,14 @@ import jason.asSyntax.*;
 public class PutBoxBack extends DefaultInternalAction {
 	
 	private static final long serialVersionUID = 1L;
-	public Queue<String> truckCargoDrop = new LinkedList<String>();
+	
 	    
    @SuppressWarnings("unchecked")
    @Override
    public Object execute(TransitionSystem ts, 
                          Unifier un, 
                          Term[] args) throws Exception {
-	   truckCargoDrop = new LinkedList<String>();
+	   Queue<String> truckCargoDrop = new LinkedList<String>();
 	   String boxPutBack = null;
 	   List <Term> st = null;
 	   String terms = null;
@@ -27,6 +27,7 @@ public class PutBoxBack extends DefaultInternalAction {
 			   if (b.getFunctor().toString().equals("boxPutBack")) {
 				   boxPutBack = "box(" + b.getTerms().get(0).toString() + ", " + b.getTerms().get(1).toString() + ")";
 				   //Store the data
+				   System.out.println("ENTROU PRA COLOCAR DE VOLTAAAAAAA: -> " +  boxPutBack);
 				   terms = b.getTerms().get(0).toString() + ", " + b.getTerms().get(1).toString() + ","+ b.getTerms().get(2).toString();
 			   //Get the truckload
 			   }
@@ -41,8 +42,11 @@ public class PutBoxBack extends DefaultInternalAction {
 	   {
 		   truckCargoDrop.add(st.get(i).toString());
 	   }
+	   System.out.println("CARGA ATUALLLLLLLLLLLLLLLLLLLLLLLLLL: -> " +  truckCargoDrop);
+	   
 	   //Put the box inside of the same list
 	   truckCargoDrop.add(boxPutBack);	   
+	   System.out.println("CARGA ANOVAAAAAAAAAAAAAAAAAAAAAAA: -> " +  truckCargoDrop);
 	   
 	  //Delete this boxPutBack, and the current truckload
 	  ts.getAg().delBel(Literal.parseLiteral("boxPutBack("+ terms +")"));

@@ -1,8 +1,4 @@
 *****************Lista de tarefas a realizar no sistema ainda*************************
---> Arrumar o caso em que tem 2 agentes solicitando ajuda;
-	- Ambos solicitam,ambos tem as mesmas repostas, e ambos selecionam o mesmo agente. E ai fica esperando a chegada dele, mas ele só vai para um, o outro
-	fica parado para sempre
---> Verificar a questão da parte grafica. Mostra meio devagar depois de passar o tempo
---> Mostrou alguns erros, tem que verificar isso
-	- Com velocidade muito rápida, 2 agentes começam a ajudar, mas nem terminou a ação
-	- Deu um problema de falta de plano. Mas isso ocorreu poucas vezes. Tem que verificar
+--> Erro quando o agente ta ocupado e aceita a oferta: Ele não coloca a caixa de volta as vezes;
+--> Worker ficou esperando o agente no truck, mas ele não veio. E ai ele ficou parado pra sempre.
+--> Um ajudante veio a mais (worker0 fez 2 calls para os helpers)

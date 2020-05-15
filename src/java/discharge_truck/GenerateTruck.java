@@ -22,12 +22,18 @@ public class GenerateTruck extends DefaultInternalAction {
    public Object execute(TransitionSystem ts, 
                          Unifier un, 
                          Term[] args) throws Exception {
+	
 	   
-	   Random generatorCharge = new Random();
+	  truckCargo = new LinkedList<Integer>();
+	  truckCargoDrop = new LinkedList<String>();
+	  boxes = new LinkedList<String>();
+	  qtdTruck = 0;
+	   
+	Random generatorCharge = new Random();
    	int qtd = 0;
-   	while (qtd == 0)
+   	while (qtd < 5)
    	{
-   		qtd = generatorCharge.nextInt(15);
+   		qtd = generatorCharge.nextInt(6);
    	}
    	int aux = 0;
    	String drop = null;
@@ -48,7 +54,7 @@ public class GenerateTruck extends DefaultInternalAction {
    		aux += 1;
    	}	
    	  ts.getAg().delBel(Literal.parseLiteral("truckloadCurrently(_)"));
-   	  ts.getAg().delBel(Literal.parseLiteral("truckloadInitial(_)"));
+   	  ts.getAg().delBel(Literal.parseLiteral("truckload(_)"));
    	  ts.getAg().delBel(Literal.parseLiteral("qtdThings(_)"));
 
       // ts.getAg().delBel(Literal.parseLiteral("qtdTruck(_)"));

@@ -53,6 +53,11 @@ public class FactoryEnv extends Environment {
                 place = 1;   
             } 
             
+            else if (lworker.equals(model.ltruck3)) {
+                addPercept("worker" + agent, at3);
+                place = 1;   
+            } 
+            
             else  if (lworker.equals(model.lgarage)) {
                 addPercept("worker" + agent, ag);
                 place = 1;
@@ -88,6 +93,11 @@ public class FactoryEnv extends Environment {
             
             else if (lworker.equals(model.ltruck2)) {
                 addPercept("helper" + agent, at2);
+                place = 1;   
+            } 
+            
+            else if (lworker.equals(model.ltruck3)) {
+                addPercept("helper" + agent, at3);
                 place = 1;   
             } 
             

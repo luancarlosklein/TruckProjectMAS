@@ -2,7 +2,7 @@
 
 /* Initial beliefs*/
 id(0).
-capacity(2). //Maximum weight the agent can carry
+capacity(6). //Maximum weight the agent can carry
 batery(100). //Agent batery level, between 0 to 100 (0% - 100%)
 positionDrop(0,0). //The position on the board for the discharge the box
 qtdGoal(10). //Quantity of objects it have the goal to discharge
@@ -14,13 +14,16 @@ truckGet(truck). //The truck the agent is resposable
 capacityHelper(0).//Capacity extra from de helper
 helper(true). //The variable is false when the agent depends of one helper
 plays(initiator,truck1).
-plays(initiator,truck2).  
+plays(initiator,truck2).
+plays(initiator,truck3).  
 busy(false).
 posTruck1(0, 9).
 posTruck2(4, 9).
 jumbled(0.9).
 qtdTruck1(0).
 qtdTruck2(0).
+qtdTruck3(0).
+time(0).
 
 /*Initial rules */
 //The rule that checks if the agent can take a box to carry 
@@ -54,11 +57,18 @@ all_proposals_received(CNPId) :-
 			L = K + 1;
 			-+qtdTruck1(L);
 		}
-		else
+		if (X == truck2)
 		{
 			?qtdTruck2(K);
 			L = K + 1;
 			-+qtdTruck2(L);
+		}
+
+		if (X == truck3)
+		{
+			?qtdTruck3(K);
+			L = K + 1;
+			-+qtdTruck3(L);
 		}
 		-+qtdDischarge(E);
 		!goToRecharge.
@@ -69,6 +79,9 @@ all_proposals_received(CNPId) :-
 	    -msg(M)[source(Ag)];
 		-+helper(false);
 		-+capacityHelper(M);
+		?time(T);
+  	 	NT = T + 4;
+  		-+time(NT);
 		?box(WeightBox, Local);
 		!getBox(WeightBox).
 				
@@ -83,6 +96,9 @@ all_proposals_received(CNPId) :-
 <- -failureCnp(true)[source(Ag)];
 	.print("The helper is busy! I need a new CNP! (W0)");
 	.wait(5000);
+	?time(T);
+  	NT = T + 2;
+  	-+time(NT);
 	!startCNP(1).
 	
 /* Plans */
@@ -95,17 +111,24 @@ all_proposals_received(CNPId) :-
 		?qtdDischarge(Z);
 		E = Z + 1;
 		?truckGet(X);
-		if (X == truck1)
+	    if (X == truck1)
 		{
 			?qtdTruck1(K);
 			L = K + 1;
 			-+qtdTruck1(L);
 		}
-		else
+		if (X == truck2)
 		{
 			?qtdTruck2(K);
 			L = K + 1;
 			-+qtdTruck2(L);
+		}
+
+		if (X == truck3)
+		{
+			?qtdTruck3(K);
+			L = K + 1;
+			-+qtdTruck3(L);
 		}
 		-+qtdDischarge(E);
 		!goToRecharge.
@@ -123,6 +146,9 @@ all_proposals_received(CNPId) :-
   	?batery(X);
 	//Y = X - 4;
   	-+batery(Y);
+  	?time(T);
+  	NT = T + 1;
+  	-+time(NT);
     !at(P).
 			
 //Recharge batery
@@ -136,40 +162,72 @@ all_proposals_received(CNPId) :-
 
 //In the truck
 +!goToTruck(T): true 
-<-  .time(H, M, S);
-	.send(T,tell,coming(H, M, S));
-	!at(T);	
-	?box(WeightBox, Local);
-	-+dropLocal(Local);
-	//This is the posibility the agent make a mistake in the truck, spend more time here
+<-  !at(T);	
 	.random(R);
 	?jumbled(X);
 	if(R < X)
 	{
-		.wait( (X-R)*10000);
 		.print("UPS! I slipped!(WO)");
+		?time(J);
+  	    NT = J + 2;
+  	    -+time(NT);
 	} 
-	!getBox(WeightBox).
+	.send(T,
+            askOne,
+            boxRe(Peso, DROPL),
+            Answer, 30000); 
+	
+	.print("Box received: ", Answer);
+	!retireBox(Answer).
+	
 			 	   
 +!getBox(Weight): canGetBox(Weight)
 <-  
 	-+hand_in(box);
 	?box(WeightBox, Local);
-	-+dropLocal(Local);
+//	-+dropLocal(Local);
 	?truckGet(T);
-	.time(H, M, S);
+	?time(TIME)
 	//Send a message to the truck
-	.send(T,tell,leaving(H, M, S));
+	.send(T,tell,leaving(TIME, WeightBox));
+	-+time(0);
 	!at(Local).
 
+@reBox[atomic]
++!retireBox(boxRe(Wei, Drop)): true
+<- -+box(Wei, Drop);
+	-+dropLocal(Drop); 
+    !getBox(WeightBox).
+    
++!retireBox(timeout) <- 
+			?truckGet(A);
+			.send(A, tell, failureCnpForTruck(true));
+			
+            -accept_proposal(CNPId, Truck)[source(A)];
+            -proposal(CNPId, _);
+            .print("I ask for a box, but I don't have any response!");
+            -+busy(false).
+
++!retireBox(false) <- 
+			?truckGet(A);
+			.send(A, tell, failureCnpForTruck(true));
+             -accept_proposal(CNPId, Truck)[source(A)];
+             -proposal(CNPId, _);
+             .print("I ask for a box, but I don't have any response!");
+             -+busy(false).
+              
 -!goToTruck(T): true
-<-  
+<-  ?truckGet(T);
 	.print("Something Wrong! Let's do a goToTruck again!(WO)");
 	!at(T);
-	?box(WeightBox, Local);
-	-+dropLocal(Local); 
-	!getBox(WeightBox).
-			   			 
+	.send(T,
+            askOne,
+            boxRe(Peso, DROPL),
+            Answer, 10000); 
+	
+	.print("Box received: ", Answer);
+	!retireBox(Answer).
+
 //The plan ask for help for other agent, if the Box Weight (W) is bigger than the agent capacity(C)
 +!getBox(Weight): not canGetBox(Weight)
 <-  .print("I need help!(WO)");
@@ -177,7 +235,7 @@ all_proposals_received(CNPId) :-
 	
 //////////////////////////////////////////////////////////////////////////////////////////
 //The contract net/////////
-//Asking help
+//Call for help
 
 // start the CNP
 @cnp9
@@ -272,31 +330,43 @@ all_proposals_received(CNPId) :-
    .print("I'm busy! I won't respond you(W0)");
    -cfp(CNPId)[source(A)].
     
+
 //The proposal is accept, but the agent is in another taks. Send a failure to the truck      
 @r1Busy[atomic]
-+accept_proposal(CNPId, Truck, box(X, Y))[source(A)]:  proposal(CNPId, Offer) & (busy(true) | hand_in(box))
-<-  .send(A, tell, failureCnpForTruck(X, Y));
-    -accept_proposal(CNPId, Truck, box(X, Y))[source(A)];
++accept_proposal(CNPId, Truck)[source(A)]:  proposal(CNPId, Offer) & busy(true)
+<-  .send(A, tell, failureCnpForTruck(true));
+    -accept_proposal(CNPId, Truck)[source(A)];
+    -proposal(CNPId, _);
    	.print("My proposal '",Offer,"' won CNP ",CNPId,
-             " for! BUT I'm busy now. Sorry!(W0)").
+             " for! BUT I'm busy now. Sorry! (W1)").
    
-@r1T
-+accept_proposal(CNPId,Truck, box(X, Y))[source(A)]:  proposal(CNPId, Offer)  & hand_in(none) & busy(false)
+@r1T[atomic]
++accept_proposal(CNPId,Truck)[source(A)]:  proposal(CNPId, Offer)  & busy(false)
 <-  
 	.send(A, tell, confirmation(CNPId));
 	-+busy(true);
 	.print("My proposal '",Offer,"' won CNP ",CNPId,
-             " for!(W0)");        
-    -+box(X,Y);
-    -accept_proposal(CNPId, Truck, box(X, Y))[source(A)];
+             " for! (W1)");        
+    -accept_proposal(CNPId, Truck)[source(A)];
     -proposal(CNPId, Offer);
     -+truckGet(Truck);
+    -+time(0);
 	!goToTruck(Truck).
+
 	   
++accept_proposal(CNPId,Truck)[source(A)]: true
+<- .send(A, tell, failureCnpForTruck(true));
+    -accept_proposal(CNPId, Truck)[source(A)];
+    -proposal(CNPId, _);
+    .print("TRUCKKK: ", Truck);
+    .print("SOURCEEE: ", A);
+    .print("ERRRRRRRRRRRRRRRRRRRRRRRRRRROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR");
+   	.print("My proposal '",Offer,"' won CNP ",CNPId,
+             " for! BUT I'm busy now. Sorry! (W1)").
+
 @r2T +reject_proposal(CNPId)[source(A)]
 <-  .print("I lost CNP ",CNPId, ".(W0)");
-    -proposal(CNPId,_,_);
-    -+busy(false);
+    -proposal(CNPId,_);
     -reject_proposal(CNPId)[source(A)]. // clear memory
     
        

@@ -1,7 +1,7 @@
 // Agent ajudante in project discharge_truck
 
 /* Initial beliefs and rules */
-id(4).
+id(5).
 drop(dropIr).
 truck(truckIr).
 capacity(20). // :- .random(R) & X = (10*R) + 5.
@@ -12,8 +12,10 @@ lengthPlan(0).
 stepPlan(0).
 plan(none).
 busy(false).
+//Apply fot the workers
 plays(initiator,worker0). 
-plays(initiator,worker1). 
+plays(initiator,worker1).
+plays(initiator,worker2). 
 agenteAjudado(none).
 
 
@@ -50,19 +52,19 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    -+carregando(true);
    -+ajudado(false);
    ?agenteAjudado(Ag);
-   .print("Carreguei. Agora Vamos!");
+   .print("I gotten the box! Let's go");
    ?capacity(Y);
    .send(Ag,tell,msg(Y));
    discharge_truck.DoAction.
 ////////////////////////////////////////
       
-@des      
+@des[atomic]      
 +descarregar(X) : true
 <-  
 	-+carregando(false);
     -+ajudado(true);
     ?agenteAjudado(Ag);
-    .print("DESCARREGANDO");
+    .print("Unloading");
     .send(Ag,tell,arrived(true));
     discharge_truck.DoAction.
     
@@ -93,7 +95,7 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 +cfp(CNPId)[source(A)]  
    :   plays(initiator,A) & busy(true)
    <- .send(A,tell,refuse(CNPId));
-   .print("EU ME RECUSEI!");
+   .print("I recuse!!");
       -cfp(CNPId)[source(A)].
 
 
@@ -122,7 +124,7 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 	  
 @r2 +reject_proposal(CNPId)[source(A)]
    <- .print("I lost CNP ",CNPId, ".");
-      -proposal(CNPId,_,_);
+      -proposal(CNPId,_);
       -+busy(false);
       -reject_proposal(CNPId)[source(A)]. // clear memory
 

@@ -1,10 +1,10 @@
 // Agent ajudante in project discharge_truck
 
 /* Initial beliefs and rules */
-id(2).
+id(3).
 drop(dropIr).
 truck(truckIr).
-capacity(10). //:- .random(R) & X = (10*R) + 5.
+capacity(10).
 ajudado(false).
 carregando(null).
 havePlan(false).
@@ -12,10 +12,11 @@ lengthPlan(0).
 stepPlan(0).
 plan(none).
 busy(false).
+//Apply fot the workers
 plays(initiator,worker0). 
 plays(initiator,worker1). 
+plays(initiator,worker2).
 agenteAjudado(none).
-
 
 /*Rules*/
 podeCarregar :- truck(X) & at(Y) & (X == Y) & carregando(false).
@@ -50,19 +51,19 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
    -+ carregando(true);
    -+ ajudado(false);
    ?agenteAjudado(Ag);
-   .print("Carreguei. Agora Vamos!");
+   .print("I gottn the box!Let's go");
    ?capacity(Y);
    .send(Ag,tell,msg(Y));
    discharge_truck.DoAction.
 ////////////////////////////////////////
       
-@des
+@des[atomic]
 +descarregar(X) : true
 <-  
 	-+ carregando(false);
     -+ ajudado(true);
     ?agenteAjudado(Ag);
-    .print("DESCARREGANDO");
+    .print("Unloading");
     .send(Ag,tell,arrived(true));
     discharge_truck.DoAction.
     
@@ -93,8 +94,17 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 +cfp(CNPId)[source(A)]: plays(initiator,A) & busy(true)
    <- 
    	  .send(A,tell,refuse(CNPId));
-      .print("EU ME RECUSEI!");
+      .print("I recuse!!");
       -cfp(CNPId)[source(A)].
+
+@r1Busy
++accept_proposal(CNPId, Truck, Drop)[source(A)]
+   :  proposal(CNPId, Offer) & busy(true)
+   <- 
+   		.send(A, tell, failureCnp(true));
+   		-accept_proposal(CNPId, Truck, Drop)[source(A)];
+   		.print("My proposal '",Offer,"' won CNP ",CNPId,
+             " for! BUT I'm busy now. Sorry!'").
 
 @r1
 +accept_proposal(CNPId, Truck, Drop)[source(A)]:  proposal(CNPId, Offer)
@@ -112,7 +122,7 @@ podeDescarregar :- drop(X) & at(Y) & (X == Y) & carregando(true).
 @r2 +reject_proposal(CNPId)[source(A)]
    <- 
    	  .print("I lost CNP ",CNPId, ".");
-      -proposal(CNPId,_,_);
+      -proposal(CNPId,_);
       -+busy(false);
       -reject_proposal(CNPId)[source(A)]. // clear memory
 
