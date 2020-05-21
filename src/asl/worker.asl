@@ -1,8 +1,8 @@
 // Agent worker in project unloading_truck
 
+start(true).
 /* Initial beliefs*/
-id(0).
-capacity(6). //Maximum weight the agent can carry
+
 batery(100). //Agent batery level, between 0 to 100 (0% - 100%)
 positionDrop(0,0). //The position on the board for the discharge the box
 qtdGoal(10). //Quantity of objects it have the goal to discharge
@@ -26,11 +26,15 @@ qtdTruck3(0).
 time(0).
 
 
-+id(X): true <- .my_name(Me); +myName(Me).
++start(true): true 
+<- 
+	.my_name(Me); 
+	+myName(Me);
+	discharge_truck.CreateMindWorker.
 
 /*Initial rules */
 //The rule that checks if the agent can take a box to carry 
-canGetBox(Weight) :- capacity(X) & capacityHelper(Y) & (X+Y) > Weight.
+canGetBox(Weight) :- capacity(X) & capacityHelper(Y) & (X+Y) >= Weight.
 
 // The rule that checks the agent's batery level (low level)					
 lowBatery :- batery(Y) & Y < 40. 
@@ -102,7 +106,8 @@ all_proposals_received(CNPId) :-
 	?time(T);
   	NT = T + 2;
   	-+time(NT);
-	!startCNP(1).
+	?id(ID);
+	!startCNP(ID + 1).
 	
 /* Plans */
 //Stop the walk, worker arrived to the drop D without help 	
@@ -200,7 +205,7 @@ all_proposals_received(CNPId) :-
 +!retireBox(boxRe(Wei, Drop)): true
 <- -+box(Wei, Drop);
 	-+dropLocal(Drop); 
-    !getBox(WeightBox).
+    !getBox(Wei).
     
 +!retireBox(timeout) <- 
 			?truckGet(A);
@@ -234,7 +239,11 @@ all_proposals_received(CNPId) :-
 //The plan ask for help for other agent, if the Box Weight (W) is bigger than the agent capacity(C)
 +!getBox(Weight): not canGetBox(Weight)
 <-  .print("I need help!(WO)");
-	!startCNP(1).//Call a helper
+    ?capacity(X);
+    ?capacityHelper(Y);
+    .print("X:",X, " Y:",Y," PESO:", Weight);
+    ?id(ID);
+	!startCNP(ID + 1).//Call a helper
 	
 //////////////////////////////////////////////////////////////////////////////////////////
 //The contract net/////////
@@ -277,7 +286,8 @@ all_proposals_received(CNPId) :-
       .print("Winner is ",WAg," with ",WOf, " (WO)");
       !announce_result(CNPId,L,WAg);
       -+cnp_state(CNPId,finished);
-      .abolish(propose(1,_)).
+      ?id(ID);
+      .abolish(propose(ID+1,_)).
 
 // nothing todo, the current phase is not 'propose'
 @lc2 +!contract(CNPId).

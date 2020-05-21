@@ -4,21 +4,29 @@ MAS discharge_truck {
 	environment: FactoryEnv(gui)
 
 	agents:
-		truck1;
-		helper2;
-		helper1;
-		helper0 ;
+		//helper;
+		//truck;
+		
+		
+		helper #3;
+		
+		//helper2;
+		//helper1;
+		//helper0 ;
 		//Ajudante é o 11
 		//worker11;
 	
 		truck3;
 		truck2;
+		truck1;
 		
 		drop;
 		garage;
-		worker0;
-		worker1;
-		worker2;
+		
+		worker #6;
+		//worker0;
+		//worker1;
+		//worker2;
 		//worker3;
 		//worker4;
 		//worker5;

@@ -22,6 +22,7 @@ public class RemakeAgentMind extends DefaultInternalAction {
 	   for (Literal b: ts.getAg().getBB()) {			   
 			   if (b.getFunctor().toString().equals("impression")) {
 				   allImpressions.add(b);
+				   System.out.println("OIUSSSSSSSSSSSSSSSSSSSSJJJJJ: " + allImpressions);
 			   }
 		   }
 	   
@@ -32,14 +33,14 @@ public class RemakeAgentMind extends DefaultInternalAction {
 		  }
 	  
 	  //The percent of impressions recovered
-	  double indexFoggeten = 0.1;
+	  double indexFoggeten = 1;
 	  //Define all many impressions to put back
 	  int finalSize =  (int)(allImpressions.size() * indexFoggeten);
 	  int placeRemove = 0;
 	  Random rdm = new Random();
 	  
 	  //Remove some impressions of the list
-	  while (allImpressions.size() >  finalSize)
+	  while (allImpressions.size() > finalSize & allImpressions.size() > 1)
 	  {
 		  placeRemove = rdm.nextInt(allImpressions.size() - 1);
 		  allImpressions.remove(placeRemove);
@@ -51,7 +52,7 @@ public class RemakeAgentMind extends DefaultInternalAction {
 		 ts.getAg().addBel(Literal.parseLiteral(allImpressions.get(i).toString()));
 	     System.out.println(allImpressions.get(i));
 	  }
-		  
+	  		  
 	 return true;
    } 
 }

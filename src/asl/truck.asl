@@ -4,6 +4,22 @@ qtdThings(0).//Qtd inside of this truck
 myPos(0, 9).//The pos in the map
 start(true).//Generate a truck
 
+image(worker1, 1, 1).
+image(worker2, 1, 1).
+image(worker3, 1, 1).
+
+reputation(worker1, 1, 1).
+reputation(worker2, 1, 1).
+reputation(worker3, 1, 1).
+
+
+imageLevel(worker1, 1, 1).
+imageLevel(worker2, 1, 1).
+imageLevel(worker3, 1, 1).
+
+reputationLevel(worker1, 1, 1).
+reputationLevel(worker2, 1, 1).
+reputationLevel(worker3, 1, 1).
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -21,8 +37,7 @@ all_proposals_received(CNPId) :-
 <- .time(H, M, S);
 	L = H*3600 + M*60 + S;
 	+hourStart(L);
-	.send([truck2, truck3], tell, hourStart(L));
-	discharge_truck.CreateMindTruck.
+	.send([truck2, truck3], tell, hourStart(L)).
 
 /* Initial goals */
 

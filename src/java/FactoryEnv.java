@@ -33,12 +33,14 @@ public class FactoryEnv extends Environment {
     void updatePercepts() {
     	Location lworker;
     	int place;
-    	int agent = 0;
+    	int agent = 1;
+    	int agentN = agent - 1;
     	//Atualize the percepts for all workers
-    	while (agent < FactoryModel.qtdWorkers)
+    	while (agentN < FactoryModel.qtdWorkers)
     	{
     		clearPercepts("worker" + agent);
-    		lworker = model.getAgPos(agent);
+    		lworker = model.getAgPos(agentN);
+    		//System.out.println("ENTROUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU:---> agente: " + agent + " Posicao: " + lworker);
     		place = 0;
     		addPercept("worker"+ agent, Literal.parseLiteral("pos(" + lworker.x + "," + lworker.y +")"));
     		 // add agent location to its percepts
@@ -75,14 +77,16 @@ public class FactoryEnv extends Environment {
             	addPercept("worker" + agent, asw);
             }
             agent += 1;
+            agentN += 1;
     	}
     	
-    	agent = 0;
+    	agent = 1;
+    	agentN = agent - 1;
     	//Atualize the percepts for all helpers
-    	while (agent < FactoryModel.qtdHelpers)
+    	while (agentN < FactoryModel.qtdHelpers)
     	{
     		clearPercepts("helper" + agent);
-    		lworker = model.getAgPos(agent + FactoryModel.qtdWorkers);
+    		lworker = model.getAgPos(agentN + FactoryModel.qtdWorkers);
     		place = 0;
     		 // add agent location to its percepts
     		//Check if the agent is in one of the principal places, and add to it the information about this place
@@ -98,6 +102,7 @@ public class FactoryEnv extends Environment {
             
             else if (lworker.equals(model.ltruck3)) {
                 addPercept("helper" + agent, at3);
+              
                 place = 1;   
             } 
             
@@ -118,6 +123,7 @@ public class FactoryEnv extends Environment {
             	addPercept("helper" + agent, asw);
             }
             agent += 1;
+            agentN += 1;
     	}
     }
     

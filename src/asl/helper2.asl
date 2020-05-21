@@ -13,9 +13,9 @@ stepPlan(0).
 plan(none).
 busy(false).
 //Apply fot the workers
-plays(initiator,worker0). 
-plays(initiator,worker1).
-plays(initiator,worker2). 
+plays(initiator,worker1). 
+plays(initiator,worker2).
+plays(initiator,worker3). 
 agenteAjudado(none).
 
 

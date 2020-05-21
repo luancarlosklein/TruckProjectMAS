@@ -101,7 +101,7 @@ public class FactoryView extends GridWorldView{
     public void drawAgent(Graphics g, int x, int y, Color c, int id) {
     	
     		//Worker color
-    		if (id < 3)
+    		if (id < FactoryModel.qtdWorkers)
     		{
     			c = Color.yellow;
                 super.drawAgent(g, x, y, c, id);
@@ -110,7 +110,7 @@ public class FactoryView extends GridWorldView{
     		}
             
             //Helper color
-    		else if (id >= 3)
+    		else if (id >= FactoryModel.qtdWorkers)
             {
             	c = Color.blue;
                 super.drawAgent(g, x, y, c, id);

@@ -4,14 +4,10 @@ qtdThings(0).//Qtd inside of this truck
 myPos(4, 9).//The agent position 
 start(true).//Generate the truck
 startP(true).//Make a delay to call a CNP
+hourStartTrue(false).
 
-image(worker0, 0, 0).
-image(worker1, 0, 0).
-image(worker2, 0, 0).
 
-reputation(worker0, 0, 0).
-reputation(worker1, 0, 0).
-reputation(worker2, 0, 0).
+
 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -37,12 +33,19 @@ all_proposals_received(CNPId) :-
 	!remake;
 	-+start(true).
 
+
++!generateProfile:true
+<- discharge_truck.GenerateProfile.
+
+
 +!remake:true
 <- discharge_truck.RemakeAgentMind.
 
 +!start: true
 <- discharge_truck.GenerateTruck.
 
++!createMind: true
+<- discharge_truck.CreateMindTruck.
 
 //Make a delay, for to avoid the conflict to the other truck
 +startP(true): true
@@ -50,14 +53,30 @@ all_proposals_received(CNPId) :-
 
 +!start: true
 <- discharge_truck.GenerateTruck.
-@a[atomic]
-+start(true): true 
-<-  .wait("+hourStart(_)[source(truck1)]");
+
+@aS[atomic]
++start(true): hourStartTrue(true) 
+<-  
 	!start;
 	?truckloadCurrently(L);
 	!generateNextBox(L);
 	!startCNP(5);
+	!generateProfile;
 	-+start(false).
+	
+
+@a[atomic]
++start(true): true 
+<-  .wait("+hourStart(_)[source(truck1)]");
+    -+hourStartTrue(true);
+    !createMind;
+	!start;
+	?truckloadCurrently(L);
+	!generateNextBox(L);
+	!startCNP(5);
+	!generateProfile;
+	-+start(false);
+	.
 	
 //Make this fot call a worker
 +!doANewCnp(X): qtdThings(Y) & Y == 0

@@ -1,4 +1,2 @@
 *****************Lista de tarefas a realizar no sistema ainda*************************
---> Erro quando o agente ta ocupado e aceita a oferta: Ele não coloca a caixa de volta as vezes;
---> Worker ficou esperando o agente no truck, mas ele não veio. E ai ele ficou parado pra sempre.
---> Um ajudante veio a mais (worker0 fez 2 calls para os helpers)
+--> Gerar gráficos
