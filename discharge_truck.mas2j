@@ -1,6 +1,6 @@
 MAS discharge_truck {
 
-
+//comment
 	environment: FactoryEnv(gui)
 
 	agents:
