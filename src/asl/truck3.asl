@@ -5,6 +5,7 @@ myPos(9, 9).//The agent position
 start(true).//Generate the truck
 startP(true).//Make a delay to call a CNP
 hourStartTrue(false).
+
 //////////////////////////////////////////////////////////////////////////////////
 
 //For the call for helper (contract net)
