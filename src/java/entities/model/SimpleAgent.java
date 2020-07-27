@@ -2,6 +2,12 @@ package entities.model;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+/*
+ * This class implements the main components of an agent.
+ * It is inherited by the Worker, Helper, and Truck classes.
+ * @see{Worker, Helper, and Truck}
+ */
+
 public abstract class SimpleAgent 
 {
 	private static AtomicInteger seqId = new AtomicInteger();
@@ -58,7 +64,5 @@ public abstract class SimpleAgent
 	{
 		return "id=" + id + ", name=" + name + ", posX=" 
 				+ pos.getX() + "posX=" + pos.getY();
-	}
-	
-	
+	}	
 }

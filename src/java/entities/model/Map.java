@@ -1,8 +1,7 @@
 package entities.model;
 
 /**
- * This class implements the logic matrix used to allocate the agents and artifacts.
- * This logic matrix represents the world where the agents are inserted on.
+ * This class implements the logic matrix used in the placement of agents and artifacts.
  */
 
 public class Map 
@@ -11,26 +10,21 @@ public class Map
 	private Integer length;
 	private char matrix[][];
 	
+	// Constructor
 	public Map(Integer width, Integer length) 
 	{
 		this.width = width;
 		this.length = length;
 		matrix = new char[width][length];
-		
-		for(int i = 0; i < width; i++)
-			for(int j = 0; j < length; j++)
-				matrix[i][j] = MazeElements.WALL.getContent();
 	}
-
-	public Integer getWidth(){return width;}
-	public Integer getLength(){return length;}
-	public char[][] getMatrix(){return matrix;}
 	
 	/**
-	 * Interface used by the design pattern Visitor.
-	 * The idea is separating model and operations.
+	 * Interface used by design pattern Visitor.
+	 * The idea is separating the operations of the class  into service operations.
+	 * @param MapVisitor: an operation that operates over the map. 
+	 * @throws Exception 
 	 */
-    public void accept(MapVisitor visitor) 
+    public void accept(MapVisitor visitor) throws Exception 
     {
         visitor.visit(this);
     }
@@ -51,7 +45,21 @@ public class Map
 			}
 			sb.append("\n");
 		}
-		
 		return sb.toString();
+	}
+	
+	public Integer getWidth()
+	{
+		return width;
+	}
+	
+	public Integer getLength()
+	{
+		return length;
+	}
+	
+	public char[][] getMatrix()
+	{
+		return matrix;
 	}
 }

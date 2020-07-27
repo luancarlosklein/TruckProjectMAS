@@ -1,5 +1,10 @@
 package entities.model;
 
+/**
+ * This class implements a simple tuple(x, y).
+ * It is used to represent a cell of the world.
+ */
+
 public class Position 
 {
 	private Integer x;

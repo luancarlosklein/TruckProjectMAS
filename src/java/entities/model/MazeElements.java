@@ -1,7 +1,7 @@
 package entities.model;
 
 /**
- * This class specifies the element types that can be put on a maze.
+ * This class specifies the elements that can be put on a maze.
  * '*': free position (PASSAGE).
  * '#': wall
  * 'W': worker
