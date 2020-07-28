@@ -12,7 +12,7 @@ import entities.model.MazeElements;
  * This class generates a maze using the Prim's algorithm.
  */
 
-public class PathCreationVisitor implements MapVisitor
+public class CreateMapVisitor implements MapVisitor
 {
 	/**
 	 * This method access a map and creates paths inside of it.

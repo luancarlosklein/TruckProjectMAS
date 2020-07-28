@@ -3,22 +3,18 @@ package entities.services;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import entities.model.Map;
 import entities.model.MazeElements;
+import entities.model.World;
+import entities.model.WorldVisitor;
 
 /**
- * This class implements the save operation.
- * The map and the placing of agents are stored in a file.
- * By default, the maps are saved in: /src/maps 
+ * This saves the state of the world in a file.
+ * By default, the files are stored in: /src/maps 
  */
 
-public class SaveWorldInFile 
+public class SaveWorldVisitor implements WorldVisitor 
 {
-	/**
-	 * This method creates the file where the map is saved.
-	 * @param map: a map that describes the placing of agents and artifacts. 
-	 */
-	public static void save(Map map)
+	public void visit(World world) 
 	{
 		try 
 		{
@@ -26,19 +22,19 @@ public class SaveWorldInFile
 			StringBuffer sbHeader = new StringBuffer();
 			StringBuffer sbBody = new StringBuffer();
 			
-			for(int i = 0; i < map.getWidth(); i++)
+			for(int i = 0; i < world.getMap().getWidth(); i++)
 	    	{
-	    		for(int j = 0; j < map.getLength(); j++)
+	    		for(int j = 0; j < world.getMap().getLength(); j++)
 	    		{
-	    			if(map.getMatrix()[i][j] == MazeElements.PASSAGE.getContent() 
-	    					|| map.getMatrix()[i][j] == MazeElements.WALL.getContent())
-	    				sbBody.append(map.getMatrix()[i][j]).append(" ");
+	    			if(world.getMap().getMatrix()[i][j] == MazeElements.PASSAGE.getContent() 
+	    					|| world.getMap().getMatrix()[i][j] == MazeElements.WALL.getContent())
+	    				sbBody.append(world.getMap().getMatrix()[i][j]).append(" ");
 	    			else
 	    			{
-	    				sbHeader.append(map.getMatrix()[i][j]).append(";");
+	    				sbHeader.append(world.getMap().getMatrix()[i][j]).append(";");
     					sbHeader.append(i).append(";").append(j).append("\n");
     					
-	    				if(map.getMatrix()[i][j] == MazeElements.TRUCKER.getContent())
+	    				if(world.getMap().getMatrix()[i][j] == MazeElements.TRUCKER.getContent())
 	    					sbBody.append(MazeElements.WALL.getContent()).append(" ");
 	    				else
 	    					sbBody.append(MazeElements.PASSAGE.getContent()).append(" ");

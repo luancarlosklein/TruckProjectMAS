@@ -1,9 +1,14 @@
 package entities.model;
 
-import entities.services.LoadWorldFromFile;
-import entities.services.PathCreationVisitor;
-import entities.services.RandomPlacingVisitor;
-import entities.services.SaveWorldInFile;
+import java.util.ArrayList;
+import java.util.List;
+
+import entities.services.CreateMapVisitor;
+import entities.services.CreateWorldVisitor;
+import entities.services.LoadWorldVisitor;
+import entities.services.SaveWorldVisitor;
+
+import jason.environment.grid.Location;
 
 /**
  * This class implements the world of agents.
@@ -11,14 +16,15 @@ import entities.services.SaveWorldInFile;
  * Therefore, each agent described herein corresponds to an agent in Jason.
  */
 
-public class World 
-{	
+public class World
+{
 	private Map map;
-	private Worker[] workers;
-	private Helper[] helpers;
-	private Truck[] truckers;
-	private Position[] garages;
-	private Position[] rechargeStops;
+	private List<Worker> workers;
+	private List<Helper> helpers;
+	private List<Truck> truckers;
+	private List<Location> garages;
+	private List<Location> rechargeStops;
+	private ArrayList<Location> obstacles;
 	
 	/**
 	 * This constructor creates a random world.
@@ -31,35 +37,119 @@ public class World
 	public World(Integer width, Integer length) throws Exception 
 	{
 		map = new Map(width, length);
-		map.accept(new PathCreationVisitor());
+		workers = new ArrayList<Worker>();
+		helpers = new ArrayList<Helper>();
+		truckers = new ArrayList<Truck>();
+		garages = new ArrayList<Location>();
+		rechargeStops = new ArrayList<Location>();
+		obstacles = new ArrayList<Location>();
 		
-		workers = new Worker[3];
-		helpers = new Helper[3];
-		truckers = new Truck[3];
-		garages = new Position[1];
-		rechargeStops = new Position[2];
-		map.accept(new RandomPlacingVisitor(workers, helpers, truckers, garages, rechargeStops));
-		
-		SaveWorldInFile.save(map);
+		map.accept(new CreateMapVisitor());
+		this.accept(new CreateWorldVisitor());
+		this.accept(new SaveWorldVisitor());
+		loadObstacles();
 	}
 	
 	/**
 	 * This constructor creates a world from an input file.
 	 * @param fileName: name of input file.
 	 */
-	public World(String fileName) 
+	public World() 
 	{
-		LoadWorldFromFile loader = new LoadWorldFromFile();
-		loader.load(fileName);
-		
-		map = loader.getMap();
-		workers = loader.getWorkes();
-		helpers = loader.getHelpers();
-		truckers = loader.getTruckers();
-		garages = loader.getGarages();
-		rechargeStops = loader.getRechargeStops();
+		this.accept(new LoadWorldVisitor());
+		obstacles = new ArrayList<Location>();
+		loadObstacles();
 	}
 	
+	/**
+	 * Interface used by design pattern Visitor.
+	 * The idea is separating the operations of the class  into service operations.
+	 * @param WorldVisitor: an operation that operates over the world. 
+	 */
+    public void accept(WorldVisitor visitor) 
+    {
+        visitor.visit(this);
+    }
+    
+    private void loadObstacles()
+    {
+    	for(int i = 0; i < map.getWidth(); i++)
+    	{
+    		for(int j = 0; j < map.getLength(); j++)
+    			if(map.getMatrix()[i][j] == MazeElements.WALL.getContent())
+    				obstacles.add(new Location(i, j));
+    	}
+    }
+    
+    public int getNumbAgents()
+    {
+    	return workers.size() + helpers.size() + truckers.size();
+    }
+
+	public Map getMap() 
+	{
+		return map;
+	}
+
+	public List<Worker> getWorkers() 
+	{
+		return workers;
+	}
+
+	public List<Helper> getHelpers() 
+	{
+		return helpers;
+	}
+
+	public List<Truck> getTruckers() 
+	{
+		return truckers;
+	}
+
+	public List<Location> getGarages() 
+	{
+		return garages;
+	}
+
+	public List<Location> getRechargeStops() 
+	{
+		return rechargeStops;
+	}
+
+	public void setMap(Map map) {
+		this.map = map;
+	}
+
+	public void setWorkers(List<Worker> workers) 
+	{
+		this.workers = workers;
+	}
+
+	public void setHelpers(List<Helper> helpers) 
+	{
+		this.helpers = helpers;
+	}
+
+	public void setTruckers(List<Truck> truckers) 
+	{
+		this.truckers = truckers;
+	}
+
+	public void setGarages(List<Location> garages) 
+	{
+		this.garages = garages;
+	}
+
+	public void setRechargeStops(List<Location> rechargeStops) 
+	{
+		this.rechargeStops = rechargeStops;
+	}
+	
+	public ArrayList<Location> getObstacles() 
+	{
+		return obstacles;
+	}
+
 	@Override
 	public String toString() 
 	{
@@ -74,10 +164,10 @@ public class World
 		for(Truck t : truckers)
 			sb.append(t).append("\n");
 		
-		for(Position g : garages)
+		for(Location g : garages)
 			sb.append(g).append("\n");
 		
-		for(Position r : rechargeStops)
+		for(Location r : rechargeStops)
 			sb.append(r).append("\n");
 		
 		sb.append(map);

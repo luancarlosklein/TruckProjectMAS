@@ -12,7 +12,7 @@ public class Test {
 		try 
 		{
 			World w1 = new World(10, 10);
-			World w2 = new World("maps/map.txt");
+			World w2 = new World();
 			
 			System.out.println(w1);
 			System.out.println(w2);
