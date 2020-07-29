@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import entities.model.Helper;
-import entities.model.Map;
+import entities.model.MapPlacing;
 import entities.model.MazeElements;
 import entities.model.Truck;
 import entities.model.Worker;
@@ -36,6 +36,8 @@ public class LoadWorldVisitor implements WorldVisitor
 			world.setTruckers(new ArrayList<Truck>());
 			world.setGarages(new ArrayList<Location>());
 			world.setRechargeStops(new ArrayList<Location>());
+			world.setDepots(new ArrayList<Location>());
+			
 			
 			while (file.hasNextLine()) 
 			{
@@ -62,6 +64,9 @@ public class LoadWorldVisitor implements WorldVisitor
 					
 					else if(type == MazeElements.RECHARGE_POINT.getContent())
 						world.getRechargeStops().add(new Location(x, y));
+					
+					else if(type == MazeElements.DEPOT.getContent())
+						world.getRechargeStops().add(new Location(x, y));
 				}
 				else
 					header = false;
@@ -74,14 +79,14 @@ public class LoadWorldVisitor implements WorldVisitor
 			int width = lines.get(0).split(" ").length;
 			int length = lines.size();
 			
-			world.setMap(new Map(width, length));
+			world.setPlacement(new MapPlacing(width, length));
 			
 			for(int i = 0; i < width; i++)
 			{
 				String cells[] = lines.get(i).split(" ");
 				
 				for(int j = 0; j < length; j++)
-					world.getMap().getMatrix()[i][j] = cells[j].charAt(0);
+					world.getPlacement().getMatrix()[i][j] = cells[j].charAt(0);
 			}
 		}
 		catch (FileNotFoundException e) 

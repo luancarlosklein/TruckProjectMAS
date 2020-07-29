@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import entities.model.Map;
+import entities.model.MapPlacing;
+import entities.model.MapRouting;
 import entities.model.MapVisitor;
 import entities.model.MazeElements;
 
@@ -15,10 +16,10 @@ import entities.model.MazeElements;
 public class CreateMapVisitor implements MapVisitor
 {
 	/**
-	 * This method access a map and creates paths inside of it.
-	 * @param map: a map that describes the placing of agents and artifacts.
+	 * This method initialize a character map randomly.
+	 * @param map: a matrix of characters not initialized.
 	 */
-	public void visit(Map map) 
+	public void visit(MapPlacing map) 
 	{
 		for(int i = 0; i < map.getWidth(); i++)
 			for(int j = 0; j < map.getLength(); j++)
@@ -69,6 +70,12 @@ public class CreateMapVisitor implements MapVisitor
         	map.getMatrix()[0][j] = MazeElements.WALL.getContent();
         
         for(int j = 0; j < map.getLength(); j++)
-        	map.getMatrix()[map.getLength() - 1][j] = MazeElements.WALL.getContent();	
+        	map.getMatrix()[map.getLength() - 1][j] = MazeElements.WALL.getContent();
+	}
+
+	public void visit(MapRouting map) 
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

@@ -22,19 +22,19 @@ public class SaveWorldVisitor implements WorldVisitor
 			StringBuffer sbHeader = new StringBuffer();
 			StringBuffer sbBody = new StringBuffer();
 			
-			for(int i = 0; i < world.getMap().getWidth(); i++)
+			for(int i = 0; i < world.getPlacement().getWidth(); i++)
 	    	{
-	    		for(int j = 0; j < world.getMap().getLength(); j++)
+	    		for(int j = 0; j < world.getPlacement().getLength(); j++)
 	    		{
-	    			if(world.getMap().getMatrix()[i][j] == MazeElements.PASSAGE.getContent() 
-	    					|| world.getMap().getMatrix()[i][j] == MazeElements.WALL.getContent())
-	    				sbBody.append(world.getMap().getMatrix()[i][j]).append(" ");
+	    			if(world.getPlacement().getMatrix()[i][j] == MazeElements.PASSAGE.getContent() 
+	    					|| world.getPlacement().getMatrix()[i][j] == MazeElements.WALL.getContent())
+	    				sbBody.append(world.getPlacement().getMatrix()[i][j]).append(" ");
 	    			else
 	    			{
-	    				sbHeader.append(world.getMap().getMatrix()[i][j]).append(";");
+	    				sbHeader.append(world.getPlacement().getMatrix()[i][j]).append(";");
     					sbHeader.append(i).append(";").append(j).append("\n");
     					
-	    				if(world.getMap().getMatrix()[i][j] == MazeElements.TRUCKER.getContent())
+	    				if(world.getPlacement().getMatrix()[i][j] == MazeElements.TRUCKER.getContent())
 	    					sbBody.append(MazeElements.WALL.getContent()).append(" ");
 	    				else
 	    					sbBody.append(MazeElements.PASSAGE.getContent()).append(" ");

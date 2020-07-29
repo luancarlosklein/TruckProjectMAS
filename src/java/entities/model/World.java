@@ -7,7 +7,6 @@ import entities.services.CreateMapVisitor;
 import entities.services.CreateWorldVisitor;
 import entities.services.LoadWorldVisitor;
 import entities.services.SaveWorldVisitor;
-
 import jason.environment.grid.Location;
 
 /**
@@ -18,13 +17,16 @@ import jason.environment.grid.Location;
 
 public class World
 {
-	private Map map;
+	private MapPlacing placement;
 	private List<Worker> workers;
 	private List<Helper> helpers;
 	private List<Truck> truckers;
 	private List<Location> garages;
 	private List<Location> rechargeStops;
-	private ArrayList<Location> obstacles;
+	private List<Location> depots;
+	
+	private List<MapRouting> routes;
+	private List<Location> obstacles;
 	
 	/**
 	 * This constructor creates a random world.
@@ -36,15 +38,17 @@ public class World
 	 */
 	public World(Integer width, Integer length) throws Exception 
 	{
-		map = new Map(width, length);
+		placement = new MapPlacing(width, length);
 		workers = new ArrayList<Worker>();
 		helpers = new ArrayList<Helper>();
 		truckers = new ArrayList<Truck>();
 		garages = new ArrayList<Location>();
 		rechargeStops = new ArrayList<Location>();
+		depots = new ArrayList<Location>();
+		routes = new ArrayList<MapRouting>();
 		obstacles = new ArrayList<Location>();
 		
-		map.accept(new CreateMapVisitor());
+		placement.accept(new CreateMapVisitor());
 		this.accept(new CreateWorldVisitor());
 		this.accept(new SaveWorldVisitor());
 		loadObstacles();
@@ -70,13 +74,16 @@ public class World
     {
         visitor.visit(this);
     }
-    
+
+    /**
+     * Find obstacles on the map and put each one of them (its location) in a list
+     */
     private void loadObstacles()
     {
-    	for(int i = 0; i < map.getWidth(); i++)
+    	for(int i = 0; i < placement.getWidth(); i++)
     	{
-    		for(int j = 0; j < map.getLength(); j++)
-    			if(map.getMatrix()[i][j] == MazeElements.WALL.getContent())
+    		for(int j = 0; j < placement.getLength(); j++)
+    			if(placement.getMatrix()[i][j] == MazeElements.WALL.getContent())
     				obstacles.add(new Location(i, j));
     	}
     }
@@ -86,9 +93,14 @@ public class World
     	return workers.size() + helpers.size() + truckers.size();
     }
 
-	public Map getMap() 
+	public MapPlacing getPlacement() 
 	{
-		return map;
+		return placement;
+	}
+
+	public void setPlacement(MapPlacing placement) 
+	{
+		this.placement = placement;
 	}
 
 	public List<Worker> getWorkers() 
@@ -96,33 +108,14 @@ public class World
 		return workers;
 	}
 
-	public List<Helper> getHelpers() 
-	{
-		return helpers;
-	}
-
-	public List<Truck> getTruckers() 
-	{
-		return truckers;
-	}
-
-	public List<Location> getGarages() 
-	{
-		return garages;
-	}
-
-	public List<Location> getRechargeStops() 
-	{
-		return rechargeStops;
-	}
-
-	public void setMap(Map map) {
-		this.map = map;
-	}
-
 	public void setWorkers(List<Worker> workers) 
 	{
 		this.workers = workers;
+	}
+
+	public List<Helper> getHelpers() 
+	{
+		return helpers;
 	}
 
 	public void setHelpers(List<Helper> helpers) 
@@ -130,9 +123,19 @@ public class World
 		this.helpers = helpers;
 	}
 
+	public List<Truck> getTruckers() 
+	{
+		return truckers;
+	}
+
 	public void setTruckers(List<Truck> truckers) 
 	{
 		this.truckers = truckers;
+	}
+
+	public List<Location> getGarages() 
+	{
+		return garages;
 	}
 
 	public void setGarages(List<Location> garages) 
@@ -140,14 +143,44 @@ public class World
 		this.garages = garages;
 	}
 
+	public List<Location> getRechargeStops() 
+	{
+		return rechargeStops;
+	}
+
 	public void setRechargeStops(List<Location> rechargeStops) 
 	{
 		this.rechargeStops = rechargeStops;
 	}
-	
-	public ArrayList<Location> getObstacles() 
+
+	public List<Location> getDepots() 
+	{
+		return depots;
+	}
+
+	public void setDepots(List<Location> depots) 
+	{
+		this.depots = depots;
+	}
+
+	public List<MapRouting> getRoutes() 
+	{
+		return routes;
+	}
+
+	public void setRoutes(List<MapRouting> routes) 
+	{
+		this.routes = routes;
+	}
+
+	public List<Location> getObstacles() 
 	{
 		return obstacles;
+	}
+
+	public void setObstacles(List<Location> obstacles) 
+	{
+		this.obstacles = obstacles;
 	}
 
 	@Override
@@ -170,7 +203,7 @@ public class World
 		for(Location r : rechargeStops)
 			sb.append(r).append("\n");
 		
-		sb.append(map);
+		sb.append(placement);
 		return sb.toString();
 	}
 }

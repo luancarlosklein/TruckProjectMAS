@@ -9,7 +9,7 @@ public class WorldView extends GridWorldModel
 	
 	protected WorldView(World world) 
 	{
-		super(world.getMap().getWidth(), world.getMap().getLength(), world.getNumbAgents());
+		super(world.getPlacement().getWidth(), world.getPlacement().getLength(), world.getNumbAgents());
 	}
 
 }

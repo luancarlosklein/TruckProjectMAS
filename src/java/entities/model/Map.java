@@ -1,34 +1,28 @@
 package entities.model;
 
-/**
- * This class implements the logic matrix used in the placement of agents and artifacts.
- */
-
-public class Map 
+public abstract class Map<T> 
 {
-	private Integer width;
-	private Integer length;
-	private char matrix[][];
+	protected Integer width;
+	protected Integer length;
+	protected T matrix[][];
 	
-	// Constructor
-	public Map(Integer width, Integer length) 
-	{
+	public Map(Integer width, Integer length) {
+		super();
 		this.width = width;
 		this.length = length;
-		matrix = new char[width][length];
+		this.matrix = null;
+	}
+
+	public Integer getWidth()
+	{
+		return width;
 	}
 	
-	/**
-	 * Interface used by design pattern Visitor.
-	 * The idea is separating the operations of the class  into service operations.
-	 * @param MapVisitor: an operation that operates over the map. 
-	 * @throws Exception 
-	 */
-    public void accept(MapVisitor visitor) throws Exception 
-    {
-        visitor.visit(this);
-    }
-
+	public Integer getLength()
+	{
+		return length;
+	}
+	
 	@Override
 	public String toString() 
 	{
@@ -46,20 +40,5 @@ public class Map
 			sb.append("\n");
 		}
 		return sb.toString();
-	}
-	
-	public Integer getWidth()
-	{
-		return width;
-	}
-	
-	public Integer getLength()
-	{
-		return length;
-	}
-	
-	public char[][] getMatrix()
-	{
-		return matrix;
 	}
 }

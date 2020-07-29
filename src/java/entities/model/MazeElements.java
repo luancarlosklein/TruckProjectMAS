@@ -19,7 +19,8 @@ public enum MazeElements
 	HELPER('H'),
 	TRUCKER('T'),
 	GARAGE('G'),
-	RECHARGE_POINT('R');
+	RECHARGE_POINT('R'),
+	DEPOT('D');
 	
 	private char content;
 	

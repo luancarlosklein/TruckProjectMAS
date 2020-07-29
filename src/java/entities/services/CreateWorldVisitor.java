@@ -29,89 +29,109 @@ public class CreateWorldVisitor implements WorldVisitor
 		Random r = new Random();
 		
 		// THESE VARIABLES DEFINE THE AMOUNT OF AGENTS AND ARTIFACTS OF THE WORLD.
-		int gridSize = world.getMap().getWidth() * world.getMap().getLength();
+		int gridSize = world.getPlacement().getWidth() * world.getPlacement().getLength();
 		int qtdWorkers = (int) (gridSize * 0.03);
 		int qtdHelpers = (int) (gridSize * 0.05);
 		int qtdTruckers = (int) (gridSize * 0.03);
 		int qtdGarages = (int) (gridSize * 0.01);
 		int qtdRecharges = (int) (gridSize * 0.02);
+		int qtdDepots = (int) (gridSize * 0.02);
 
 		// These variables control the number of times that attempts of random placement can occur. 
 		int workersAttempts = 0;
 		int helpersAttempts = 0;
 		int garagesAttempts = 0;
 		int rechargesAttempts = 0;
+		int depotsAttempts = 0;
 		
 		// Placing the workers
 		for(int i = 0; i < qtdWorkers; i++)
 		{
-			int x = r.nextInt(world.getMap().getWidth());
-			int y = r.nextInt(world.getMap().getLength());
+			int x = r.nextInt(world.getPlacement().getWidth());
+			int y = r.nextInt(world.getPlacement().getLength());
 			
-			while(world.getMap().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
+			while(world.getPlacement().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
 			{
-				x = r.nextInt(world.getMap().getWidth());
-				y = r.nextInt(world.getMap().getLength());
+				x = r.nextInt(world.getPlacement().getWidth());
+				y = r.nextInt(world.getPlacement().getLength());
 				
 				if(workersAttempts++ > PLACEMENT_ATTEMPTS)
 					throw new Error("The number of positioning attempts exceeded the allowed limit for workers.");
 			}
-			world.getMap().getMatrix()[x][y] = MazeElements.WORKER.getContent();
+			world.getPlacement().getMatrix()[x][y] = MazeElements.WORKER.getContent();
 			world.getWorkers().add(new Worker(x, y));
 		}
 		
 		// Placing the helpers
 		for(int i = 0; i < qtdHelpers; i++)
 		{
-			int x = r.nextInt(world.getMap().getWidth());
-			int y = r.nextInt(world.getMap().getLength());
+			int x = r.nextInt(world.getPlacement().getWidth());
+			int y = r.nextInt(world.getPlacement().getLength());
 			
-			while(world.getMap().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
+			while(world.getPlacement().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
 			{
-				x = r.nextInt(world.getMap().getWidth());
-				y = r.nextInt(world.getMap().getLength());
+				x = r.nextInt(world.getPlacement().getWidth());
+				y = r.nextInt(world.getPlacement().getLength());
 				
 				if(helpersAttempts++ > PLACEMENT_ATTEMPTS)
 					throw new Error("The number of positioning attempts exceeded the allowed limit for helpers.");
 			}
-			world.getMap().getMatrix()[x][y] = MazeElements.HELPER.getContent();
+			world.getPlacement().getMatrix()[x][y] = MazeElements.HELPER.getContent();
 			world.getHelpers().add(new Helper(x, y));
 		}
 		
 		// Placing the garages
 		for(int i = 0; i < qtdGarages; i++)
 		{
-			int x = r.nextInt(world.getMap().getWidth());
-			int y = r.nextInt(world.getMap().getLength());
+			int x = r.nextInt(world.getPlacement().getWidth());
+			int y = r.nextInt(world.getPlacement().getLength());
 			
-			while(world.getMap().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
+			while(world.getPlacement().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
 			{
-				x = r.nextInt(world.getMap().getWidth());
-				y = r.nextInt(world.getMap().getLength());
+				x = r.nextInt(world.getPlacement().getWidth());
+				y = r.nextInt(world.getPlacement().getLength());
 				
 				if(garagesAttempts++ > PLACEMENT_ATTEMPTS)
 					throw new Error("The number of positioning attempts exceeded the allowed limit for garages.");
 			}
-			world.getMap().getMatrix()[x][y] = MazeElements.GARAGE.getContent();
+			world.getPlacement().getMatrix()[x][y] = MazeElements.GARAGE.getContent();
 			world.getGarages().add(new Location(x, y));
 		}
 		
 		// Placing the recharge points
 		for(int i = 0; i < qtdRecharges; i++)
 		{
-			int x = r.nextInt(world.getMap().getWidth());
-			int y = r.nextInt(world.getMap().getLength());
+			int x = r.nextInt(world.getPlacement().getWidth());
+			int y = r.nextInt(world.getPlacement().getLength());
 			
-			while(world.getMap().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
+			while(world.getPlacement().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
 			{
-				x = r.nextInt(world.getMap().getWidth());
-				y = r.nextInt(world.getMap().getLength());
+				x = r.nextInt(world.getPlacement().getWidth());
+				y = r.nextInt(world.getPlacement().getLength());
 				
 				if(rechargesAttempts++ > PLACEMENT_ATTEMPTS)
 					throw new Error("The number of positioning attempts exceeded the allowed limit for recharge stops.");
 			}
-			world.getMap().getMatrix()[x][y] = MazeElements.RECHARGE_POINT.getContent();
+			world.getPlacement().getMatrix()[x][y] = MazeElements.RECHARGE_POINT.getContent();
 			world.getRechargeStops().add(new Location(x, y));
+		}
+		
+		// Placing the depots
+		for(int i = 0; i < qtdDepots; i++)
+		{
+			int x = r.nextInt(world.getPlacement().getWidth());
+			int y = r.nextInt(world.getPlacement().getLength());
+			
+			while(world.getPlacement().getMatrix()[x][y] != MazeElements.PASSAGE.getContent())
+			{
+				x = r.nextInt(world.getPlacement().getWidth());
+				y = r.nextInt(world.getPlacement().getLength());
+				
+				if(depotsAttempts++ > PLACEMENT_ATTEMPTS)
+					throw new Error("The number of positioning attempts exceeded the allowed limit for depots.");
+			}
+			world.getPlacement().getMatrix()[x][y] = MazeElements.DEPOT.getContent();
+			world.getDepots().add(new Location(x, y));
 		}
  		
 		// Placing the truckers
@@ -120,37 +140,37 @@ public class CreateWorldVisitor implements WorldVisitor
 			int x = -1;
 			int y = -1;
 			
-			for(int aux = 0; aux < world.getMap().getWidth(); aux++)
+			for(int aux = 0; aux < world.getPlacement().getWidth(); aux++)
 			{	
-				if(world.getMap().getMatrix()[aux][1] == MazeElements.PASSAGE.getContent() 
-						&& world.getMap().getMatrix()[aux][0] == MazeElements.WALL.getContent())
+				if(world.getPlacement().getMatrix()[aux][1] == MazeElements.PASSAGE.getContent() 
+						&& world.getPlacement().getMatrix()[aux][0] == MazeElements.WALL.getContent())
 				{
-					world.getMap().getMatrix()[aux][0] = MazeElements.TRUCKER.getContent();
+					world.getPlacement().getMatrix()[aux][0] = MazeElements.TRUCKER.getContent();
 					x = aux;
 					y = 0;
 					break;
 				}
-				else if(world.getMap().getMatrix()[aux][world.getMap().getLength() - 2] == MazeElements.PASSAGE.getContent() 
-						&& world.getMap().getMatrix()[aux][world.getMap().getLength() - 1] == MazeElements.WALL.getContent())
+				else if(world.getPlacement().getMatrix()[aux][world.getPlacement().getLength() - 2] == MazeElements.PASSAGE.getContent() 
+						&& world.getPlacement().getMatrix()[aux][world.getPlacement().getLength() - 1] == MazeElements.WALL.getContent())
 				{
-					world.getMap().getMatrix()[aux][world.getMap().getLength() - 1] = MazeElements.TRUCKER.getContent();
+					world.getPlacement().getMatrix()[aux][world.getPlacement().getLength() - 1] = MazeElements.TRUCKER.getContent();
 					x = aux;
-					y = world.getMap().getLength() - 1;
+					y = world.getPlacement().getLength() - 1;
 					break;
 				}
-				else if(world.getMap().getMatrix()[1][aux] == MazeElements.PASSAGE.getContent() 
-						&& world.getMap().getMatrix()[0][aux] == MazeElements.WALL.getContent())
+				else if(world.getPlacement().getMatrix()[1][aux] == MazeElements.PASSAGE.getContent() 
+						&& world.getPlacement().getMatrix()[0][aux] == MazeElements.WALL.getContent())
 				{
-					world.getMap().getMatrix()[0][aux] = MazeElements.TRUCKER.getContent();
+					world.getPlacement().getMatrix()[0][aux] = MazeElements.TRUCKER.getContent();
 					x = 0;
 					y = aux;
 					break;
 				}
-				else if(world.getMap().getMatrix()[world.getMap().getWidth() - 2][aux] == MazeElements.PASSAGE.getContent() 
-						&& world.getMap().getMatrix()[world.getMap().getWidth() - 1][aux] == MazeElements.WALL.getContent())
+				else if(world.getPlacement().getMatrix()[world.getPlacement().getWidth() - 2][aux] == MazeElements.PASSAGE.getContent() 
+						&& world.getPlacement().getMatrix()[world.getPlacement().getWidth() - 1][aux] == MazeElements.WALL.getContent())
 				{
-					world.getMap().getMatrix()[world.getMap().getWidth() - 1][aux] = MazeElements.TRUCKER.getContent();
-					x = world.getMap().getWidth() - 1;
+					world.getPlacement().getMatrix()[world.getPlacement().getWidth() - 1][aux] = MazeElements.TRUCKER.getContent();
+					x = world.getPlacement().getWidth() - 1;
 					y = aux;
 					break;
 				}
