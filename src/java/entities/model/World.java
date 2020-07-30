@@ -1,10 +1,13 @@
 package entities.model;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.List;
 
 import entities.services.CreateMapVisitor;
 import entities.services.CreateWorldVisitor;
+import entities.services.DefineWorldRoutesVisitor;
 import entities.services.LoadWorldVisitor;
 import entities.services.SaveWorldVisitor;
 import jason.environment.grid.Location;
@@ -17,16 +20,17 @@ import jason.environment.grid.Location;
 
 public class World
 {
+	// Logic map
 	private MapPlacing placement;
-	private List<Worker> workers;
-	private List<Helper> helpers;
-	private List<Truck> truckers;
-	private List<Location> garages;
-	private List<Location> rechargeStops;
-	private List<Location> depots;
 	
-	private List<MapRouting> routes;
-	private List<Location> obstacles;
+	// Structures
+	private List<Worker> workers = new ArrayList<Worker>();
+	private List<Helper> helpers = new ArrayList<Helper>();
+	private List<Truck> truckers = new ArrayList<Truck>();
+	private List<Artifact> garages = new ArrayList<Artifact>();
+	private List<Artifact> rechargeStops = new ArrayList<Artifact>();
+	private List<Artifact> depots = new ArrayList<Artifact>();
+	private Map<Location, MapRouting> routes = new HashMap<Location, MapRouting>();
 	
 	/**
 	 * This constructor creates a random world.
@@ -39,19 +43,10 @@ public class World
 	public World(Integer width, Integer length) throws Exception 
 	{
 		placement = new MapPlacing(width, length);
-		workers = new ArrayList<Worker>();
-		helpers = new ArrayList<Helper>();
-		truckers = new ArrayList<Truck>();
-		garages = new ArrayList<Location>();
-		rechargeStops = new ArrayList<Location>();
-		depots = new ArrayList<Location>();
-		routes = new ArrayList<MapRouting>();
-		obstacles = new ArrayList<Location>();
 		
-		placement.accept(new CreateMapVisitor());
 		this.accept(new CreateWorldVisitor());
+		this.accept(new DefineWorldRoutesVisitor());
 		this.accept(new SaveWorldVisitor());
-		loadObstacles();
 	}
 	
 	/**
@@ -61,8 +56,7 @@ public class World
 	public World() 
 	{
 		this.accept(new LoadWorldVisitor());
-		obstacles = new ArrayList<Location>();
-		loadObstacles();
+		this.accept(new DefineWorldRoutesVisitor());
 	}
 	
 	/**
@@ -76,41 +70,57 @@ public class World
     }
 
     /**
-     * Find obstacles on the map and put each one of them (its location) in a list
+     * This method creates a route to an interest point for worker agents.
+     * @param pos: location of interest point (e.g., truck, depot, ...)
      */
-    private void loadObstacles()
+    public void addRouteTo(Location pos)
     {
-    	for(int i = 0; i < placement.getWidth(); i++)
+    	MapRouting route = new MapRouting(placement.width, placement.length);
+    	route.accept(new CreateMapVisitor());
+    	
+    	for (int i = 0; i < placement.width; i++) 
     	{
-    		for(int j = 0; j < placement.getLength(); j++)
-    			if(placement.getMatrix()[i][j] == MazeElements.WALL.getContent())
-    				obstacles.add(new Location(i, j));
-    	}
+    		for (int j = 0; j < placement.length; j++) 
+    		{
+    			// Calculate the Manhattan distance (used as heuristic for LRTA*)
+	        	if (placement.matrix[i][j] != MapElements.WALL.getContent())
+					route.matrix[i][j] = (double) (Math.abs(pos.x - j) + Math.abs(pos.y - i));
+	        }
+	    }
+    	routes.put(pos, route);
+    }
+    
+    /**
+     * Remove a route from the map of routes
+     * @param pos: location to be removed (a old interest point).
+     * @throws Exception 
+     */
+    public void removeRouteTo(Location pos) throws Exception
+    {
+    	if(routes.containsKey(pos)) 
+    		routes.remove(pos);
+    	else
+    		throw new Exception("There is not a route to informated position!");
     }
     
     public int getNumbAgents()
     {
     	return workers.size() + helpers.size() + truckers.size();
     }
-
-	public MapPlacing getPlacement() 
-	{
-		return placement;
-	}
-
-	public void setPlacement(MapPlacing placement) 
-	{
+    
+    public void setPlacement(MapPlacing placement) 
+    {
 		this.placement = placement;
 	}
+
+	public MapPlacing getPlacement() 
+    {
+    	return placement;
+    }
 
 	public List<Worker> getWorkers() 
 	{
 		return workers;
-	}
-
-	public void setWorkers(List<Worker> workers) 
-	{
-		this.workers = workers;
 	}
 
 	public List<Helper> getHelpers() 
@@ -118,69 +128,29 @@ public class World
 		return helpers;
 	}
 
-	public void setHelpers(List<Helper> helpers) 
-	{
-		this.helpers = helpers;
-	}
-
 	public List<Truck> getTruckers() 
 	{
 		return truckers;
 	}
 
-	public void setTruckers(List<Truck> truckers) 
-	{
-		this.truckers = truckers;
-	}
-
-	public List<Location> getGarages() 
+	public List<Artifact> getGarages() 
 	{
 		return garages;
 	}
 
-	public void setGarages(List<Location> garages) 
-	{
-		this.garages = garages;
-	}
-
-	public List<Location> getRechargeStops() 
+	public List<Artifact> getRechargeStops() 
 	{
 		return rechargeStops;
 	}
 
-	public void setRechargeStops(List<Location> rechargeStops) 
-	{
-		this.rechargeStops = rechargeStops;
-	}
-
-	public List<Location> getDepots() 
+	public List<Artifact> getDepots() 
 	{
 		return depots;
 	}
 
-	public void setDepots(List<Location> depots) 
-	{
-		this.depots = depots;
-	}
-
-	public List<MapRouting> getRoutes() 
+	public Map<Location, MapRouting> getRoutes() 
 	{
 		return routes;
-	}
-
-	public void setRoutes(List<MapRouting> routes) 
-	{
-		this.routes = routes;
-	}
-
-	public List<Location> getObstacles() 
-	{
-		return obstacles;
-	}
-
-	public void setObstacles(List<Location> obstacles) 
-	{
-		this.obstacles = obstacles;
 	}
 
 	@Override
@@ -197,13 +167,20 @@ public class World
 		for(Truck t : truckers)
 			sb.append(t).append("\n");
 		
-		for(Location g : garages)
+		for(Artifact g : garages)
 			sb.append(g).append("\n");
 		
-		for(Location r : rechargeStops)
+		for(Artifact r : rechargeStops)
 			sb.append(r).append("\n");
 		
-		sb.append(placement);
+		for(Artifact d : depots)
+			sb.append(d).append("\n");
+		
+		sb.append(placement).append("\n");
+		
+		for(MapRouting route : routes.values())
+			sb.append(route).append("\n");
+		
 		return sb.toString();
 	}
 }

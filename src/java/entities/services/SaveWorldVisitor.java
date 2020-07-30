@@ -3,7 +3,7 @@ package entities.services;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import entities.model.MazeElements;
+import entities.model.MapElements;
 import entities.model.World;
 import entities.model.WorldVisitor;
 
@@ -26,18 +26,18 @@ public class SaveWorldVisitor implements WorldVisitor
 	    	{
 	    		for(int j = 0; j < world.getPlacement().getLength(); j++)
 	    		{
-	    			if(world.getPlacement().getMatrix()[i][j] == MazeElements.PASSAGE.getContent() 
-	    					|| world.getPlacement().getMatrix()[i][j] == MazeElements.WALL.getContent())
+	    			if(world.getPlacement().getMatrix()[i][j] == MapElements.PASSAGE.getContent() 
+	    					|| world.getPlacement().getMatrix()[i][j] == MapElements.WALL.getContent())
 	    				sbBody.append(world.getPlacement().getMatrix()[i][j]).append(" ");
 	    			else
 	    			{
 	    				sbHeader.append(world.getPlacement().getMatrix()[i][j]).append(";");
     					sbHeader.append(i).append(";").append(j).append("\n");
     					
-	    				if(world.getPlacement().getMatrix()[i][j] == MazeElements.TRUCKER.getContent())
-	    					sbBody.append(MazeElements.WALL.getContent()).append(" ");
+	    				if(world.getPlacement().getMatrix()[i][j] == MapElements.TRUCKER.getContent())
+	    					sbBody.append(MapElements.WALL.getContent()).append(" ");
 	    				else
-	    					sbBody.append(MazeElements.PASSAGE.getContent()).append(" ");
+	    					sbBody.append(MapElements.PASSAGE.getContent()).append(" ");
 	    			}
 	    		}
 	    		sbBody.append("\n");

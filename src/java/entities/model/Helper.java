@@ -1,6 +1,6 @@
 package entities.model;
 
-public class Helper extends SimpleAgent
+public class Helper extends SimpleElement
 {
 	private Integer capacity; 		// Maximum weight that agent can carry
 	

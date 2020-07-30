@@ -11,7 +11,7 @@ package entities.model;
  * 'R': recharge point
  */
 
-public enum MazeElements 
+public enum MapElements 
 {
 	WALL('#'),
 	PASSAGE('*'),
@@ -22,9 +22,9 @@ public enum MazeElements
 	RECHARGE_POINT('R'),
 	DEPOT('D');
 	
-	private char content;
+	public char content;
 	
-	private MazeElements(char content) 
+	private MapElements(char content) 
 	{
 		this.content = content;
 	}

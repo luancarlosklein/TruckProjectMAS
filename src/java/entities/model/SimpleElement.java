@@ -9,15 +9,15 @@ import jason.environment.grid.Location;
  * @see{Worker, Helper, and Truck}
  */
 
-public abstract class SimpleAgent 
+public abstract class SimpleElement 
 {
 	private static AtomicInteger seqId = new AtomicInteger();
 
-	private Integer id;
-	private String name;
-	private Location pos;
+	protected Integer id;
+	protected String name;
+	protected Location pos;
 	
-	public SimpleAgent(Integer posX, Integer posY) 
+	public SimpleElement(Integer posX, Integer posY) 
 	{
 		super();
 		this.id = seqId.getAndIncrement();
@@ -40,24 +40,12 @@ public abstract class SimpleAgent
 		this.name = name;
 	}
 
-	public Integer getPosX() 
-	{
-		return pos.x;
+	public Location getPos() {
+		return pos;
 	}
 
-	public void setPosX(Integer posX) 
-	{
-		this.pos.x = posX;
-	}
-
-	public Integer getPosY() 
-	{
-		return pos.y;
-	}
-
-	public void setPosY(Integer posY) 
-	{
-		this.pos.y = pos.y;
+	public void setPos(Location pos) {
+		this.pos = pos;
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package entities.model;
 
-public class Worker extends SimpleAgent{
-
+public class Worker extends SimpleElement
+{
 	private Integer capacity; 		// Maximum weight that agent can carry
 	private Double battery; 		// Battery level (0% - 100%)
 	private Double jumbled;			// Chance of agent drops the box on the floor (0% - 100%).

@@ -1,6 +1,6 @@
 package entities.model;
 
-public class Truck extends SimpleAgent
+public class Truck extends SimpleElement
 {
 	private Integer qtdThings;		//Qtd of boxes inside of the truck
 	

@@ -6,15 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import entities.model.Artifact;
 import entities.model.Helper;
+import entities.model.MapElements;
 import entities.model.MapPlacing;
-import entities.model.MazeElements;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
 import entities.model.WorldVisitor;
-
-import jason.environment.grid.Location;
 
 /**
  * This class loads a world from a file.
@@ -31,14 +30,6 @@ public class LoadWorldVisitor implements WorldVisitor
 			List<String> lines = new ArrayList<String>();
 			boolean header = true;
 			
-			world.setWorkers(new ArrayList<Worker>());
-			world.setHelpers(new ArrayList<Helper>());
-			world.setTruckers(new ArrayList<Truck>());
-			world.setGarages(new ArrayList<Location>());
-			world.setRechargeStops(new ArrayList<Location>());
-			world.setDepots(new ArrayList<Location>());
-			
-			
 			while (file.hasNextLine()) 
 			{
 				String data = file.nextLine();
@@ -50,23 +41,23 @@ public class LoadWorldVisitor implements WorldVisitor
 					int x = Integer.parseInt(fields[1]);
 					int y = Integer.parseInt(fields[2]);
 					
-					if(type == MazeElements.WORKER.getContent())
+					if(type == MapElements.WORKER.getContent())
 						world.getWorkers().add(new Worker(x, y));
 					
-					else if(type == MazeElements.HELPER.getContent())
+					else if(type == MapElements.HELPER.getContent())
 						world.getHelpers().add(new Helper(x, y));
 					
-					else if(type == MazeElements.TRUCKER.getContent())
+					else if(type == MapElements.TRUCKER.getContent())
 						world.getTruckers().add(new Truck(x, y));
 					
-					else if(type == MazeElements.GARAGE.getContent())
-						world.getGarages().add(new Location(x, y));
+					else if(type == MapElements.GARAGE.getContent())
+						world.getGarages().add(new Artifact(x, y, MapElements.GARAGE));
 					
-					else if(type == MazeElements.RECHARGE_POINT.getContent())
-						world.getRechargeStops().add(new Location(x, y));
+					else if(type == MapElements.RECHARGE_POINT.getContent())
+						world.getGarages().add(new Artifact(x, y, MapElements.RECHARGE_POINT));
 					
-					else if(type == MazeElements.DEPOT.getContent())
-						world.getRechargeStops().add(new Location(x, y));
+					else if(type == MapElements.DEPOT.getContent())
+						world.getGarages().add(new Artifact(x, y, MapElements.DEPOT));
 				}
 				else
 					header = false;
