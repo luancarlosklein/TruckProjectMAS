@@ -29,6 +29,7 @@ public class LoadWorldVisitor implements WorldVisitor
 			Scanner file = new Scanner(new File("maps/map.txt"));
 			List<String> lines = new ArrayList<String>();
 			boolean header = true;
+			int wCount = 0, hCount = 0, tCount = 0, gCount = 0, rCount = 0, dCount = 0;
 			
 			while (file.hasNextLine()) 
 			{
@@ -42,22 +43,46 @@ public class LoadWorldVisitor implements WorldVisitor
 					int y = Integer.parseInt(fields[2]);
 					
 					if(type == MapElements.WORKER.getContent())
-						world.getWorkers().add(new Worker(x, y));
+					{
+						Worker w = new Worker(x, y);
+						w.setName("W" + wCount++);
+						world.getWorkerMap().put(w.getId(), w);
+					}
 					
 					else if(type == MapElements.HELPER.getContent())
-						world.getHelpers().add(new Helper(x, y));
+					{
+						Helper h = new Helper(x, y);
+						h.setName("H" + hCount++);
+						world.getHelperMap().put(h.getId(), h);
+					}
 					
 					else if(type == MapElements.TRUCKER.getContent())
-						world.getTruckers().add(new Truck(x, y));
+					{
+						Truck t = new Truck(x, y);
+						t.setName("T" + tCount++);
+						world.getTruckMap().put(t.getId(), t);
+					}
 					
 					else if(type == MapElements.GARAGE.getContent())
-						world.getGarages().add(new Artifact(x, y, MapElements.GARAGE));
+					{
+						Artifact g = new Artifact(x, y, MapElements.GARAGE);
+						g.setName("Garage" + gCount++);
+						world.getGarageMap().put(g.getId(), g);
+					}
 					
 					else if(type == MapElements.RECHARGE_POINT.getContent())
-						world.getGarages().add(new Artifact(x, y, MapElements.RECHARGE_POINT));
+					{
+						Artifact r = new Artifact(x, y, MapElements.RECHARGE_POINT);
+						r.setName("Recharge" + rCount++);
+						world.getRechargeMap().put(r.getId(), r);
+					}
 					
 					else if(type == MapElements.DEPOT.getContent())
-						world.getGarages().add(new Artifact(x, y, MapElements.DEPOT));
+					{
+						Artifact d = new Artifact(x, y, MapElements.DEPOT);
+						d.setName("Depot" + dCount++);
+						world.getDepotsMap().put(d.getId(), d);
+					}
 				}
 				else
 					header = false;

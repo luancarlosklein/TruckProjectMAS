@@ -1,8 +1,21 @@
 package views;
 
+import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.util.List;
 
+import entities.model.Constants;
+import entities.model.Helper;
+import entities.model.SimpleElement;
+import entities.model.Truck;
+import entities.model.Worker;
 import jason.environment.grid.GridWorldView;
+import jason.environment.grid.Location;
+
+/**
+ * This class configures the viewer to be shown on the screen
+ */
 
 public class WordViewer  extends GridWorldView
 {
@@ -13,10 +26,87 @@ public class WordViewer  extends GridWorldView
 	{		
         super(model, title, windowSize);
         this.model = model;
+        
         defaultFont = new Font("Arial", Font.BOLD, 16);
         setVisible(true);
         repaint();
 	}
 
+	/**
+	 *  This method draws the objects 
+	 */
+    @Override
+    public void draw(Graphics g, int x, int y, int object) 
+    {
+    	// Drawing the obstacles (walls)
+    	for(Location wall : model.getObstacles())
+    		super.drawObstacle(g, wall.x, wall.y);
+    	
+    	List<Location> posAgents = model.getAgentsPositions();
+        
+    	// Drawing the artifacts
+    	if(object == Constants.GARAGE.getValue())
+    	{
+    		if (posAgents.contains(new Location(x, y))) 
+    			drawnArtifact(g, x, y, Color.pink);
+            else
+            	drawnArtifact(g, x, y, Color.green);
+        
+            g.setColor(Color.black);
+            drawString(g, x, y, defaultFont, "Garage");
+    	}
+    	else if(object == Constants.DEPOT.getValue())
+    	{
+    		if (posAgents.contains(new Location(x, y)))
+    			drawnArtifact(g, x, y, Color.pink);
+            else
+            	drawnArtifact(g, x, y, Color.orange);
+        
+            g.setColor(Color.black);
+            drawString(g, x, y, defaultFont, "Drop");
+    	}
+    	else if(object == Constants.RECHARGE.getValue())
+    	{
+    		if (posAgents.contains(new Location(x, y)))
+    			drawnArtifact(g, x, y, Color.pink);
+            else
+            	drawnArtifact(g, x, y, Color.yellow);
+        
+            g.setColor(Color.black);
+            drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.2)), "Recharge");
+            //drawString(g, x, y, new Font("Arial", Font.BOLD, 12), "Recharge");
+    	}
+    }
 
+    public void drawnArtifact(Graphics g, int x, int y, Color c)
+    {    	
+    	g.setColor(c);
+    	g.fillRect(x * super.cellSizeW, y * super.cellSizeH, super.cellSizeW, super.cellSizeH);
+    }
+    
+    @Override
+    public void drawAgent(Graphics g, int x, int y, Color c, int i) 
+    {
+    	int id = model.getIdMapping().get(i);
+    	SimpleElement agent = model.getElement(id);
+    	
+    	if(agent.getClass().equals(Worker.class))
+    	{
+    		super.drawAgent(g, x, y, Color.yellow, -1);
+            g.setColor(Color.black);
+            super.drawString(g, x, y, defaultFont, agent.getName());
+		}
+    	else if(agent.getClass().equals(Helper.class))
+    	{
+    		super.drawAgent(g, x, y, Color.blue, -1);
+            g.setColor(Color.white);
+            super.drawString(g, x, y, defaultFont, agent.getName());
+    	}
+    	else if(agent.getClass().equals(Truck.class))
+    	{
+    		super.drawAgent(g, x, y, Color.red, -1);
+            g.setColor(Color.white);
+            super.drawString(g, x, y, defaultFont, agent.getName());
+    	}
+    }
 }

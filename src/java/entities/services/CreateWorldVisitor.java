@@ -59,8 +59,10 @@ public class CreateWorldVisitor implements WorldVisitor
 				if(workersAttempts++ > Constants.PLACEMENT_ATTEMPTS.getValue())
 					throw new Error("The number of positioning attempts exceeded the allowed limit for workers.");
 			}
+			Worker w = new Worker(x, y);
+			w.setName("W" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.WORKER.getContent();
-			world.getWorkers().add(new Worker(x, y));
+			world.getWorkerMap().put(w.getId(), w);
 		}
 		
 		// Placing the helpers
@@ -77,8 +79,10 @@ public class CreateWorldVisitor implements WorldVisitor
 				if(helpersAttempts++ > Constants.PLACEMENT_ATTEMPTS.getValue())
 					throw new Error("The number of positioning attempts exceeded the allowed limit for helpers.");
 			}
+			Helper h = new Helper(x, y);
+			h.setName("H" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.HELPER.getContent();
-			world.getHelpers().add(new Helper(x, y));
+			world.getHelperMap().put(h.getId(), h);
 		}
 		
 		// Placing the garages
@@ -95,8 +99,10 @@ public class CreateWorldVisitor implements WorldVisitor
 				if(garagesAttempts++ > Constants.PLACEMENT_ATTEMPTS.getValue())
 					throw new Error("The number of positioning attempts exceeded the allowed limit for garages.");
 			}
+			Artifact g = new Artifact(x, y, MapElements.GARAGE);
+			g.setName("Garage" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.GARAGE.getContent();
-			world.getGarages().add(new Artifact(x, y, MapElements.GARAGE));
+			world.getGarageMap().put(g.getId(), g);
 		}
 		
 		// Placing the recharge points
@@ -113,8 +119,10 @@ public class CreateWorldVisitor implements WorldVisitor
 				if(rechargesAttempts++ > Constants.PLACEMENT_ATTEMPTS.getValue())
 					throw new Error("The number of positioning attempts exceeded the allowed limit for recharge stops.");
 			}
+			Artifact rp = new Artifact(x, y, MapElements.RECHARGE_POINT);
+			rp.setName("Recharge" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.RECHARGE_POINT.getContent();
-			world.getGarages().add(new Artifact(x, y, MapElements.RECHARGE_POINT));
+			world.getRechargeMap().put(rp.getId(), rp);
 		}
 		
 		// Placing the depots
@@ -131,8 +139,10 @@ public class CreateWorldVisitor implements WorldVisitor
 				if(depotsAttempts++ > Constants.PLACEMENT_ATTEMPTS.getValue())
 					throw new Error("The number of positioning attempts exceeded the allowed limit for depots.");
 			}
+			Artifact d = new Artifact(x, y, MapElements.DEPOT);
+			d.setName("Depot" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.DEPOT.getContent();
-			world.getGarages().add(new Artifact(x, y, MapElements.DEPOT));
+			world.getDepotsMap().put(d.getId(), d);
 		}
  		
 		// Placing the truckers
@@ -179,7 +189,11 @@ public class CreateWorldVisitor implements WorldVisitor
 			if(x == -1 || y == -1)
 				throw new Error("One or more truckers were not placed");
 			else
-				world.getTruckers().add(new Truck(x, y));
+			{
+				Truck t = new Truck(x, y);
+				t.setName("T" + i);
+				world.getTruckMap().put(t.getId(), t);
+			}
 		}
 	}
 }

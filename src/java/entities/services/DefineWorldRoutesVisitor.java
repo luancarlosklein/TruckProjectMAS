@@ -9,16 +9,16 @@ public class DefineWorldRoutesVisitor implements WorldVisitor
 {
 	public void visit(World world) 
 	{
-		for(Truck t : world.getTruckers())
-			world.addRouteTo(t.getPos());
+		for(Truck t : world.getTruckMap().values())
+			world.addRouteTo(t);
 		
-		for(Artifact a : world.getDepots())
-			world.addRouteTo(a.getPos());
+		for(Artifact d : world.getDepotsMap().values())
+			world.addRouteTo(d);
 		
-		for(Artifact a : world.getGarages())
-			world.addRouteTo(a.getPos());
+		for(Artifact g : world.getGarageMap().values())
+			world.addRouteTo(g);
 		
-		for(Artifact a : world.getRechargeStops())
-			world.addRouteTo(a.getPos());
+		for(Artifact r : world.getRechargeMap().values())
+			world.addRouteTo(r);
 	}
 }

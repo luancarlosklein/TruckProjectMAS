@@ -1,16 +1,13 @@
 package entities.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.List;
 
 import entities.services.CreateMapVisitor;
 import entities.services.CreateWorldVisitor;
 import entities.services.DefineWorldRoutesVisitor;
 import entities.services.LoadWorldVisitor;
 import entities.services.SaveWorldVisitor;
-import jason.environment.grid.Location;
 
 /**
  * This class implements the world of agents.
@@ -24,13 +21,13 @@ public class World
 	private MapPlacing placement;
 	
 	// Structures
-	private List<Worker> workers = new ArrayList<Worker>();
-	private List<Helper> helpers = new ArrayList<Helper>();
-	private List<Truck> truckers = new ArrayList<Truck>();
-	private List<Artifact> garages = new ArrayList<Artifact>();
-	private List<Artifact> rechargeStops = new ArrayList<Artifact>();
-	private List<Artifact> depots = new ArrayList<Artifact>();
-	private Map<Location, MapRouting> routes = new HashMap<Location, MapRouting>();
+	private Map<Integer, Worker> workerMap = new HashMap<Integer, Worker>();
+	private Map<Integer, Helper> helperMap = new HashMap<Integer, Helper>();
+	private Map<Integer, Truck> truckMap = new HashMap<Integer, Truck>();
+	private Map<Integer, Artifact> garageMap = new HashMap<Integer, Artifact>();
+	private Map<Integer, Artifact> rechargeMap = new HashMap<Integer, Artifact>();
+	private Map<Integer, Artifact> depotsMap = new HashMap<Integer, Artifact>();
+	private Map<Integer, MapRouting> routes = new HashMap<Integer, MapRouting>();
 	
 	/**
 	 * This constructor creates a random world.
@@ -71,9 +68,9 @@ public class World
 
     /**
      * This method creates a route to an interest point for worker agents.
-     * @param pos: location of interest point (e.g., truck, depot, ...)
+     * @param element: a target element (e.g., truck, depot, garage, ...)
      */
-    public void addRouteTo(Location pos)
+    public void addRouteTo(SimpleElement element)
     {
     	MapRouting route = new MapRouting(placement.width, placement.length);
     	route.accept(new CreateMapVisitor());
@@ -84,28 +81,28 @@ public class World
     		{
     			// Calculate the Manhattan distance (used as heuristic for LRTA*)
 	        	if (placement.matrix[i][j] != MapElements.WALL.getContent())
-					route.matrix[i][j] = (double) (Math.abs(pos.x - j) + Math.abs(pos.y - i));
+					route.matrix[i][j] = (double) (Math.abs(element.getPos().x - j) + Math.abs(element.getPos().y - i));
 	        }
 	    }
-    	routes.put(pos, route);
+    	routes.put(element.getId(), route);
     }
     
     /**
      * Remove a route from the map of routes
-     * @param pos: location to be removed (a old interest point).
+     * @param element: a target element (e.g., truck, depot, garage, ...).
      * @throws Exception 
      */
-    public void removeRouteTo(Location pos) throws Exception
+    public void removeRouteTo(SimpleElement element) throws Exception
     {
-    	if(routes.containsKey(pos)) 
-    		routes.remove(pos);
+    	if(routes.containsKey(element.getId())) 
+    		routes.remove(element.getId());
     	else
     		throw new Exception("There is not a route to informated position!");
     }
     
     public int getNumbAgents()
     {
-    	return workers.size() + helpers.size() + truckers.size();
+    	return workerMap.values().size() + helperMap.values().size() + truckMap.values().size();
     }
     
     public void setPlacement(MapPlacing placement) 
@@ -118,37 +115,37 @@ public class World
     	return placement;
     }
 
-	public List<Worker> getWorkers() 
+	public Map<Integer, Worker> getWorkerMap() 
 	{
-		return workers;
+		return workerMap;
 	}
 
-	public List<Helper> getHelpers() 
+	public Map<Integer, Helper> getHelperMap() 
 	{
-		return helpers;
+		return helperMap;
 	}
 
-	public List<Truck> getTruckers() 
+	public Map<Integer, Truck> getTruckMap() 
 	{
-		return truckers;
+		return truckMap;
 	}
 
-	public List<Artifact> getGarages() 
+	public Map<Integer, Artifact> getGarageMap() 
 	{
-		return garages;
+		return garageMap;
 	}
 
-	public List<Artifact> getRechargeStops() 
+	public Map<Integer, Artifact> getRechargeMap() 
 	{
-		return rechargeStops;
+		return rechargeMap;
 	}
 
-	public List<Artifact> getDepots() 
+	public Map<Integer, Artifact> getDepotsMap() 
 	{
-		return depots;
+		return depotsMap;
 	}
 
-	public Map<Location, MapRouting> getRoutes() 
+	public Map<Integer, MapRouting> getRoutes() 
 	{
 		return routes;
 	}
@@ -158,22 +155,22 @@ public class World
 	{
 		StringBuffer sb = new StringBuffer();
 		
-		for(Worker w : workers)
+		for(Worker w : workerMap.values())
 			sb.append(w).append("\n");
 		
-		for(Helper h : helpers)
+		for(Helper h : helperMap.values())
 			sb.append(h).append("\n");
 		
-		for(Truck t : truckers)
+		for(Truck t : truckMap.values())
 			sb.append(t).append("\n");
 		
-		for(Artifact g : garages)
+		for(Artifact g : garageMap.values())
 			sb.append(g).append("\n");
 		
-		for(Artifact r : rechargeStops)
+		for(Artifact r : rechargeMap.values())
 			sb.append(r).append("\n");
 		
-		for(Artifact d : depots)
+		for(Artifact d : depotsMap.values())
 			sb.append(d).append("\n");
 		
 		sb.append(placement).append("\n");

@@ -3,7 +3,13 @@ package entities.model;
 public enum Constants 
 {
 	INFINITE(9999),
-	PLACEMENT_ATTEMPTS(1000);
+	PLACEMENT_ATTEMPTS(1000),
+	WORKER(1),
+	HELPER(2),
+	TRUCK(4),
+	GARAGE(8),
+	DEPOT(16),
+	RECHARGE(32);
 	
 	public int value;
 	
