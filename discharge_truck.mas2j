@@ -5,7 +5,8 @@ MAS discharge_truck {
 	environment: environments.DischargeEnv(gui)
 
 	agents:
-		workerModule;
+		manager;
+//		workerModule;
 		//helper;
 		//truck;
 		

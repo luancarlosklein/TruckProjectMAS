@@ -60,7 +60,6 @@ public class CreateWorldVisitor implements WorldVisitor
 					throw new Error("The number of positioning attempts exceeded the allowed limit for workers.");
 			}
 			Worker w = new Worker(x, y);
-			w.setName("W" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.WORKER.getContent();
 			world.getWorkerMap().put(w.getId(), w);
 		}
@@ -80,7 +79,6 @@ public class CreateWorldVisitor implements WorldVisitor
 					throw new Error("The number of positioning attempts exceeded the allowed limit for helpers.");
 			}
 			Helper h = new Helper(x, y);
-			h.setName("H" + i);
 			world.getPlacement().getMatrix()[x][y] = MapElements.HELPER.getContent();
 			world.getHelperMap().put(h.getId(), h);
 		}
@@ -191,7 +189,6 @@ public class CreateWorldVisitor implements WorldVisitor
 			else
 			{
 				Truck t = new Truck(x, y);
-				t.setName("T" + i);
 				world.getTruckMap().put(t.getId(), t);
 			}
 		}

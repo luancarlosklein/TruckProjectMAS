@@ -8,11 +8,14 @@ public class Truck extends SimpleElement
 	{
 		super(posX, posY);
 		this.qtdThings = qtdThings;
+		this.setName("truck_" + id);
 	}
 	
 	public Truck(Integer posX, Integer posY) 
 	{
 		super(posX, posY);
+		this.qtdThings = 0;
+		this.setName("truck_" + id);
 	}
 
 	public Integer getQtdThings() 

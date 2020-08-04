@@ -27,14 +27,10 @@ public class WordViewer  extends GridWorldView
         super(model, title, windowSize);
         this.model = model;
         
-        defaultFont = new Font("Arial", Font.BOLD, 16);
         setVisible(true);
         repaint();
 	}
-
-	/**
-	 *  This method draws the objects 
-	 */
+	
     @Override
     public void draw(Graphics g, int x, int y, int object) 
     {
@@ -53,7 +49,7 @@ public class WordViewer  extends GridWorldView
             	drawnArtifact(g, x, y, Color.green);
         
             g.setColor(Color.black);
-            drawString(g, x, y, defaultFont, "Garage");
+            drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), "Garage");
     	}
     	else if(object == Constants.DEPOT.getValue())
     	{
@@ -63,7 +59,7 @@ public class WordViewer  extends GridWorldView
             	drawnArtifact(g, x, y, Color.orange);
         
             g.setColor(Color.black);
-            drawString(g, x, y, defaultFont, "Drop");
+            drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), "Drop");
     	}
     	else if(object == Constants.RECHARGE.getValue())
     	{
@@ -74,16 +70,21 @@ public class WordViewer  extends GridWorldView
         
             g.setColor(Color.black);
             drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.2)), "Recharge");
-            //drawString(g, x, y, new Font("Arial", Font.BOLD, 12), "Recharge");
     	}
     }
 
+    /**
+	 *  This method draws artifacts as squares 
+	 */
     public void drawnArtifact(Graphics g, int x, int y, Color c)
     {    	
     	g.setColor(c);
     	g.fillRect(x * super.cellSizeW, y * super.cellSizeH, super.cellSizeW, super.cellSizeH);
     }
     
+    /**
+	 *  This method draws agents as circles
+	 */
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int i) 
     {
@@ -94,19 +95,19 @@ public class WordViewer  extends GridWorldView
     	{
     		super.drawAgent(g, x, y, Color.yellow, -1);
             g.setColor(Color.black);
-            super.drawString(g, x, y, defaultFont, agent.getName());
+            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("W" + agent.getId()));
 		}
     	else if(agent.getClass().equals(Helper.class))
     	{
     		super.drawAgent(g, x, y, Color.blue, -1);
             g.setColor(Color.white);
-            super.drawString(g, x, y, defaultFont, agent.getName());
+            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("H" + agent.getId()));
     	}
     	else if(agent.getClass().equals(Truck.class))
     	{
     		super.drawAgent(g, x, y, Color.red, -1);
             g.setColor(Color.white);
-            super.drawString(g, x, y, defaultFont, agent.getName());
+            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("T" + agent.getId()));
     	}
     }
 }

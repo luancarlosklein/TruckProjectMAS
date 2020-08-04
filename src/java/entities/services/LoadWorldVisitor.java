@@ -29,7 +29,7 @@ public class LoadWorldVisitor implements WorldVisitor
 			Scanner file = new Scanner(new File("maps/map.txt"));
 			List<String> lines = new ArrayList<String>();
 			boolean header = true;
-			int wCount = 0, hCount = 0, tCount = 0, gCount = 0, rCount = 0, dCount = 0;
+			int gCount = 0, rCount = 0, dCount = 0;
 			
 			while (file.hasNextLine()) 
 			{
@@ -44,22 +44,19 @@ public class LoadWorldVisitor implements WorldVisitor
 					
 					if(type == MapElements.WORKER.getContent())
 					{
-						Worker w = new Worker(x, y);
-						w.setName("W" + wCount++);
+						Worker w = new Worker(x, y);				
 						world.getWorkerMap().put(w.getId(), w);
 					}
 					
 					else if(type == MapElements.HELPER.getContent())
 					{
 						Helper h = new Helper(x, y);
-						h.setName("H" + hCount++);
 						world.getHelperMap().put(h.getId(), h);
 					}
 					
 					else if(type == MapElements.TRUCKER.getContent())
 					{
 						Truck t = new Truck(x, y);
-						t.setName("T" + tCount++);
 						world.getTruckMap().put(t.getId(), t);
 					}
 					

@@ -8,12 +8,14 @@ public class Helper extends SimpleElement
 	{
 		super(posX, posY);
 		this.capacity = capacity;
+		this.setName("helper_" + id);
 	}
 	
 	public Helper(Integer posX, Integer posY) 
 	{
 		super(posX, posY);
 		this.capacity = 0;
+		this.setName("helper_" + id);
 	}
 
 	public Integer getCapacity() 

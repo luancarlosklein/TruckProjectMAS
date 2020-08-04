@@ -15,6 +15,7 @@ public class Worker extends SimpleElement
 		this.battery = battery;
 		this.jumbled = jumbled;
 		this.qtdGoals = qtGoals;
+		this.setName("worker_" + id);
 	}
 	
 	public Worker(Integer posX, Integer posY) 
@@ -24,6 +25,7 @@ public class Worker extends SimpleElement
 		this.battery = 0.0;
 		this.jumbled = 0.0;
 		this.qtdGoals = 0;
+		this.setName("worker_" + id);
 	}
 
 	public Integer getCapacity() 
