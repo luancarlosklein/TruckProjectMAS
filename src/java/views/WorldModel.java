@@ -27,13 +27,17 @@ public class WorldModel extends GridWorldModel
 {
 	private World world;
 	private Map<Integer, Integer> idMapping;
+	private Map<Integer, Integer> codeMapping;
+	private List<Location> obstacles;
     private int stepCount;
 	
 	public WorldModel(World world)
 	{
-		super(world.getPlacement().getWidth(), world.getPlacement().getLength(), world.getNumbAgents());
+		super(world.getPlacement().getWidth() + 1, world.getPlacement().getLength() + 1, world.getNumbAgents());
 		this.world = world;
 		this.idMapping = new HashMap<Integer, Integer>();
+		this.codeMapping = new HashMap<Integer, Integer>();
+		this.obstacles = computeObstacles();
 		this.stepCount = 0;
 		
 		// Adding agents to the model
@@ -41,19 +45,22 @@ public class WorldModel extends GridWorldModel
 		for(Worker w : world.getWorkerMap().values())
 		{
 			setAgPos(code, w.getPos().x, w.getPos().y);
-			idMapping.put(code++, w.getId());
+			idMapping.put(w.getId(), code);
+			codeMapping.put(code++, w.getId());
 		}
 		
 		for(Helper h : world.getHelperMap().values())
 		{
 			setAgPos(code, h.getPos().x, h.getPos().y);
-			idMapping.put(code++, h.getId());
+			idMapping.put(h.getId(), code);
+			codeMapping.put(code++, h.getId());
 		}
 		
 		for(Truck t : world.getTruckMap().values())
 		{
 			setAgPos(code, t.getPos().x, t.getPos().y);
-			idMapping.put(code++, t.getId());
+			idMapping.put(t.getId(), code);
+			codeMapping.put(code++, t.getId());
 		}
 		
 		// Adding the artifacts that will be drew
@@ -71,7 +78,7 @@ public class WorldModel extends GridWorldModel
 	 * This method finds the positions in the Map that are obstacles
 	 * @return a list of obstacles (WALL)
 	 */
-	public List<Location> getObstacles()
+	public List<Location> computeObstacles()
 	{
 		List<Location> obstacles = new ArrayList<Location>();
 		
@@ -138,20 +145,19 @@ public class WorldModel extends GridWorldModel
 	
 	/**
 	 * An action, it is used to move the agents on the grid.
+	 * @code agentId: id of agent in .
 	 * @param tarPos: the target position of agent.
-	 * @code code: the code of agent on the grid.
 	 */
-	public boolean moveTowards(Location tarPos, int code) 
+	public boolean moveTowards(int agentId, Location tarPos) 
 	{
-		Location currentPos = getAgPos(code);
+		SimpleElement agent = getElement(agentId);
 		MapRouting currentRoute = null;
 		SimpleElement currentTarget = null;
-		SimpleElement currentAgent = getElement(idMapping.get(code));
+		Random rand = new Random();
 		List<Integer> indexes = new ArrayList<Integer>();
-		Location[] possibilities = {new Location(-1, -1), new Location(-1, -1), new Location(-1, -1), new Location(-1, -1)};
-        double[] values = {100000.0, 10000.0, 10000.0, 10000.0};
-        Random rand = new Random();
-		
+		List<Double> values = new ArrayList<Double>();
+		List<Location> possibilities = new ArrayList<Location>();        
+        
         // Getting the route to target position
 		for(Truck t : world.getTruckMap().values())
 		{
@@ -204,67 +210,68 @@ public class WorldModel extends GridWorldModel
 		}
 		
 		// Checking possible error situations
-		if(getObstacles().contains(currentPos))
-			throw new Error("Agent " + code + " jumps over the wall, it is going to " + currentTarget.getName());
+		if(getObstacles().contains(agent.getPos()))
+			throw new Error("Agent " + agent.getName() + " jumps over the wall, it is going to the " + currentTarget.getName());
 		
 		if(currentTarget == null || currentRoute == null)
-			throw new Error("Target doesn't exist, or it is impossible to find a route to target.");
+			throw new Error("Target doesn't exist, or it is impossible to find a route to the target.");
+		
+        System.out.println("agent pos.x: " + agent.getPos() + " agent pos.y: " + agent.getPos().y);
 		
 		// Computing the new direction of agent
-		if ((currentPos.y - 1) >= 0)
+        int x = agent.getPos().x;
+        int y = agent.getPos().y;
+        
+		if ((y - 1) >= 0 && !obstacles.contains(new Location(x, y - 1)))
 		{
-			possibilities[0] = new Location(currentPos.x, currentPos.y - 1);
-	   	 	values[0] = currentRoute.getMatrix()[currentPos.x][currentPos.y - 1];
+			possibilities.add(new Location(x, y - 1));
+			values.add(currentRoute.getMatrix()[x][y - 1]);
 		}
-		if((currentPos.y + 1) < world.getPlacement().getLength())
+		if((y + 1) < world.getPlacement().getLength() && !obstacles.contains(new Location(x, y + 1)))
 		{
-			possibilities[1] = new Location(currentPos.x, currentPos.y + 1);
-       	 	values[1] = currentRoute.getMatrix()[currentPos.x][currentPos.y + 1];
+			possibilities.add(new Location(x, y + 1));
+			values.add(currentRoute.getMatrix()[x][y + 1]);
 		}
-		if((currentPos.x - 1) >= 0)
+		if((x - 1) >= 0 && !obstacles.contains(new Location(x - 1, y)))
 		{
-			possibilities[2] = new Location(currentPos.x - 1, currentPos.y);
-       	 	values[2] = currentRoute.getMatrix()[currentPos.x - 1][currentPos.y];
+			possibilities.add(new Location(x - 1, y));
+			values.add(currentRoute.getMatrix()[x - 1][y]);
 		}
-		if((currentPos.x + 1) >= world.getPlacement().getWidth())
+		if((x + 1) < world.getPlacement().getWidth() && !obstacles.contains(new Location(x + 1, y)))
 		{
-			possibilities[3] = new Location(currentPos.x + 1, currentPos.y);
-       	 	values[3] = currentRoute.getMatrix()[currentPos.x + 1][currentPos.y];
+			possibilities.add(new Location(x + 1, y));
+			values.add(currentRoute.getMatrix()[x + 1][y]);
 		}
 		
 		// Finding the best possibilities
-        double minVal = values[0];
-        Location minPos = possibilities[0];
-        
-        for(int i = 0; i < 4; i++)
-        {
-        	if(values[i] < minVal)
-        	{
-        		indexes = new ArrayList<Integer>();
-        		indexes.add(i);
-        		minVal = values[i];
-        		minPos = possibilities[i];
-        	}	
-        	if(values[i] == minVal)
-        	{
-        		indexes.add(i);
-        		minVal = values[i];
-        		minPos = possibilities[i];
-        	}
-        }
-        
-        // Selecting a random direction
-        int index = rand.nextInt(indexes.size());
-        minVal = values[index];
-		minPos = possibilities[index];
-		
-        // In this moment, considering the LRTA*, the estimations of distance are shared among agents. 
-        if (currentRoute.getMatrix()[currentPos.x][currentPos.y] >= 0)
-        	currentRoute.getMatrix()[currentPos.x][currentPos.y] = minVal + 1;
-		
-        // Updating the agent position
-        setAgPos(code, minPos);
-        currentAgent.setPos(minPos);
+		if(!possibilities.isEmpty())
+		{
+			double minVal = values.get(0);
+			Location minPos = possibilities.get(0);
+			
+			for(int i = 0; i < possibilities.size(); i++)
+			{
+				if(values.get(i) <= minVal)
+	        	{
+	        		indexes.add(i);
+	        		minVal = values.get(i);
+	        		minPos = possibilities.get(i);
+	        	}	
+			}
+			
+			// Selecting a random direction
+	        int index = rand.nextInt(indexes.size());
+	        minVal = values.get(index);
+			minPos = possibilities.get(index);
+			
+	        // In this moment, considering the LRTA*, the estimations of distance are shared among agents. 
+	        if (currentRoute.getMatrix()[agent.getPos().x][agent.getPos().y] >= 0)
+	        	currentRoute.getMatrix()[agent.getPos().x][agent.getPos().y] = minVal + 1;
+			
+	        // Updating the agent position
+	        setAgPos(getIdMapping().get(agent.getId()), minPos);
+	        agent.setPos(minPos);	
+		}
        
         if (view != null) 
         {
@@ -292,9 +299,19 @@ public class WorldModel extends GridWorldModel
 	{
 		return idMapping;
 	}
+	
+	public Map<Integer, Integer> codeMapping() 
+	{
+		return codeMapping;
+	}
 
 	public int getStepCount() 
 	{
 		return stepCount;
+	}
+
+	public List<Location> getObstacles() 
+	{
+		return obstacles;
 	}
 }

@@ -1,43 +1,9 @@
-MAS discharge_truck {
-
-//comment
-//	environment: FactoryEnv(gui)
+MAS discharge_truck 
+{
 	environment: environments.DischargeEnv(gui)
 
 	agents:
 		manager;
-//		workerModule;
-		//helper;
-		//truck;
-		
-		
-//		helper #3;
-//		
-//		//helper2;
-//		//helper1;
-//		//helper0 ;
-//		//Ajudante � o 11
-//		//worker11;
-//	
-//		truck3;
-//		truck2;
-//		truck1;
-//		
-//		drop;
-//		garage;
-//		
-//		worker #6;
-//		//worker0;
-//		//worker1;
-//		//worker2;
-//		//worker3;
-//		//worker4;
-//		//worker5;
-//		//worker6;
-//		//worker7;	
-//		//worker8;
-//		//worker9;
-//		//worker10;
 		
 	aslSourcePath:
 		"src/asl";

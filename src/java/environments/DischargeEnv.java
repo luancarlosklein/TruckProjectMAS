@@ -1,6 +1,6 @@
 package environments;
 
-import java.util.logging.Logger;
+import java.util.Random;
 
 import entities.model.Artifact;
 import entities.model.Helper;
@@ -14,9 +14,8 @@ import views.WordViewer;
 import views.WorldModel;
 
 public class DischargeEnv extends Environment
-{	
-	private Logger logger = Logger.getLogger("Log messages for Class: " + this.getClass().getName());
-	private WorldModel model;
+{
+	public static WorldModel model;
 	
 	@Override
 	public void init(String[] args) 
@@ -41,14 +40,27 @@ public class DischargeEnv extends Environment
 
 		System.out.println("\n--------------------- STARTING JASON APPLICATION --------------------\n");
 		
-		updatePercepts();
+		startPercepts();
 	}
 	
 	// Setting the initial perceptions
-	public void updatePercepts() 
-	{	
+	public void startPercepts()
+	{
+		Random rand = new Random();
+		
 		// Start manager
-		clearPercepts("manager");
+		clearPercepts("manager");	
+		
+		// Start truckers
+		for(Truck t : model.getWorld().getTruckMap().values())
+		{
+			addPercept("manager", Literal.parseLiteral("add_trucker(" + t.getName() + ")"));
+			
+			clearPercepts(t.getName());
+			addPercept(t.getName(), Literal.parseLiteral("id(" + t.getId() + ")"));			
+			addPercept(t.getName(), Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
+			addPercept(t.getName(), Literal.parseLiteral("qtdThings(" + t.getQtdThings() + ")"));
+		}
 		
 		// Start workers
 		for(Worker w : model.getWorld().getWorkerMap().values())
@@ -56,8 +68,49 @@ public class DischargeEnv extends Environment
 			addPercept("manager", Literal.parseLiteral("add_worker("+ w.getName() +")"));
 			
 			clearPercepts(w.getName());
+			addPercept(w.getName(), Literal.parseLiteral("id(" + w.getId() + ")"));
 			addPercept(w.getName(), Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
+			addPercept(w.getName(), Literal.parseLiteral("batery(" + w.getBattery() +")"));
+			addPercept(w.getName(), Literal.parseLiteral("qtdGoal(" + w.getQtdGoals() +")"));
+			addPercept(w.getName(), Literal.parseLiteral("jumbled(" + w.getJumbled() +")"));
+			addPercept(w.getName(), Literal.parseLiteral("truckStatus(full)"));
+			addPercept(w.getName(), Literal.parseLiteral("hand_in(none)"));
+			addPercept(w.getName(), Literal.parseLiteral("dropLocal(none)"));
+			addPercept(w.getName(), Literal.parseLiteral("qtdDischarge(0)"));
+			addPercept(w.getName(), Literal.parseLiteral("capacityHelper(0)"));
+			addPercept(w.getName(), Literal.parseLiteral("helper(true)"));
+			addPercept(w.getName(), Literal.parseLiteral("busy(false)"));
+			addPercept(w.getName(), Literal.parseLiteral("time(0)"));
 			
+			for(Truck t : model.getWorld().getTruckMap().values())
+			{
+				addPercept(w.getName(), Literal.parseLiteral("plays(initiator," + t.getName() + ")"));
+				addPercept(w.getName(), Literal.parseLiteral("posTruck(" + t.getPos().x + "," + t.getPos().y + ")"));
+				addPercept(w.getName(), Literal.parseLiteral("qtdTruck(" + t.getName() + "," + t.getQtdThings() + ")"));
+				
+				if(rand.nextDouble() <= 0.6)
+					addPercept(w.getName(), Literal.parseLiteral("truckGet(" + t.getName() + ")"));	
+			}
+		}
+		
+		// Start helpers
+		for(Helper h : model.getWorld().getHelperMap().values())
+		{
+			addPercept("manager", Literal.parseLiteral("add_helper("+ h.getName() +")"));
+			
+			clearPercepts(h.getName());
+			addPercept(h.getName(), Literal.parseLiteral("id(" + h.getId() + ")"));
+			addPercept(h.getName(), Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
+		}
+	}
+	
+	// update perceptions
+	public void updatePercepts() 
+	{					
+		// update the location of each worker
+		for(Worker w : model.getWorld().getWorkerMap().values())
+		{
+			clearPercepts(w.getName());
 			boolean isOverlapped = false;
 			
 			for(Truck t : model.getWorld().getTruckMap().values())
@@ -100,14 +153,10 @@ public class DischargeEnv extends Environment
 				addPercept(w.getName(), Literal.parseLiteral("at(somewhere)"));
 		}		
 		
-		// Start helpers
+		// update the location of each helper
 		for(Helper h : model.getWorld().getHelperMap().values())
-		{
-			addPercept("manager", Literal.parseLiteral("add_helper("+ h.getName() +")"));
-			
+		{	
 			clearPercepts(h.getName());
-			addPercept(h.getName(), Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
-			
 			boolean isOverlapped = false;
 			
 			for(Worker w : model.getWorld().getWorkerMap().values())
@@ -152,29 +201,31 @@ public class DischargeEnv extends Environment
 					addPercept(h.getName(), Literal.parseLiteral("at(somewhere)"));
 			}
 		}
-		
-		// Start truckers
-		for(Truck t : model.getWorld().getTruckMap().values())
-			addPercept("manager", Literal.parseLiteral("add_trucker("+ t.getName() +")"));
 	}
 	
 	// Defining the actions that can be performed by agents
 	@Override
 	public boolean executeAction(String agName, Structure action) 
-	{
-        boolean result = false;
-        
+	{	
         if (action.getFunctor().equals("move_towards")) 
         {
-            int code = Integer.parseInt(action.getTerm(1).toString());                 
-            result = model.moveTowards(model.getElement(model.getIdMapping().get(code)).getPos(), code);
-        }	
-        if (result) 
-        {
-            updatePercepts();
-            try { Thread.sleep(400); } catch (Exception e) {}
+        	int agentId = Integer.parseInt(agName.split("_")[1]);
+        	int targetId = Integer.parseInt(action.getTerm(0).toString().split("_")[1]);
+        	
+        	if(model.moveTowards(agentId, model.getElement(targetId).getPos()))
+        	{
+        		updatePercepts();
+                try {Thread.sleep(400);} 
+                catch (InterruptedException e) 
+                {
+                	System.out.println(e.getMessage());
+					e.printStackTrace();
+				}
+        		return true;
+        	}
+        	return false;
         }
-        return result;
+        return true;
 	}
 
 	@Override

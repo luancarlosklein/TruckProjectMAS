@@ -26,4 +26,9 @@ public class MapPlacing extends Map<Character>
 	{
 		return matrix;
 	}
+	
+	public boolean isObstacle(int x, int y)
+	{
+		return this.matrix[x][y] == MapElements.WALL.content;
+	}
 }

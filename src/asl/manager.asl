@@ -10,7 +10,7 @@
  */ 
 +add_worker(Name)
 	<-	.create_agent(Name, "worker.asl");
-		.print(Name);
+		.print("A new worker was created. Name: ", Name);
 		-add_worker(Name).
 
 /*
@@ -18,13 +18,15 @@
  */ 
 +add_trucker(Name)
 	<-	.create_agent(Name, "truck.asl");
+		.print("A new truck was created. Name: ", Name);
 		-add_trucker(Name).
 		
 /*
  * Create a new helper
  */ 
 +add_helper(Name)
-	<-	.create_agent(Name, "helper.asl").
+	<-	.create_agent(Name, "helper.asl");
+		.print("A new helper was created. Name: ", Name);
 		-add_helper(helper).
 
 ///*
