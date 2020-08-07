@@ -11,7 +11,7 @@ package entities.model;
  * 'R': recharge point
  */
 
-public enum MapElements 
+public enum WorldElements 
 {
 	WALL('#'),
 	PASSAGE('*'),
@@ -24,7 +24,7 @@ public enum MapElements
 	
 	public char content;
 	
-	private MapElements(char content) 
+	private WorldElements(char content) 
 	{
 		this.content = content;
 	}

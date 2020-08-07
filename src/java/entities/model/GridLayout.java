@@ -4,20 +4,20 @@ package entities.model;
  * This class implements the logic matrix that defines the placement of agents.
  */
 
-public class MapPlacing extends Map<Character> 
+public class GridLayout extends GridStructure<Character> 
 {	
 	// Constructor
-	public MapPlacing(Integer width, Integer length) 
+	public GridLayout(Integer width, Integer height) 
 	{
-		super(width, length);
-		this.matrix = new Character[width][length];
+		super(width, height);
+		this.matrix = new Character[height][width];
 	}
 	
 	/**
 	 * This method implements the interface {@see: MapVisitor}.
 	 * @param visitor: a visitor operation. 
 	 */
-    public void accept(MapVisitor visitor) 
+    public void accept(GridVisitor visitor) 
     {
         visitor.visit(this);
     }
@@ -29,6 +29,6 @@ public class MapPlacing extends Map<Character>
 	
 	public boolean isObstacle(int x, int y)
 	{
-		return this.matrix[x][y] == MapElements.WALL.content;
+		return this.matrix[y][x] == WorldElements.WALL.content;
 	}
 }

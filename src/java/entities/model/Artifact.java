@@ -7,7 +7,7 @@ public class Artifact extends SimpleElement
 {
 	private Boolean actived;
 	
-	public Artifact(Integer posX, Integer posY, MapElements type) 
+	public Artifact(Integer posX, Integer posY, WorldElements type) 
 	{
 		super(posX, posY);
 		this.actived = true;

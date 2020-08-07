@@ -3,7 +3,7 @@ package entities.services;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import entities.model.MapElements;
+import entities.model.WorldElements;
 import entities.model.World;
 import entities.model.WorldVisitor;
 
@@ -22,22 +22,22 @@ public class SaveWorldVisitor implements WorldVisitor
 			StringBuffer sbHeader = new StringBuffer();
 			StringBuffer sbBody = new StringBuffer();
 			
-			for(int i = 0; i < world.getPlacement().getWidth(); i++)
+			for(int i = 0; i < world.getLayout().getHeight(); i++)
 	    	{
-	    		for(int j = 0; j < world.getPlacement().getLength(); j++)
+	    		for(int j = 0; j < world.getLayout().getWidth(); j++)
 	    		{
-	    			if(world.getPlacement().getMatrix()[i][j] == MapElements.PASSAGE.getContent() 
-	    					|| world.getPlacement().getMatrix()[i][j] == MapElements.WALL.getContent())
-	    				sbBody.append(world.getPlacement().getMatrix()[i][j]).append(" ");
+	    			if(world.getLayout().getMatrix()[i][j] == WorldElements.PASSAGE.getContent() 
+	    					|| world.getLayout().getMatrix()[i][j] == WorldElements.WALL.getContent())
+	    				sbBody.append(world.getLayout().getMatrix()[i][j]).append(" ");
 	    			else
 	    			{
-	    				sbHeader.append(world.getPlacement().getMatrix()[i][j]).append(";");
+	    				sbHeader.append(world.getLayout().getMatrix()[i][j]).append(";");
     					sbHeader.append(i).append(";").append(j).append("\n");
     					
-	    				if(world.getPlacement().getMatrix()[i][j] == MapElements.TRUCKER.getContent())
-	    					sbBody.append(MapElements.WALL.getContent()).append(" ");
+	    				if(world.getLayout().getMatrix()[i][j] == WorldElements.TRUCKER.getContent())
+	    					sbBody.append(WorldElements.WALL.getContent()).append(" ");
 	    				else
-	    					sbBody.append(MapElements.PASSAGE.getContent()).append(" ");
+	    					sbBody.append(WorldElements.PASSAGE.getContent()).append(" ");
 	    			}
 	    		}
 	    		sbBody.append("\n");

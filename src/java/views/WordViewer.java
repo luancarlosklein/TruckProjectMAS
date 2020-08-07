@@ -36,7 +36,7 @@ public class WordViewer extends GridWorldView
     {
     	// Drawing the obstacles (walls)
     	for(Location wall : model.getObstacles())
-    		super.drawObstacle(g, wall.x, wall.y);
+    		super.drawObstacle(g, wall.y, wall.x);
     	
     	List<Location> posAgents = model.getAgentsPositions();
         

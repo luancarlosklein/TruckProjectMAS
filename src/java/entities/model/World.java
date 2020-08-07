@@ -3,7 +3,7 @@ package entities.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import entities.services.CreateMapVisitor;
+import entities.services.CreateGridVisitor;
 import entities.services.CreateWorldVisitor;
 import entities.services.DefineWorldRoutesVisitor;
 import entities.services.LoadWorldVisitor;
@@ -18,7 +18,7 @@ import entities.services.SaveWorldVisitor;
 public class World
 {
 	// Logic map
-	private MapPlacing placement;
+	private GridLayout layout;
 	
 	// Structures
 	private Map<Integer, Worker> workerMap = new HashMap<Integer, Worker>();
@@ -27,7 +27,7 @@ public class World
 	private Map<Integer, Artifact> garageMap = new HashMap<Integer, Artifact>();
 	private Map<Integer, Artifact> rechargeMap = new HashMap<Integer, Artifact>();
 	private Map<Integer, Artifact> depotsMap = new HashMap<Integer, Artifact>();
-	private Map<Integer, MapRouting> routes = new HashMap<Integer, MapRouting>();
+	private Map<Integer, GridRoutes> routes = new HashMap<Integer, GridRoutes>();
 	
 	/**
 	 * This constructor creates a random world.
@@ -37,9 +37,9 @@ public class World
 	 * @param length: the length of map.
 	 * @throws Exception 
 	 */
-	public World(Integer width, Integer length) throws Exception 
+	public World(Integer width, Integer height) throws Exception 
 	{
-		placement = new MapPlacing(width, length);
+		layout = new GridLayout(width, height);
 		
 		this.accept(new CreateWorldVisitor());
 		this.accept(new DefineWorldRoutesVisitor());
@@ -72,16 +72,16 @@ public class World
      */
     public void addRouteTo(SimpleElement element)
     {
-    	MapRouting route = new MapRouting(placement.width, placement.length);
-    	route.accept(new CreateMapVisitor());
+    	GridRoutes route = new GridRoutes(layout.width, layout.height);
+    	route.accept(new CreateGridVisitor());
     	
-    	for (int i = 0; i < placement.width; i++) 
+    	for (int y = 0; y < layout.height; y++) 
     	{
-    		for (int j = 0; j < placement.length; j++) 
+    		for (int x = 0; x < layout.width; x++) 
     		{
     			// Calculate the Manhattan distance (used as heuristic for LRTA*)
-	        	if (placement.matrix[i][j] != MapElements.WALL.getContent())
-					route.matrix[i][j] = (double) (Math.abs(element.getPos().x - j) + Math.abs(element.getPos().y - i));
+	        	if ((layout.matrix[y][x] != WorldElements.WALL.getContent()) || (x == element.getPos().x && y == element.getPos().y))
+					route.matrix[y][x] = (Math.abs(element.getPos().x - x) + Math.abs(element.getPos().y - y));
 	        }
 	    }
     	routes.put(element.getId(), route);
@@ -105,14 +105,14 @@ public class World
     	return workerMap.values().size() + helperMap.values().size() + truckMap.values().size();
     }
     
-    public void setPlacement(MapPlacing placement) 
+    public void setLayout(GridLayout placement) 
     {
-		this.placement = placement;
+		this.layout = placement;
 	}
 
-	public MapPlacing getPlacement() 
+	public GridLayout getLayout() 
     {
-    	return placement;
+    	return layout;
     }
 
 	public Map<Integer, Worker> getWorkerMap() 
@@ -145,7 +145,7 @@ public class World
 		return depotsMap;
 	}
 
-	public Map<Integer, MapRouting> getRoutes() 
+	public Map<Integer, GridRoutes> getRoutes() 
 	{
 		return routes;
 	}
@@ -173,9 +173,9 @@ public class World
 		for(Artifact d : depotsMap.values())
 			sb.append(d).append("\n");
 		
-		sb.append(placement).append("\n");
+		sb.append(layout).append("\n");
 		
-		for(MapRouting route : routes.values())
+		for(GridRoutes route : routes.values())
 			sb.append(route).append("\n");
 		
 		return sb.toString();

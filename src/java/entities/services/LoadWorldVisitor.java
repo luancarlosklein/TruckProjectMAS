@@ -8,8 +8,8 @@ import java.util.Scanner;
 
 import entities.model.Artifact;
 import entities.model.Helper;
-import entities.model.MapElements;
-import entities.model.MapPlacing;
+import entities.model.WorldElements;
+import entities.model.GridLayout;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
@@ -39,44 +39,44 @@ public class LoadWorldVisitor implements WorldVisitor
 				{
 					String fields[] = data.split(";");
 					char type = fields[0].charAt(0);
-					int x = Integer.parseInt(fields[1]);
-					int y = Integer.parseInt(fields[2]);
+					int y = Integer.parseInt(fields[1]);
+					int x = Integer.parseInt(fields[2]);
 					
-					if(type == MapElements.WORKER.getContent())
+					if(type == WorldElements.WORKER.getContent())
 					{
 						Worker w = new Worker(x, y);				
 						world.getWorkerMap().put(w.getId(), w);
 					}
 					
-					else if(type == MapElements.HELPER.getContent())
+					else if(type == WorldElements.HELPER.getContent())
 					{
 						Helper h = new Helper(x, y);
 						world.getHelperMap().put(h.getId(), h);
 					}
 					
-					else if(type == MapElements.TRUCKER.getContent())
+					else if(type == WorldElements.TRUCKER.getContent())
 					{
 						Truck t = new Truck(x, y);
 						world.getTruckMap().put(t.getId(), t);
 					}
 					
-					else if(type == MapElements.GARAGE.getContent())
+					else if(type == WorldElements.GARAGE.getContent())
 					{
-						Artifact g = new Artifact(x, y, MapElements.GARAGE);
+						Artifact g = new Artifact(x, y, WorldElements.GARAGE);
 						g.setName("Garage" + gCount++);
 						world.getGarageMap().put(g.getId(), g);
 					}
 					
-					else if(type == MapElements.RECHARGE_POINT.getContent())
+					else if(type == WorldElements.RECHARGE_POINT.getContent())
 					{
-						Artifact r = new Artifact(x, y, MapElements.RECHARGE_POINT);
+						Artifact r = new Artifact(x, y, WorldElements.RECHARGE_POINT);
 						r.setName("Recharge" + rCount++);
 						world.getRechargeMap().put(r.getId(), r);
 					}
 					
-					else if(type == MapElements.DEPOT.getContent())
+					else if(type == WorldElements.DEPOT.getContent())
 					{
-						Artifact d = new Artifact(x, y, MapElements.DEPOT);
+						Artifact d = new Artifact(x, y, WorldElements.DEPOT);
 						d.setName("Depot" + dCount++);
 						world.getDepotsMap().put(d.getId(), d);
 					}
@@ -90,16 +90,16 @@ public class LoadWorldVisitor implements WorldVisitor
 			file.close();
 			
 			int width = lines.get(0).split(" ").length;
-			int length = lines.size();
+			int height = lines.size();
 			
-			world.setPlacement(new MapPlacing(width, length));
+			world.setLayout(new GridLayout(width, height));
 			
-			for(int i = 0; i < width; i++)
+			for(int i = 0; i < height; i++)
 			{
 				String cells[] = lines.get(i).split(" ");
 				
-				for(int j = 0; j < length; j++)
-					world.getPlacement().getMatrix()[i][j] = cells[j].charAt(0);
+				for(int j = 0; j < width; j++)
+					world.getLayout().getMatrix()[i][j] = cells[j].charAt(0);
 			}
 		}
 		catch (FileNotFoundException e) 
