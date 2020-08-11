@@ -212,10 +212,10 @@ public class WorldModel extends GridWorldModel
 		if(currentTarget == null || currentRoute == null)
 			throw new Error("Target doesn't exist, or it is impossible to find a route to the target.");
 		
-		//-----------------------------------------------
-		System.out.println(currentRoute);
-        System.out.println("agent pos: " + agent.getPos());
-        //-----------------------------------------------
+//		//-----------------------------------------------
+//		System.out.println(currentRoute);
+//        System.out.println("agent pos: " + agent.getPos());
+//        //-----------------------------------------------
         
 		// Computing the new direction of agent
         int x = agent.getPos().x;

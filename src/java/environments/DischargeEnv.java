@@ -1,7 +1,5 @@
 package environments;
 
-import java.util.Random;
-
 import entities.model.Artifact;
 import entities.model.Helper;
 import entities.model.Truck;
@@ -30,7 +28,6 @@ public class DischargeEnv extends Environment
 				WordViewer view  = new WordViewer(model, "Discharge Truck", 700);
 				model.setView(view);
 			}
-			updatePercepts();
 		} 
 		catch (Exception e) 
 		{
@@ -44,68 +41,26 @@ public class DischargeEnv extends Environment
 	}
 	
 	// Setting the initial perceptions
-	public void startPercepts()
-	{
-		Random rand = new Random();
-		
+	private void startPercepts()
+	{		
 		// Start manager
-		clearPercepts("manager");	
+		clearPercepts("manager");
 		
 		// Start truckers
 		for(Truck t : model.getWorld().getTruckMap().values())
-		{
 			addPercept("manager", Literal.parseLiteral("add_trucker(" + t.getName() + ")"));
-			
-			clearPercepts(t.getName());
-			addPercept(t.getName(), Literal.parseLiteral("id(" + t.getId() + ")"));			
-			addPercept(t.getName(), Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
-			addPercept(t.getName(), Literal.parseLiteral("qtdThings(" + t.getQtdThings() + ")"));
-		}
-		
-		// Start workers
-		for(Worker w : model.getWorld().getWorkerMap().values())
-		{
-			addPercept("manager", Literal.parseLiteral("add_worker("+ w.getName() +")"));
-			
-			clearPercepts(w.getName());
-			addPercept(w.getName(), Literal.parseLiteral("id(" + w.getId() + ")"));
-			addPercept(w.getName(), Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
-			addPercept(w.getName(), Literal.parseLiteral("batery(" + w.getBattery() +")"));
-			addPercept(w.getName(), Literal.parseLiteral("qtdGoal(" + w.getQtdGoals() +")"));
-			addPercept(w.getName(), Literal.parseLiteral("jumbled(" + w.getJumbled() +")"));
-			addPercept(w.getName(), Literal.parseLiteral("truckStatus(full)"));
-			addPercept(w.getName(), Literal.parseLiteral("hand_in(none)"));
-			addPercept(w.getName(), Literal.parseLiteral("dropLocal(none)"));
-			addPercept(w.getName(), Literal.parseLiteral("qtdDischarge(0)"));
-			addPercept(w.getName(), Literal.parseLiteral("capacityHelper(0)"));
-			addPercept(w.getName(), Literal.parseLiteral("helper(true)"));
-			addPercept(w.getName(), Literal.parseLiteral("busy(false)"));
-			addPercept(w.getName(), Literal.parseLiteral("time(0)"));
-			
-			for(Truck t : model.getWorld().getTruckMap().values())
-			{
-				addPercept(w.getName(), Literal.parseLiteral("plays(initiator," + t.getName() + ")"));
-				addPercept(w.getName(), Literal.parseLiteral("posTruck(" + t.getPos().x + "," + t.getPos().y + ")"));
-				addPercept(w.getName(), Literal.parseLiteral("qtdTruck(" + t.getName() + "," + t.getQtdThings() + ")"));
-				
-				if(rand.nextDouble() <= 0.6)
-					addPercept(w.getName(), Literal.parseLiteral("truckGet(" + t.getName() + ")"));	
-			}
-		}
 		
 		// Start helpers
 		for(Helper h : model.getWorld().getHelperMap().values())
-		{
 			addPercept("manager", Literal.parseLiteral("add_helper("+ h.getName() +")"));
-			
-			clearPercepts(h.getName());
-			addPercept(h.getName(), Literal.parseLiteral("id(" + h.getId() + ")"));
-			addPercept(h.getName(), Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
-		}
+		
+		// Start workers
+		for(Worker w : model.getWorld().getWorkerMap().values())
+			addPercept("manager", Literal.parseLiteral("add_worker("+ w.getName() +")"));
 	}
 	
 	// update perceptions
-	public void updatePercepts() 
+	private void updatePercepts() 
 	{					
 		// update the location of each worker
 		for(Worker w : model.getWorld().getWorkerMap().values())

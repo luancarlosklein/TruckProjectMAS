@@ -6,5 +6,5 @@ MAS discharge_truck
 		manager;
 		
 	aslSourcePath:
-		"src/asl";
+		"src/asl/agents";
 }
