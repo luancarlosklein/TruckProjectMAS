@@ -29,7 +29,6 @@ public class LoadWorldVisitor implements WorldVisitor
 			Scanner file = new Scanner(new File("maps/map.txt"));
 			List<String> lines = new ArrayList<String>();
 			boolean header = true;
-			int gCount = 0, rCount = 0, dCount = 0;
 			
 			while (file.hasNextLine()) 
 			{
@@ -63,21 +62,18 @@ public class LoadWorldVisitor implements WorldVisitor
 					else if(type == WorldElements.GARAGE.getContent())
 					{
 						Artifact g = new Artifact(x, y, WorldElements.GARAGE);
-						g.setName("Garage" + gCount++);
 						world.getGarageMap().put(g.getId(), g);
 					}
 					
 					else if(type == WorldElements.RECHARGE_POINT.getContent())
 					{
 						Artifact r = new Artifact(x, y, WorldElements.RECHARGE_POINT);
-						r.setName("Recharge" + rCount++);
 						world.getRechargeMap().put(r.getId(), r);
 					}
 					
 					else if(type == WorldElements.DEPOT.getContent())
 					{
 						Artifact d = new Artifact(x, y, WorldElements.DEPOT);
-						d.setName("Depot" + dCount++);
 						world.getDepotsMap().put(d.getId(), d);
 					}
 				}

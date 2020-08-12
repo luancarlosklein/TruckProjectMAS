@@ -30,9 +30,10 @@ public class initializeTruck extends DefaultInternalAction
     {
     	Truck t = truckMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
+    	t.setQtdThings(10);
+    	
 		ts.getAg().addBel(Literal.parseLiteral("id(" + t.getId() + ")"));			
 		ts.getAg().addBel(Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
-		ts.getAg().addBel(Literal.parseLiteral("qtdThings(" + t.getQtdThings() + ")"));
   
         return true;
     }

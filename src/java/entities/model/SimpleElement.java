@@ -45,7 +45,8 @@ public abstract class SimpleElement
 	}
 
 	public void setPos(Location pos) {
-		this.pos = pos;
+		this.pos.x = pos.x;
+		this.pos.y = pos.y;
 	}
 
 	@Override

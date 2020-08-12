@@ -1,3 +1,6 @@
 /modules/
 /discharge_truck/
 /agents/
+/environments/
+/entities/
+/actions/

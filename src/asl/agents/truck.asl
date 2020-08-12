@@ -5,11 +5,11 @@
 
 /* BEHAVIOR *************/
 
-start(true).
+!start(true).
 
 /**
  * Set the initial beliefs of trucker
  */
-+start(true): getMyName(Name)
++!start(true): getMyName(Name)
 	<-	actions.initializeTruck(Name)
 		!register("requester_trucker").

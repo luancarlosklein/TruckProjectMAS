@@ -8,6 +8,8 @@ getMyName(Name) :- .my_name(Name).
 // Get agent's id
 getMyId(Id) :- id(Id).
 
+// Get agent's position(x, y)
+getMyPosition(X, Y) :- pos(X, Y).
 
 /* PLANS *************/
 
@@ -15,16 +17,23 @@ getMyId(Id) :- id(Id).
  * Move the agent from an initial position to a target position.
  * The agents moves step by step (a position at time). 
  * His movement is shown on the screen when the 'gui' option is enable.
+ * @param Target: the target position (where the agent wants to go)
  */
-+move(Target): true
-	<-	!at(Target).
-	
-@m1
-+!at(Target): at(Target) & getMyName(Name) & getMyId(Id) 
-	<-	.print("I arrived!", Name, Id).
++!at(Target): at(Target) & getMyName(Me)
+	<-	actions.updateAgentPosition(Me);
+		.print("I arrived at the ", Target).
 
 //Take a step towards
-@m2
-+!at(Target): not at(Target)
++!at(Target): not at(Target) & getMyName(Me)
 	<-	move_towards(Target);
+		actions.updateAgentPosition(Me);
 		!at(Target).
+
+/**
+ * Considering a list of possible targets, this plan finds the nearest target from agent.
+ * @param Tlist: list of targets
+ * @param Target: the nearest target
+ */	
++!getNearesTarget(Tlist, Target): getMyPosition(X, Y)
+	<-	actions.findTheNearest(Tlist, X, Y, Target);
+		.print("The nearest target: " , Target).

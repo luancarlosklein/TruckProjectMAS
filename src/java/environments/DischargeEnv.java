@@ -2,6 +2,7 @@ package environments;
 
 import entities.model.Artifact;
 import entities.model.Helper;
+import entities.model.SimpleElement;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
@@ -60,102 +61,49 @@ public class DischargeEnv extends Environment
 	}
 	
 	// update perceptions
-	private void updatePercepts() 
+	private void updatePercepts(SimpleElement agent) 
 	{					
-		// update the location of each worker
-		for(Worker w : model.getWorld().getWorkerMap().values())
-		{
-			clearPercepts(w.getName());
-			boolean isOverlapped = false;
-			
-			for(Truck t : model.getWorld().getTruckMap().values())
-			{
-				if (w.getPos().equals(t.getPos())) 
-				{
-					addPercept(w.getName(), Literal.parseLiteral("at(" + t.getName() + ")")); 
-	                isOverlapped = true;
-				}
-			}
-			
-			for(Artifact g : model.getWorld().getGarageMap().values())
-			{
-				if (w.getPos().equals(g.getPos())) 
-				{
-					addPercept(w.getName(), Literal.parseLiteral("at(" + g.getName() + ")")); 
-	                isOverlapped = true;
-				}
-			}
-			
-			for(Artifact r : model.getWorld().getRechargeMap().values())
-			{
-				if (w.getPos().equals(r.getPos())) 
-				{
-					addPercept(w.getName(), Literal.parseLiteral("at(" + r.getName() + ")")); 
-	                isOverlapped = true;
-				}
-			}
-			
-			for(Artifact d : model.getWorld().getDepotsMap().values())
-			{
-				if (w.getPos().equals(d.getPos())) 
-				{
-					addPercept(w.getName(), Literal.parseLiteral("at(" + d.getName() + ")")); 
-	                isOverlapped = true;
-				}
-			}
-			
-			if(!isOverlapped)
-				addPercept(w.getName(), Literal.parseLiteral("at(somewhere)"));
-		}		
+		clearPercepts(agent.getName());
+		boolean isOverlapped = false;
 		
-		// update the location of each helper
-		for(Helper h : model.getWorld().getHelperMap().values())
-		{	
-			clearPercepts(h.getName());
-			boolean isOverlapped = false;
-			
-			for(Worker w : model.getWorld().getWorkerMap().values())
+		for(Truck t : model.getWorld().getTruckMap().values())
+		{
+			if (agent.getPos().equals(t.getPos())) 
 			{
-				for(Truck t : model.getWorld().getTruckMap().values())
-				{					
-					if(w.getPos().equals(t.getPos()))
-					{
-						addPercept(h.getName(), Literal.parseLiteral("at(" + t.getName() + ")"));
-						isOverlapped = true;
-					}
-				}
-				
-				for(Artifact g : model.getWorld().getGarageMap().values())
-				{
-					if (w.getPos().equals(g.getPos())) 
-					{
-						addPercept(h.getName(), Literal.parseLiteral("at(" + g.getName() + ")")); 
-		                isOverlapped = true;
-					}
-				}
-				
-				for(Artifact r : model.getWorld().getRechargeMap().values())
-				{
-					if (w.getPos().equals(r.getPos())) 
-					{
-						addPercept(h.getName(), Literal.parseLiteral("at(" + r.getName() + ")")); 
-		                isOverlapped = true;
-					}
-				}
-				
-				for(Artifact d : model.getWorld().getDepotsMap().values())
-				{
-					if (w.getPos().equals(d.getPos())) 
-					{
-						addPercept(h.getName(), Literal.parseLiteral("at(" + d.getName() + ")")); 
-		                isOverlapped = true;
-					}
-				}
-				
-				if(!isOverlapped)
-					addPercept(h.getName(), Literal.parseLiteral("at(somewhere)"));
+				addPercept(agent.getName(), Literal.parseLiteral("at(" + t.getName() + ")"));
+                isOverlapped = true;
 			}
 		}
+		
+		for(Artifact g : model.getWorld().getGarageMap().values())
+		{
+			if (agent.getPos().equals(g.getPos())) 
+			{
+				addPercept(agent.getName(), Literal.parseLiteral("at(" + g.getName() + ")"));
+                isOverlapped = true;
+			}
+		}
+		
+		for(Artifact r : model.getWorld().getRechargeMap().values())
+		{
+			if (agent.getPos().equals(r.getPos())) 
+			{
+				addPercept(agent.getName(), Literal.parseLiteral("at(" + r.getName() + ")"));			
+                isOverlapped = true;
+			}
+		}
+		
+		for(Artifact d : model.getWorld().getDepotsMap().values())
+		{
+			if (agent.getPos().equals(d.getPos())) 
+			{
+				addPercept(agent.getName(), Literal.parseLiteral("at(" + d.getName() + ")"));
+                isOverlapped = true;
+			}
+		}
+		
+		if(!isOverlapped)
+			addPercept(agent.getName(), Literal.parseLiteral("at(somewhere)"));
 	}
 	
 	// Defining the actions that can be performed by agents
@@ -169,7 +117,8 @@ public class DischargeEnv extends Environment
         	
         	if(model.moveTowards(agentId, model.getElement(targetId).getPos()))
         	{
-        		updatePercepts();
+        		updatePercepts(model.getElement(agentId));
+        		
                 try {Thread.sleep(400);} 
                 catch (InterruptedException e) 
                 {

@@ -15,15 +15,15 @@ public class Artifact extends SimpleElement
 		switch (type)
 		{
 			case GARAGE:
-				this.name = "Garage";
+				this.name = "garage_" + this.getId();
 				break;
 				
 			case RECHARGE_POINT:
-				this.name = "Recharge";
+				this.name = "recharge_" + this.getId();
 				break;
 				
 			case DEPOT:
-				this.name = "Depot";
+				this.name = "depot_" + this.getId();
 				break;
 				
 			default:

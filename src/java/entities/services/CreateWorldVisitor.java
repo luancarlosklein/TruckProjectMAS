@@ -60,8 +60,7 @@ public class CreateWorldVisitor implements WorldVisitor
 		for(int i = 0; i < QTD_GARAGES * gridSize; i++)
 		{
 			Location pos = getFreePosition(world);
-			Artifact g = new Artifact(pos.x, pos.y, WorldElements.GARAGE);
-			g.setName("Garage" + i);
+			Artifact g = new Artifact(pos.x, pos.y, WorldElements.GARAGE);			
 			world.getLayout().getMatrix()[pos.y][pos.x] = WorldElements.GARAGE.getContent();
 			world.getGarageMap().put(g.getId(), g);
 		}
@@ -71,7 +70,6 @@ public class CreateWorldVisitor implements WorldVisitor
 		{
 			Location pos = getFreePosition(world);
 			Artifact r = new Artifact(pos.x, pos.y, WorldElements.RECHARGE_POINT);
-			r.setName("Recharge" + i);
 			world.getLayout().getMatrix()[pos.y][pos.x] = WorldElements.RECHARGE_POINT.getContent();
 			world.getRechargeMap().put(r.getId(), r);
 		}
@@ -81,7 +79,6 @@ public class CreateWorldVisitor implements WorldVisitor
 		{
 			Location pos = getFreePosition(world);
 			Artifact d = new Artifact(pos.x, pos.y, WorldElements.DEPOT);
-			d.setName("Depot" + i);
 			world.getLayout().getMatrix()[pos.y][pos.x] = WorldElements.DEPOT.getContent();
 			world.getRechargeMap().put(d.getId(), d);
 		}
