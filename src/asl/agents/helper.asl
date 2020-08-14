@@ -13,8 +13,8 @@
 +!start(true): getMyName(Me)
 	<-	actions.initializeHelper(Me);
 		!register("provider_helper", "requester_worker");
-		+truck(truck_0);
-		+depot(depot_5);
+		+truck(truck_2);
+		+depot(depot_4);
 		+busy(true);
 		!goToTruck.
 
@@ -75,7 +75,7 @@
 /**
  * Check if the battery level of agent is low 
  */
-+!checkBattery: battery(Battery) & op_cost(Cost)
++!checkBattery: battery(Battery) & energy_cost(Cost)
 	<-	Blevel = Battery - Cost;
 		-+battery(Blevel);
 		
@@ -102,6 +102,10 @@
 			.wait(6000);
 		}
 		.print("My safety count is: ", C).
+
++!checkBoxDroped.
+// if the box is fragile, it must decrease 1 of the amount of droped boxes off.
+// otherwise the time penalization must be applied.
 
 /**
  * Answer to call for proposal

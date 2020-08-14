@@ -7,12 +7,12 @@ import java.util.List;
 import java.util.Scanner;
 
 import entities.model.Artifact;
-import entities.model.Helper;
-import entities.model.WorldElements;
 import entities.model.GridLayout;
+import entities.model.Helper;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
+import entities.model.WorldElements;
 import entities.model.WorldVisitor;
 
 /**
@@ -37,44 +37,51 @@ public class LoadWorldVisitor implements WorldVisitor
 				if(!data.equals("$") && header) 
 				{
 					String fields[] = data.split(";");
-					char type = fields[0].charAt(0);
+					WorldElements type = WorldElements.valueOf(fields[0]);
+					
 					int y = Integer.parseInt(fields[1]);
 					int x = Integer.parseInt(fields[2]);
 					
-					if(type == WorldElements.WORKER.getContent())
+					switch (type) 
 					{
-						Worker w = new Worker(x, y);				
-						world.getWorkerMap().put(w.getId(), w);
-					}
-					
-					else if(type == WorldElements.HELPER.getContent())
-					{
-						Helper h = new Helper(x, y);
-						world.getHelperMap().put(h.getId(), h);
-					}
-					
-					else if(type == WorldElements.TRUCKER.getContent())
-					{
-						Truck t = new Truck(x, y);
-						world.getTruckMap().put(t.getId(), t);
-					}
-					
-					else if(type == WorldElements.GARAGE.getContent())
-					{
-						Artifact g = new Artifact(x, y, WorldElements.GARAGE);
-						world.getGarageMap().put(g.getId(), g);
-					}
-					
-					else if(type == WorldElements.RECHARGE_POINT.getContent())
-					{
-						Artifact r = new Artifact(x, y, WorldElements.RECHARGE_POINT);
-						world.getRechargeMap().put(r.getId(), r);
-					}
-					
-					else if(type == WorldElements.DEPOT.getContent())
-					{
-						Artifact d = new Artifact(x, y, WorldElements.DEPOT);
-						world.getDepotsMap().put(d.getId(), d);
+						case WORKER:
+							Worker w = new Worker(x, y);				
+							world.getWorkerMap().put(w.getId(), w);	
+							break;
+
+						case HELPER:
+							Helper h = new Helper(x, y);
+							h.setBattery(Double.parseDouble(fields[3]));
+							h.setEnergyCost(Double.parseDouble(fields[4]));
+							h.setCapacity(Integer.parseInt(fields[5]));
+							h.setVelocity(Long.parseLong(fields[6]));
+							h.setDexterity(Double.parseDouble(fields[7]));
+							h.setFailureProb(Double.parseDouble(fields[8]));
+							h.setSafetyCount(Integer.parseInt(fields[9]));
+							world.getHelperMap().put(h.getId(), h);
+							break;
+						
+						case TRUCKER:
+							Truck t = new Truck(x, y);
+							world.getTruckMap().put(t.getId(), t);
+							break;
+						
+						case GARAGE:
+							Artifact g = new Artifact(x, y, WorldElements.GARAGE);
+							world.getGarageMap().put(g.getId(), g);
+							break;
+							
+						case RECHARGE_POINT:
+							Artifact r = new Artifact(x, y, WorldElements.RECHARGE_POINT);
+							world.getRechargeMap().put(r.getId(), r);
+							break;
+							
+						case DEPOT:
+							Artifact d = new Artifact(x, y, WorldElements.DEPOT);
+							world.getDepotsMap().put(d.getId(), d);
+							break;
+						default:
+							throw new Exception("Element is not valid: " + type);
 					}
 				}
 				else
@@ -101,6 +108,9 @@ public class LoadWorldVisitor implements WorldVisitor
 		catch (FileNotFoundException e) 
 		{
 			System.out.println("An error has occurred to open the file.");
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			e.printStackTrace();
 		}
 	}

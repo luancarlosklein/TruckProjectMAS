@@ -19,14 +19,16 @@ getMyPosition(X, Y) :- pos(X, Y).
  * His movement is shown on the screen when the 'gui' option is enable.
  * @param Target: the target position (where the agent wants to go)
  */
-+!at(Target): at(Target) & getMyName(Me)
++!at(Target): at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	actions.updateAgentPosition(Me);
-		.print("I arrived at the ", Target).
+		.print("I arrived at the ", Target);
+		.wait(Velocity).
 
 //Take a step towards
-+!at(Target): not at(Target) & getMyName(Me)
++!at(Target): not at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	move_towards(Target);
 		actions.updateAgentPosition(Me);
+		.wait(Velocity);
 		!at(Target).
 
 /**

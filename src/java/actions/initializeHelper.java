@@ -22,24 +22,21 @@ public class initializeHelper extends DefaultInternalAction
 	
 	/**
 	 * Action's arguments (from args parameter):
-	 * args[0]: trucker's name
+	 * args[0]: helper's name
 	 */
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
     	Helper h = helperMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
-    	h.setCapacity(3);
-    	h.setEnergyCost(0.5);
-    	h.setFailureProb(0.8);
-    	h.setSafetyCount(2);
-    	
-    	ts.getAg().addBel(Literal.parseLiteral("id(" + h.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
-    	ts.getAg().addBel(Literal.parseLiteral("op_cost(" + h.getEnergyCost() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("capacity(" + h.getCapacity() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("velocity(" + h.getVelocity() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("battery(" + h.getBattery() + ")"));    	
+    	ts.getAg().addBel(Literal.parseLiteral("energy_cost(" + h.getEnergyCost() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("failure_prob(" + h.getFailureProb() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("safety_count(" + h.getSafetyCount() +")"));
-    	ts.getAg().addBel(Literal.parseLiteral("battery(1.0)"));
+    	ts.getAg().addBel(Literal.parseLiteral("dexterity(" + h.getDexterity() +")"));
     	
     	for(Artifact g: garageMap.values())
     		ts.getAg().addBel(Literal.parseLiteral("garage(" + g.getName() +")"));

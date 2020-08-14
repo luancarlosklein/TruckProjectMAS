@@ -5,6 +5,8 @@ import java.util.Random;
 import entities.model.Artifact;
 import entities.model.Constants;
 import entities.model.Helper;
+import entities.model.HelperDurabilityClass;
+import entities.model.HelperExpertiseClass;
 import entities.model.WorldElements;
 import entities.model.Truck;
 import entities.model.Worker;
@@ -18,7 +20,7 @@ import jason.environment.grid.Location;
 
 public class CreateWorldVisitor implements WorldVisitor 
 {	
-	// THESE VARIABLES DEFINE THE AMOUNT OF AGENTS AND ARTIFACTS OF THE WORLD.
+	// THESE VARIABLES DEFINE THE AMOUNT OF AGENTS AND ARTIFACTS AT THE WORLD.
 	private final double QTD_WORKERS = 0.03;
 	private final double QTD_HELPERS = 0.05;
 	private final double QTD_TRUCKERS = 0.03;
@@ -26,13 +28,16 @@ public class CreateWorldVisitor implements WorldVisitor
 	private final double QTD_RECHARGES = 0.02;
 	private final double QTD_DEPOTS = 0.02;
 	
+	private	HelperBuilder hBuilder = new HelperBuilder();
+	
 	/**
 	 * This method defines the initial world configuration.
 	 * In this process, agents and artifacts are created and placed into the map.
 	 * @param world: this parameter represents a state of world.
 	 */
 	public void visit(World world) 
-	{		
+	{	
+		Random rand = new Random();
 		int gridSize = world.getLayout().getWidth() * world.getLayout().getHeight();
 		
 		// Initializing the map randomly
@@ -50,8 +55,48 @@ public class CreateWorldVisitor implements WorldVisitor
 		// Placing the helpers
 		for(int i = 0; i < QTD_HELPERS * gridSize; i++)
 		{
+			Helper h = null;
 			Location pos = getFreePosition(world);
-			Helper h = new Helper(pos.x, pos.y);
+			
+			switch (rand.nextInt(9)) 
+			{
+				case 0:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.LOW_EXPERTISE, HelperDurabilityClass.LOW_DURABILITY);
+					break;
+
+				case 1:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.LOW_EXPERTISE, HelperDurabilityClass.MIDDLE_DURABILITY);
+					break;
+				
+				case 2:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.LOW_EXPERTISE, HelperDurabilityClass.HIGH_DURABILITY);
+					break;
+					
+				case 3:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.MIDDLE_EXPERTISE, HelperDurabilityClass.LOW_DURABILITY);
+					break;
+					
+				case 4:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.MIDDLE_EXPERTISE, HelperDurabilityClass.MIDDLE_DURABILITY);
+					break;
+					
+				case 5:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.MIDDLE_EXPERTISE, HelperDurabilityClass.HIGH_DURABILITY);
+					break;
+					
+				case 6:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.HIGH_EXPERTISE, HelperDurabilityClass.LOW_DURABILITY);
+					break;
+					
+				case 7:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.HIGH_EXPERTISE, HelperDurabilityClass.MIDDLE_DURABILITY);
+					break;
+					
+				case 8:
+					h = hBuilder.build(pos.x, pos.y, rand.nextInt(5) + 1, HelperExpertiseClass.HIGH_EXPERTISE, HelperDurabilityClass.HIGH_DURABILITY);
+					break;
+			}
+			
 			world.getLayout().getMatrix()[pos.y][pos.x] = WorldElements.HELPER.getContent();
 			world.getHelperMap().put(h.getId(), h);
 		}
@@ -80,7 +125,7 @@ public class CreateWorldVisitor implements WorldVisitor
 			Location pos = getFreePosition(world);
 			Artifact d = new Artifact(pos.x, pos.y, WorldElements.DEPOT);
 			world.getLayout().getMatrix()[pos.y][pos.x] = WorldElements.DEPOT.getContent();
-			world.getRechargeMap().put(d.getId(), d);
+			world.getDepotsMap().put(d.getId(), d);
 		}
  		
 		// Placing the truckers
