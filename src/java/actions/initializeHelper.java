@@ -29,10 +29,17 @@ public class initializeHelper extends DefaultInternalAction
     {
     	Helper h = helperMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
-    	h.setCapacity(4);
+    	h.setCapacity(3);
+    	h.setEnergyCost(0.5);
+    	h.setFailureProb(0.8);
+    	h.setSafetyCount(2);
     	
     	ts.getAg().addBel(Literal.parseLiteral("id(" + h.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("op_cost(" + h.getEnergyCost() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("failure_prob(" + h.getFailureProb() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("safety_count(" + h.getSafetyCount() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("battery(1.0)"));
     	
     	for(Artifact g: garageMap.values())
     		ts.getAg().addBel(Literal.parseLiteral("garage(" + g.getName() +")"));

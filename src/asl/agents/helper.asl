@@ -40,6 +40,8 @@
 +!goToDepot: carrying(Qtd_boxes) & Qtd_boxes > 0 & depot(Depot)
 	<-	!at(Depot);
 		-+carrying(0);
+		!checkBattery;
+		!checkFailure;
 		!goToTruck.
 
 +!goToDepot: carrying(Qtd_boxes) & Qtd_boxes <= 0
@@ -49,19 +51,57 @@
 
 /**
  * The helper moves to the nearest garage from his current position
+ * When a helper arrives at a garage, he recharges his battery and receives maintenance
+ * In this case, the battery recharge and the maintenance process don't have cost for helper.
  */
 +!goToGarage
 	<-	.findall(garage(Name), garage(Name), Garages);
 		!getNearesTarget(Garages, Garage);	
-		!at(Garage).
+		!at(Garage);
+		-+safety_count(10);
+		-+battery(1.0).
 
 /**
  * The helper moves to the nearest recharge point from his current position
+ * If the helper stops his task to recharge, he is penalized. This process cost 2 seconds for helper.
  */
 +!goToRecharge
 	<-	.findall(recharge(Name), recharge(Name), Recharges);
 		!getNearesTarget(Recharges, Recharge);
-		!at(Recharge).
+		!at(Recharge);
+		.wait(2000);
+		-+battery(1.0).
+
+/**
+ * Check if the battery level of agent is low 
+ */
++!checkBattery: battery(Battery) & op_cost(Cost)
+	<-	Blevel = Battery - Cost;
+		-+battery(Blevel);
+		
+		if(Blevel <= 0)
+		{
+			.print("I don't have battery. I'm going to a recharge point.");
+			!goToRecharge;
+		}
+		.print("My battery level is: ", Blevel).
+
+/**
+ * Check if there is something is wrong (a failure)
+ * When the helper failures he goes to the garage, receives maintenance, and he is penalized at 6 seconds  
+ */
++!checkFailure: failure_prob(Probability) & safety_count(Count)
+	<-	.random(P);
+		C = Count - 1;
+		-+safety_count(C)
+		
+		if(P <= Probability & C <= 0)
+		{
+			.print("I broke, stopping to maintenance. I'm going to the garage.");
+			!goToGarage;
+			.wait(6000);
+		}
+		.print("My safety count is: ", C).
 
 /**
  * Answer to call for proposal
