@@ -118,13 +118,6 @@ public class DischargeEnv extends Environment
         	if(model.moveTowards(agentId, model.getElement(targetId).getPos()))
         	{
         		updatePercepts(model.getElement(agentId));
-        		
-//                try {Thread.sleep(400);} 
-//                catch (InterruptedException e) 
-//                {
-//                	System.out.println(e.getMessage());
-//					e.printStackTrace();
-//				}
         		return true;
         	}
         	return false;

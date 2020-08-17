@@ -37,9 +37,9 @@ public class takeBoxes extends DefaultInternalAction
 	    	int rest = t.getQtdThings() - h.getCapacity();
 	    	
 	    	// The helper takes the rest of boxes from truck
-	    	if(rest < 0)
+	    	if(rest <= 0)
 	    	{
-	    		ts.getAg().addBel(Literal.parseLiteral("carrying(" + t.getQtdThings() + ")"));
+	    		ts.getAg().addBel(Literal.parseLiteral("carrying(" + t.getQtdThings() + ")"));	    		
 	    		t.setQtdThings(0);
 	    	}
 	    	// The helper takes all possible boxes according with its capacity
@@ -53,6 +53,10 @@ public class takeBoxes extends DefaultInternalAction
     	{
     		// Inform that helper is not carrying any box
     		ts.getAg().addBel(Literal.parseLiteral("carrying(0)"));
+    		
+    		// Update the status of truck in the helper's mind
+    		ts.getAg().delBel(Literal.parseLiteral("empty_truck(_)"));
+    		ts.getAg().addBel(Literal.parseLiteral("empty_truck(true)"));
     		
     		// The helper is free to accept others contracts
     		ts.getAg().delBel(Literal.parseLiteral("busy(_)"));

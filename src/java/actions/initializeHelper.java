@@ -35,7 +35,7 @@ public class initializeHelper extends DefaultInternalAction
     	ts.getAg().addBel(Literal.parseLiteral("battery(" + h.getBattery() + ")"));    	
     	ts.getAg().addBel(Literal.parseLiteral("energy_cost(" + h.getEnergyCost() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("failure_prob(" + h.getFailureProb() +")"));
-    	ts.getAg().addBel(Literal.parseLiteral("safety_count(" + h.getSafetyCount() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("safety(" + h.getSafety() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("dexterity(" + h.getDexterity() +")"));
     	
     	for(Artifact g: garageMap.values())

@@ -8,7 +8,7 @@ public class Helper extends SimpleElement
 	private Double energyCost;		// Cost to move boxes from truck to depot.
 	private Double dexterity;		// Skill in performing a task, in this case, don't let the boxes fall down.
 	private Double failureProb;		// Probability of failure after the safety count arrives at 0.
-	private Integer safetyCount;	// Number of operations done by helper without failures (safety operations).
+	private Integer safety;			// Number of operations done by helper without failures (safety operations).
 	
 	public Helper(Integer posX, Integer posY) 
 	{
@@ -19,7 +19,7 @@ public class Helper extends SimpleElement
 		this.energyCost = 0.0;
 		this.dexterity = 0.0;
 		this.failureProb = 0.0;
-		this.safetyCount = 0;
+		this.safety = 0;
 		this.setName("helper_" + id);
 	}
 
@@ -83,14 +83,14 @@ public class Helper extends SimpleElement
 		this.failureProb = failureProb;
 	}
 
-	public Integer getSafetyCount() 
+	public Integer getSafety() 
 	{
-		return safetyCount;
+		return safety;
 	}
 
-	public void setSafetyCount(Integer safetyCount) 
+	public void setSafety(Integer safetyCount) 
 	{
-		this.safetyCount = safetyCount;
+		this.safety = safetyCount;
 	}
 	
 	public HelperDurabilityClass getDurabilityClass()
@@ -119,6 +119,6 @@ public class Helper extends SimpleElement
 		return "Helper ["+ super.toString() + ", capacity=" + capacity 
 				+ ", velocity=" + velocity + ", battery=" + battery 
 				+ ", energyCost=" + energyCost + ", dexterity=" + dexterity 
-				+ ", failureProb=" + failureProb + ", safetyCount=" + safetyCount + "]";
+				+ ", failureProb=" + failureProb + ", safetyCount=" + safety + "]";
 	}
 }

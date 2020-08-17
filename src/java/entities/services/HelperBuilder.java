@@ -14,7 +14,7 @@ public class HelperBuilder
 {
 	private Double dexterity;
 	private Double failureProb;
-	private Integer safetyCount;
+	private Integer safety;
 	
 	public HelperBuilder(){}
 	
@@ -41,7 +41,7 @@ public class HelperBuilder
 		
 		helper.setDexterity(this.dexterity);
 		helper.setFailureProb(this.failureProb);
-		helper.setSafetyCount(this.safetyCount); 
+		helper.setSafety(this.safety); 
 		
 		return helper;
 	}
@@ -84,7 +84,7 @@ public class HelperBuilder
 			 */
 			case LOW_DURABILITY:
 				this.failureProb = 0.7 + (1.0 - 0.7) * rand.nextDouble();
-				this.safetyCount = 5;
+				this.safety = 5;
 				break;
 			
 			/*
@@ -93,7 +93,7 @@ public class HelperBuilder
 			 */
 			case MIDDLE_DURABILITY:
 				this.failureProb = 0.4 + (7.0 - 0.4) * rand.nextDouble();
-				this.safetyCount = 10;
+				this.safety = 10;
 				break;
 				
 			/*
@@ -102,7 +102,7 @@ public class HelperBuilder
 			 */
 			case HIGH_DURABILITY:
 				this.failureProb = 0.0 + (4.0 - 0.0) * rand.nextDouble();
-				this.safetyCount = 15;
+				this.safety = 15;
 				break;
 
 			default:

@@ -32,8 +32,10 @@ public class initializeTruck extends DefaultInternalAction
     	
     	t.setQtdThings(10);
     	
-		ts.getAg().addBel(Literal.parseLiteral("id(" + t.getId() + ")"));			
+    	ts.getAg().addBel(Literal.parseLiteral("id(" + t.getId() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + t.getQtdThings() + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
+		ts.getAg().addBel(Literal.parseLiteral("cargo_type(" + t.getCargoType().name().toLowerCase() + ")"));
   
         return true;
     }

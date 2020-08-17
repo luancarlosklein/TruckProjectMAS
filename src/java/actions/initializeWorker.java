@@ -27,12 +27,11 @@ public class initializeWorker extends DefaultInternalAction {
     {
     	Worker w = workerMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
-    	ts.getAg().addBel(Literal.parseLiteral("id(" + w.getId() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("specialization(" + w.getSpecialization().name().toLowerCase() +")"));
     
     	for(Artifact d: depotMap.values())
     		ts.getAg().addBel(Literal.parseLiteral("depot(" + d.getName() +")"));
-		
 		
         return true;
     }

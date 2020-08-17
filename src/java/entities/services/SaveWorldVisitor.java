@@ -44,7 +44,7 @@ public class SaveWorldVisitor implements WorldVisitor
 				sbHeader.append(h.getVelocity()).append(";");
 				sbHeader.append(h.getDexterity()).append(";");
 				sbHeader.append(h.getFailureProb()).append(";");
-				sbHeader.append(h.getSafetyCount()).append("\n");
+				sbHeader.append(h.getSafety()).append("\n");
 			}
 			
 			for(Truck t : world.getTruckMap().values())

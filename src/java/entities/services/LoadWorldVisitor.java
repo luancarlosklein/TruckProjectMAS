@@ -57,7 +57,7 @@ public class LoadWorldVisitor implements WorldVisitor
 							h.setVelocity(Long.parseLong(fields[6]));
 							h.setDexterity(Double.parseDouble(fields[7]));
 							h.setFailureProb(Double.parseDouble(fields[8]));
-							h.setSafetyCount(Integer.parseInt(fields[9]));
+							h.setSafety(Integer.parseInt(fields[9]));
 							world.getHelperMap().put(h.getId(), h);
 							break;
 						
