@@ -16,7 +16,8 @@
  * */         
 +!register(Role, Initiator): true
 	<-	.df_register(Role);
-		.df_subscribe(Initiator).
+		.df_subscribe(Initiator);
+.
 		
 /**
  * The agent lost the CNP, so he must clear his memory
@@ -24,4 +25,5 @@
  */
 @r2 +reject_proposal(CNPId)
    <- .print("I lost CNP ", CNPId, ".");
-      -proposal(CNPId, _, _).
+      -proposal(CNPId, _, _);
+ .

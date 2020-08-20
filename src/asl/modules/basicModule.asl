@@ -39,3 +39,14 @@ getMyPosition(X, Y) :- pos(X, Y).
 +!getNearesTarget(Tlist, Target): getMyPosition(X, Y)
 	<-	actions.findTheNearest(Tlist, X, Y, Target);
 		.print("The nearest target: " , Target).
+
+/**
+ * Considering a list of possible targets, this plan finds the nearest target from a position X, Y.
+ * @param Tlist: list of targets
+ * @param Src_X: the source position on X-axis.
+ * @param Src_Y: the source position on Y-axis.
+ * @param Target: the nearest target
+ */		
++!getNearesTarget(Tlist, Src_X, Src_Y, Target)
+	<-	actions.findTheNearest(Tlist, Src_X, Src_Y, Target);
+		.print("The nearest target: " , Target).

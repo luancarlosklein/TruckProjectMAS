@@ -16,7 +16,12 @@
 		?cargo_type(Task_type);
 		?qtd_things(Number_of_boxes);
 		!start_cnp("provider_worker", task(Task_type, Number_of_boxes)).
-		
+	
+/**
+ * Start the CNP.
+ * @param Providers: type or class of service providers.
+ * @param Task: a simple service description.
+ */	
 +!start_cnp(Providers, Task): getMyId(CNPId)
 	<-	+cnp_state(CNPId, propose);
 		!call(CNPId, Task, Providers, Participants_list);
@@ -29,4 +34,5 @@
       	.findall(offer(Offer, Ag), proposal(CNPId, Offer)[source(Ag)], Offers);
       	.length(Offers, N_offers);
       	.print("Number of offers received: ", N_offers);
+      	
       	.
