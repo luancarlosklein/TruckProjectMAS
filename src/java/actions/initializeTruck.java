@@ -36,6 +36,7 @@ public class initializeTruck extends DefaultInternalAction
     	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + t.getQtdThings() + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("cargo_type(" + t.getCargoType().name().toLowerCase() + ")"));
+		ts.getAg().addBel(Literal.parseLiteral("unload_time(" + t.getUnloadTime() + ")"));
   
         return true;
     }

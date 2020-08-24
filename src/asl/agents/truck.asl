@@ -15,7 +15,9 @@
 		!register("requester_trucker");
 		?cargo_type(Task_type);
 		?qtd_things(Number_of_boxes);
-		!start_cnp("provider_worker", task(Task_type, Number_of_boxes)).
+		?unload_time(Unload_time);
+		!start_cnp("provider_worker", task(Task_type, Number_of_boxes, Unload_time))
+.
 	
 /**
  * Start the CNP.
@@ -26,7 +28,8 @@
 	<-	+cnp_state(CNPId, propose);
 		!call(CNPId, Task, Providers, Participants_list);
 		!bid(CNPId, Participants_list);
-		!contract(CNPId).
+		!contract(CNPId)
+.
 
 @t_cont1[atomic]
 +!contract(CNPId): cnp_state(CNPId, propose)
@@ -35,4 +38,9 @@
       	.length(Offers, N_offers);
       	.print("Number of offers received: ", N_offers);
       	
-      	.
+      	// implement a better version of this.
+      	.send(Ag, tell, accept_proposal(CNPId))
+.
+
++report(Unload_Boxes, Time)[source(Woker)]
+	<-	.print(Unload_Boxes, Time).

@@ -7,15 +7,17 @@ public class Truck extends SimpleElement
 	private Integer qtdThings;		// Amount of boxes inside of the truck
 	private Boolean discharged;		// Informs when the truck is discharge
 	private CargoType cargoType;	// Defines the type of cargo transported by the truck
+	private Long unloadTime;		// The unloading time. How much time can be spend to unload the truck. 
 	private Boolean visible;		// Defines when the truck will be shown on the screen
 	
-	public Truck(Integer posX, Integer posY, Integer qtdThings, CargoType cargoType) 
+	public Truck(Integer posX, Integer posY, Integer qtdThings, CargoType cargoType, Long unloadTime) 
 	{
 		super(posX, posY);
 		this.qtdThings = qtdThings;
 		this.setName("truck_" + id);
 		this.cargoType = cargoType;
 		this.discharged = qtdThings <= 0;
+		this.unloadTime = unloadTime;
 		this.visible = true;
 	}
 	
@@ -25,6 +27,7 @@ public class Truck extends SimpleElement
 		this.qtdThings = 0;
 		this.setName("truck_" + id);
 		this.visible = true;
+		this.unloadTime = 100000l;
 		this.cargoType = CargoType.COMMON;
 		
 		Random rand = new Random();
@@ -69,9 +72,21 @@ public class Truck extends SimpleElement
 		this.visible = visible;
 	}
 
+	public Long getUnloadTime() 
+	{
+		return unloadTime;
+	}
+
+	public void setUnloadTime(Long unloadTime) 
+	{
+		this.unloadTime = unloadTime;
+	}
+
 	@Override
 	public String toString() 
 	{
-		return "Truck [" + super.toString() + ", qtdThings=" + qtdThings + ", discharged=" + discharged + ", cargoType=" + cargoType + "]";
+		return "Truck [" + super.toString() 
+		+ ", qtdThings=" + qtdThings + ", discharged=" + discharged 
+		+ ", cargoType=" + cargoType + ", unloadTime=" + unloadTime + "]";
 	}
 }

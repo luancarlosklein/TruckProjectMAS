@@ -1,4 +1,4 @@
-// The basic rules and plans used by agents 
+// The general rules and plans used by agents. 
 
 /* RULES *************/
 
@@ -11,6 +11,9 @@ getMyId(Id) :- id(Id).
 // Get agent's position(x, y)
 getMyPosition(X, Y) :- pos(X, Y).
 
+// Get the number of offers received
+getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId, Offer)[source(Agent)], Offers).
+
 /* PLANS *************/
 
 /**
@@ -22,31 +25,34 @@ getMyPosition(X, Y) :- pos(X, Y).
 +!at(Target): at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	actions.updateAgentPosition(Me);
 		.print("I arrived at the ", Target);
-		.wait(Velocity).
+		.wait(Velocity);
+.
 
 //Take a step towards
 +!at(Target): not at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	move_towards(Target);
 		actions.updateAgentPosition(Me);
 		.wait(Velocity);
-		!at(Target).
+		!at(Target);
+.
 
 /**
- * Considering a list of possible targets, this plan finds the nearest target from agent.
- * @param Tlist: list of targets
- * @param Target: the nearest target
+ * Get the most nearest target from agent considering a list of possible targets.
+ * @param Target_list: list of possible targets.
+ * @return Nearest_target: the nearest target from agent.
  */	
-+!getNearesTarget(Tlist, Target): getMyPosition(X, Y)
-	<-	actions.findTheNearest(Tlist, X, Y, Target);
-		.print("The nearest target: " , Target).
++!getTheNearestFromMe(Target_list, Nearest_target): getMyPosition(X, Y) 
+	<-	actions.findTheNearest(Target_list, X, Y, Nearest_target);
+		.print("The nearest target is: ", Nearest_target);
+.
 
 /**
- * Considering a list of possible targets, this plan finds the nearest target from a position X, Y.
- * @param Tlist: list of targets
- * @param Src_X: the source position on X-axis.
- * @param Src_Y: the source position on Y-axis.
- * @param Target: the nearest target
- */		
-+!getNearesTarget(Tlist, Src_X, Src_Y, Target)
-	<-	actions.findTheNearest(Tlist, Src_X, Src_Y, Target);
-		.print("The nearest target: " , Target).
+ * Get the most nearest target from a given position.
+ * @param Target_list: list of possible targets.
+ * @param pos(X, Y): the reference position for distance computation.
+ * @return Nearest_target: the nearest target from agent.
+ */
+ +!getTheNearestTarget(Target_list, pos(X, Y), Nearest_target)
+	<-	actions.findTheNearest(Target_list, X, Y, Nearest_target);
+		.print("The nearest target is: ", Nearest_target);
+.

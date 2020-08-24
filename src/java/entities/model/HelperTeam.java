@@ -1,41 +1,38 @@
 package entities.model;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+/*
+ * This class implements a team of helper, which is able to unload a truck.
+ * A team is represented by a Hash table, where each entry is represented as a Helper and its status.
+ * The status of a helper is defined either as true (hired to perform a service), or false (dispensed of service).
+ */
 public class HelperTeam 
 {
-	private int id;
-	private int teamSize;
-	private Map<Helper, Boolean> team;		// Helper and his status (false, not hired; true, hired)
+	private Integer id;
+	private Boolean ready;
+	private Integer teamSize;
+	private Map<Helper, Boolean> team;
 	
 	public HelperTeam(int id, int teamSize)
 	{
 		this.id = id;
+		this.ready = false;
 		this.teamSize = teamSize;
 		this.team = new HashMap<Helper, Boolean>();
-	}
-	
-	/**
-	 * Check if team is complete (reached maximum size).
-	 * @return true, if the team is complete.
-	 */
-	public boolean teamIsComplete()
-	{
-		return this.team.size() == this.teamSize;
 	}
 
 	/**
 	 * Add a helper to team.
-	 * 
-	 * @param helper: Helper to be added.
-	 * @return true, if the helper was added to team, otherwise returns false.
+	 * @param helper: helper to be added.
+	 * @return true, if the helper was added to team, otherwise, false.
 	 */
 	public boolean addHelper(Helper helper) 
 	{
-		if (teamIsComplete())
+		if (team.size() == teamSize)
 			return false;
 		else
 			team.put(helper, false);
@@ -46,7 +43,7 @@ public class HelperTeam
 	/**
 	 * Remove a helper from team.
 	 * @param helper: Helper to be removed.
-	 * @return true, if the helper was removed from team, otherwise returns false.
+	 * @return true, if the helper was removed from the team, otherwise, false.
 	 */
 	public boolean removeHelper(Helper helper)
 	{
@@ -57,29 +54,24 @@ public class HelperTeam
 	}
 	
 	/**
-	 * Change the status of helper for hired.
-	 * @param helper: the helper that will be his status changed.
+	 * Change the status of helper to hired.
+	 * @param helper: the helper that will have his status changed.
 	 */
-	public void contractMember(Helper helper)
+	public void hireMember(Helper helper)
 	{
 		if(team.containsKey(helper))
 			team.put(helper, true);
 		else
-			throw new IllegalAccessError("The helper wasn't in the team: " + helper.getName());
+			throw new IllegalAccessError("The helper is not in the team: " + helper.getName());
 	}
-	
+
 	/**
-	 * Create a list compound of names of members of a team.
-	 * @return true, if the team is complete.
+	 * Check if the team is full (the team has the maximum size).
+	 * @return true, if the team is full, otherwise, false.
 	 */
-	public List<String> getMemberNames()
+	public boolean teamIsFull()
 	{
-		List<String> memberNames = new ArrayList<String>();
-		
-		for(Helper member : team.keySet())
-			memberNames.add(member.getName());
-		
-		return memberNames;
+		return this.team.size() == this.teamSize;
 	}
 	
 	/**
@@ -88,12 +80,53 @@ public class HelperTeam
 	 */
 	public boolean teamIsReady()
 	{
+		if(ready)
+			return true;
+		
 		for(Helper helper : team.keySet())
 		{
 			if(!team.get(helper))
 				return false;
 		}
 		return true;
+	}
+	
+	/**
+	 * @return a set of all members of team.
+	 */
+	public Set<Helper> getMembers()
+	{
+		return team.keySet();
+	}
+	
+	/**
+	 * @return a set of all members that have already accepted the service (hired).
+	 */
+	public Set<Helper> getReadyMembers()
+	{
+		Set<Helper> members = new HashSet<Helper>();
+		
+		for(Helper member: team.keySet())
+		{
+			if(team.get(member))
+				members.add(member);
+		}
+		return members;
+	}
+	
+	/**
+	 * @return a set of all members that haven't accepted the service yet.
+	 */
+	public Set<Helper> getNotReadyMembers()
+	{
+		Set<Helper> members = new HashSet<Helper>();
+		
+		for(Helper member: team.keySet())
+		{
+			if(!team.get(member))
+				members.add(member);
+		}
+		return members;
 	}
 	
 	public void showTeam()
@@ -109,6 +142,16 @@ public class HelperTeam
 	public int getTeamSize() 
 	{
 		return teamSize;
+	}
+
+	public Boolean isReady() 
+	{
+		return ready;
+	}
+
+	public void setReady(Boolean ready) 
+	{
+		this.ready = ready;
 	}
 
 	@Override
@@ -148,7 +191,6 @@ public class HelperTeam
 			else
 				sb.append(h.getName());
 		}
-		
-		return "HelperTeam [id=" + id + ", teamSize=" + teamSize + ", team={" + sb.toString() + "}]";
+		return "HelperTeam [id=" + id + ", isReady=" + ready + ", teamSize=" + teamSize + ", team={" + sb.toString() + "}]";
 	}
 }

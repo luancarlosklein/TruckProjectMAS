@@ -29,6 +29,7 @@ public class initializeWorker extends DefaultInternalAction {
     	
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
     	ts.getAg().addBel(Literal.parseLiteral("specialization(" + w.getSpecialization().name().toLowerCase() +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("risk_profile(" + w.getRiskProfile() +")"));
     
     	for(Artifact d: depotMap.values())
     		ts.getAg().addBel(Literal.parseLiteral("depot(" + d.getName() +")"));

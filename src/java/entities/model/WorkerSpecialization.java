@@ -1,6 +1,6 @@
 package entities.model;
 
-public enum WorkerType 
+public enum WorkerSpecialization 
 {
 	FRAGILE_SPECIALIZATION,
 	COMMON_SPECIALIZATION,

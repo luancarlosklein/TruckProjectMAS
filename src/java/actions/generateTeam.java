@@ -29,7 +29,9 @@ public class generateTeam extends DefaultInternalAction
 	 * args[0]: worker's name
 	 * args[1]: CNPId
 	 * args[2]: list of offers
-	 * args[3]: return (a team of helpers)
+	 * args[3]: number of boxes to be discharge from truck
+	 * args[4]: time to perform the task
+	 * args[5]: return (a team of helpers)
 	 */
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
@@ -46,6 +48,10 @@ public class generateTeam extends DefaultInternalAction
     	// Getting the map of offers
     	ListTerm offers = (ListTerm) args[2];
     	
+    	// Getting the number of boxes and the time of task
+    	NumberTerm nbBoxes = (NumberTerm) args[3];
+    	NumberTerm time = (NumberTerm) args[4];
+    	
     	for(Term term : offers) 
     	{
     		Structure offer = (Structure) term;
@@ -59,22 +65,24 @@ public class generateTeam extends DefaultInternalAction
     	if(!worker.containsTeam(teamId))
     		worker.addTeam(new HelperTeam(teamId, 2));
     	
-    	while(!worker.teamIsComplete(teamId) && !offerMap.keySet().isEmpty())
+    	while(!worker.teamIsFull(teamId) && !offerMap.keySet().isEmpty())
     	{    	
-    		Helper helper = selectTheBest(offerMap);    		
+    		Helper helper = selectTheBest(offerMap, (int) nbBoxes.solve(), (long) time.solve());    		
     		worker.addHelperToTeam(teamId, helper);
     		offerMap.remove(helper);
     	}
-    	return un.unifies(worker.getMembersAsTermList(teamId), args[3]);
+    	return un.unifies(worker.getNotReadyMembersAsTermList(teamId), args[5]);
     }
     
     /**
      * This method selects the best offer and returns the helper that made this offer.
      * At this moment, the choice is done randomly.
      * @param offerMap: a map compound of all offer made by helpers.
+     * @param nbBoxes: number of boxes to be discharge from truck.
+     * @param time: time to perform the task.
      * @return the helper that made the best offer. 
      */
-    private Helper selectTheBest(Map<Helper, Structure> offerMap)
+    private Helper selectTheBest(Map<Helper, Structure> offerMap, int nbBoxes, long time)
     {
     	Random rand = new Random();
     	Helper[] helpers = offerMap.keySet().toArray(new Helper[offerMap.keySet().size()]);

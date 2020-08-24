@@ -41,6 +41,7 @@
 	<-	.print("My proposal was accepted!");
 		+client(CNPId, Worker);
 		-+busy(true);
+		.send(Worker, tell, service(CNPId, accepted));
 .
 
 /**
@@ -49,7 +50,7 @@
  */		
 +accept_proposal(CNPId)[source(Worker)]: busy(true)
 <-	.print("My proposal was accepted, but I'm already busy.");
-	.send(Worker, tell, service(CNPId, aborted, 0, 0, 0));
+	.send(Worker, tell, service(CNPId, aborted));
 .
 
 /**
@@ -58,6 +59,19 @@
  */
 +execute(CNPId)[source(Worker)]: client(Client) & Cliente == Worker
 	<-	!start_service(CNPId);
+.
+
+/**
+ * The helper is free to accept offers from other workers.
+ * This situation represents the scenario where the worker lost the CNP.
+ * Thus, he cancels the contract with helper.
+ * @param CNPId: id of required service.
+ * @param service_status: the current status of service.
+ */ 
++service(CNPId, canceled): proposal(CNPId, _, _)
+	<-	-+busy(false);
+		-client(CNPId, _);
+		-proposal(CNPId, _, _);
 .
 
 /**
@@ -82,7 +96,7 @@
 	<-	.print("I finish my task! I'm going back to the depot.");
 		.print("Amount of boxes taken from truck: ", Taken_boxes);
 		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
-		.send(Client, tell, service(CNPId, concluded, Delivered_boxes, Taken_boxes, Time));	
+		.send(Client, tell, report(CNPId, Delivered_boxes, Taken_boxes, Time));	
 		-+busy(false);
 		-client(CNPId, _);
 		-proposal(CNPId, _, _);
@@ -145,7 +159,7 @@
  */
 +!goToGarage: safety(Safety_default) & battery(Battery_default)
 	<-	.findall(garage(Name), garage(Name), Garages);
-		!getNearesTarget(Garages, Garage);	
+		!getTheNearestFromMe(Garages, Garage);	
 		!at(Garage);
 		-+current_safety(Safety_default);
 		-+current_battery(Battery_default);
@@ -157,7 +171,7 @@
  */
 +!goToRecharge: battery(Battery_default)
 	<-	.findall(recharge(Name), recharge(Name), Recharges);
-		!getNearesTarget(Recharges, Recharge);
+		!getTheNearestFromMe(Recharges, Recharge);
 		!at(Recharge);
 		.wait(2000);
 		-+current_battery(Battery_default);
