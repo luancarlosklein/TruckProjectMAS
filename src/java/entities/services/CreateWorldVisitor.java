@@ -2,12 +2,12 @@ package entities.services;
 
 import java.util.Random;
 
+import entities.enums.Constants;
+import entities.enums.HelperExpertiseClass;
+import entities.enums.WorldElements;
 import entities.model.Artifact;
-import entities.model.Constants;
 import entities.model.Helper;
 import entities.model.HelperDurabilityClass;
-import entities.model.HelperExpertiseClass;
-import entities.model.WorldElements;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;

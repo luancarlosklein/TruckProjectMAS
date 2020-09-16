@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import entities.enums.WorldElements;
 import entities.model.Artifact;
 import entities.model.GridLayout;
 import entities.model.Helper;
 import entities.model.Truck;
 import entities.model.Worker;
 import entities.model.World;
-import entities.model.WorldElements;
 import entities.model.WorldVisitor;
 
 /**

@@ -1,5 +1,7 @@
 package entities.model;
 
+import entities.enums.HelperExpertiseClass;
+
 public class Helper extends SimpleElement
 {
 	private Integer capacity; 		// Maximum weight that agent can carry

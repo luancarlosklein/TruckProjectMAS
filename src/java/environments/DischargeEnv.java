@@ -9,8 +9,6 @@ import entities.model.World;
 import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
-import views.WordViewer;
-import views.WorldModel;
 
 public class DischargeEnv extends Environment
 {
@@ -21,7 +19,7 @@ public class DischargeEnv extends Environment
 	{
 		super.init(args);
 		try 
-		{	
+		{
 			model = new WorldModel(new World());
 			
 			if(args.length == 1 && args[0].equals("gui")) 

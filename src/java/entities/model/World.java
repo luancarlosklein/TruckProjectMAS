@@ -3,6 +3,7 @@ package entities.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import entities.enums.WorldElements;
 import entities.services.CreateGridVisitor;
 import entities.services.CreateWorldVisitor;
 import entities.services.DefineWorldRoutesVisitor;

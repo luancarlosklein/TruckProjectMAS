@@ -5,3 +5,6 @@
 /entities/
 /actions/
 /views/
+/worker/
+/WordViewer.class
+/WorldModel.class

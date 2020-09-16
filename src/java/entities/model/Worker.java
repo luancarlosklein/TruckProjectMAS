@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import entities.enums.RiskProfile;
+import entities.enums.WorkerSpecialization;
 import jason.asSyntax.Atom;
 import jason.asSyntax.ListTerm;
 import jason.asSyntax.ListTermImpl;
@@ -113,7 +115,7 @@ public class Worker extends SimpleElement
 			HelperTeam team = teams.get(teamId);
 			
 			if(!team.removeHelper(helper))
-				throw new Error("It was not possible to remove the helper.");
+				throw new Error("It was not possible to remove the helper: " + helper.getName());
 		}
 		else
 			throw new IllegalAccessError("There is not a team with this id: " + teamId);

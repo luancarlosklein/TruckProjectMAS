@@ -1,5 +1,7 @@
 package entities.model;
 
+import entities.enums.WorldElements;
+
 /**
  * This class implements the logic matrix that defines the placement of agents.
  */

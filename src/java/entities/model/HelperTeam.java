@@ -35,8 +35,7 @@ public class HelperTeam
 		if (team.size() == teamSize)
 			return false;
 		else
-			team.put(helper, false);
-		
+			team.put(helper, false);	
 		return true;
 	}
 	
@@ -48,7 +47,7 @@ public class HelperTeam
 	public boolean removeHelper(Helper helper)
 	{
 		if(team.containsKey(helper))
-			return team.remove(helper);
+			return team.remove(helper) != null;
 		else
 			throw new IllegalAccessError("Helper not found: " + helper.getName());
 	}
@@ -187,9 +186,15 @@ public class HelperTeam
 		for(Helper h : team.keySet())
 		{
 			if(i++ < team.size() - 1)
-				sb.append(h.getName()).append(";");
-			else
+			{
 				sb.append(h.getName());
+				sb.append("(hired: ").append(team.get(h)).append(");");
+			}
+			else
+			{
+				sb.append(h.getName());
+				sb.append("(hired: ").append(team.get(h)).append(")");
+			}
 		}
 		return "HelperTeam [id=" + id + ", isReady=" + ready + ", teamSize=" + teamSize + ", team={" + sb.toString() + "}]";
 	}

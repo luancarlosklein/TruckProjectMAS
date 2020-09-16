@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import entities.model.Constants;
+import entities.enums.Constants;
+import entities.enums.WorldElements;
 import entities.model.GridLayout;
 import entities.model.GridRoutes;
 import entities.model.GridVisitor;
-import entities.model.WorldElements;
 
 /**
  * This class generates a maze using the Prim's algorithm.

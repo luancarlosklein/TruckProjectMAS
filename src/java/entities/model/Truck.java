@@ -2,6 +2,8 @@ package entities.model;
 
 import java.util.Random;
 
+import entities.enums.CargoType;
+
 public class Truck extends SimpleElement
 {
 	private Integer qtdThings;		// Amount of boxes inside of the truck

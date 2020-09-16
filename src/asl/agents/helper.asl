@@ -6,16 +6,17 @@
 !start.
 
 /**
- * Set the initial beliefs of helper
+ * Set initial beliefs for helper
  */
 +!start: getMyName(Me)
-	<-	actions.initializeHelper(Me);
+	<-	actions.helper.initialize(Me);
 		!register("provider_helper", "requester_worker");
 		+busy(false);
 		?safety(Safety_default);
 		?battery(Battery_default);
 		+current_safety(Safety_default);
 		+current_battery(Battery_default);
+		+carrying(0);
 .
 
  /* COMMUNICATION **********************/
@@ -26,7 +27,7 @@
  * @param Task: the service to be done.
  */
 +cfp(CNPId, Task)[source(Worker)]: provider(Worker, "requester_worker") & busy(false) & getMyName(Me)
-	<-	actions.proposeOfferHelper(Me, Offer);
+	<-	actions.helper.proposeOffer(Me, Offer);
 		+proposal(CNPId, Task, Offer);
       	.send(Worker, tell, proposal(CNPId, Offer))
 .
@@ -57,7 +58,7 @@
  * Execution signal for the helper starts the service.
  * @param CNPId: id of required service.
  */
-+execute(CNPId)[source(Worker)]: client(Client) & Cliente == Worker
++execute(CNPId)[source(Worker)]: client(CNPId, Client) & Client == Worker
 	<-	!start_service(CNPId);
 .
 
@@ -96,7 +97,7 @@
 	<-	.print("I finish my task! I'm going back to the depot.");
 		.print("Amount of boxes taken from truck: ", Taken_boxes);
 		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
-		.send(Client, tell, report(CNPId, Delivered_boxes, Taken_boxes, Time));	
+		.send(Client, tell, report(CNPId, results(Delivered_boxes, Taken_boxes, Time)));	
 		-+busy(false);
 		-client(CNPId, _);
 		-proposal(CNPId, _, _);
@@ -128,7 +129,7 @@
  */
 @h_b1[atomic]
 +!takeBoxesFrom(Truck): getMyName(Me)
-	<-	actions.takeBoxes(Truck, Me);
+	<-	actions.helpers.takeBoxes(Me, Truck);
 .
 
 /**

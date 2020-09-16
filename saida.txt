@@ -1,1 +1,0 @@
-(move garage truck)(carregar)(move truck drop)(descarregar)(move drop garage)

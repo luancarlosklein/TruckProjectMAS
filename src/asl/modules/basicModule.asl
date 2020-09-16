@@ -23,7 +23,7 @@ getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId
  * @param Target: the target position (where the agent wants to go)
  */
 +!at(Target): at(Target) & getMyName(Me) & velocity(Velocity)
-	<-	actions.updateAgentPosition(Me);
+	<-	actions.generic.updateAgentPosition(Me);
 		.print("I arrived at the ", Target);
 		.wait(Velocity);
 .
@@ -31,7 +31,7 @@ getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId
 //Take a step towards
 +!at(Target): not at(Target) & getMyName(Me) & velocity(Velocity)
 	<-	move_towards(Target);
-		actions.updateAgentPosition(Me);
+		actions.generic.updateAgentPosition(Me);
 		.wait(Velocity);
 		!at(Target);
 .
@@ -42,7 +42,7 @@ getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId
  * @return Nearest_target: the nearest target from agent.
  */	
 +!getTheNearestFromMe(Target_list, Nearest_target): getMyPosition(X, Y) 
-	<-	actions.findTheNearest(Target_list, X, Y, Nearest_target);
+	<-	actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
 		.print("The nearest target is: ", Nearest_target);
 .
 
@@ -53,6 +53,6 @@ getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId
  * @return Nearest_target: the nearest target from agent.
  */
  +!getTheNearestTarget(Target_list, pos(X, Y), Nearest_target)
-	<-	actions.findTheNearest(Target_list, X, Y, Nearest_target);
+	<-	actions.generic.getNearestTarget(Target_list, X, Y, Nearest_target);
 		.print("The nearest target is: ", Nearest_target);
 .

@@ -2,9 +2,9 @@ package entities.services;
 
 import java.util.Random;
 
+import entities.enums.HelperExpertiseClass;
 import entities.model.Helper;
 import entities.model.HelperDurabilityClass;
-import entities.model.HelperExpertiseClass;
 
 /*
  * This class implements the Design Pattern Builder for Helpers entities

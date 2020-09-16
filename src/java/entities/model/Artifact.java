@@ -1,5 +1,7 @@
 package entities.model;
 
+import entities.enums.WorldElements;
+
 /**
  * This class implements a simple artifact, an object which is used by agents.
  */

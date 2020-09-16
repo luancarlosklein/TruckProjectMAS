@@ -3,7 +3,7 @@ package entities.services;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import entities.model.WorldElements;
+import entities.enums.WorldElements;
 import entities.model.Artifact;
 import entities.model.Helper;
 import entities.model.Truck;
