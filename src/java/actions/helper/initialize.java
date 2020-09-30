@@ -30,6 +30,7 @@ public class initialize extends DefaultInternalAction
     	Helper h = helperMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + h.getPos().x + "," + h.getPos().y +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("visible(" + h.isVisible() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("capacity(" + h.getCapacity() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("velocity(" + h.getVelocity() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("battery(" + h.getBattery() + ")"));    	

@@ -1,7 +1,9 @@
 package entities.model;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 
 import entities.enums.WorldElements;
 import entities.services.CreateGridVisitor;
@@ -29,6 +31,7 @@ public class World
 	private Map<Integer, Artifact> rechargeMap = new HashMap<Integer, Artifact>();
 	private Map<Integer, Artifact> depotsMap = new HashMap<Integer, Artifact>();
 	private Map<Integer, GridRoutes> routes = new HashMap<Integer, GridRoutes>();
+	private Queue<Truck> truckersOrder;
 	
 	/**
 	 * This constructor creates a random world.
@@ -45,6 +48,7 @@ public class World
 		this.accept(new CreateWorldVisitor());
 		this.accept(new DefineWorldRoutesVisitor());
 		this.accept(new SaveWorldVisitor());
+		this.truckersOrder = new LinkedList<Truck>();		
 	}
 	
 	/**
@@ -53,8 +57,10 @@ public class World
 	 */
 	public World() 
 	{
+		// Defining grid
 		this.accept(new LoadWorldVisitor());
 		this.accept(new DefineWorldRoutesVisitor());
+		this.truckersOrder = new LinkedList<Truck>();
 	}
 	
 	/**
@@ -149,6 +155,18 @@ public class World
 	public Map<Integer, GridRoutes> getRoutes() 
 	{
 		return routes;
+	}
+	
+	public Truck getNextTruck() 
+	{
+		Truck t = truckersOrder.remove();
+		t.setVisible(true);
+		return t;
+	}
+	
+	public Queue<Truck> getTruckersOrder() 
+	{
+		return truckersOrder;
 	}
 
 	@Override

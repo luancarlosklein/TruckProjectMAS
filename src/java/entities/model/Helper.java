@@ -24,6 +24,9 @@ public class Helper extends SimpleElement
 		this.safety = 0;
 		this.setName("helper_" + id);
 	}
+	
+	@Override
+	public void setProperties() {}
 
 	public Integer getCapacity() 
 	{

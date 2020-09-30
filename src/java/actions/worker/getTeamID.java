@@ -18,14 +18,13 @@ public class getTeamID extends DefaultInternalAction
 	/**
 	 * Arguments (come from parameter args):
 	 * @param args[0]: worker's name
-	 * @param args[1]: trucker's name
+	 * @param args[1]: CNPId
 	 * @return args[2]: a new id.
 	 */
 	@Override
 	public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
-		String id1 = args[0].toString().split("_")[1];
-		String id2 = args[1].toString().split("_")[1];
-		return un.unifies(new NumberTermImpl(Integer.parseInt(id1 + id2)), args[2]);
+		String id = args[0].toString().split("_")[1];
+		return un.unifies(new NumberTermImpl(Integer.parseInt(id + args[1])), args[2]);
     }
 }

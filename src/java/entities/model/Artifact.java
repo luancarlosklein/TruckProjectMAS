@@ -32,6 +32,9 @@ public class Artifact extends SimpleElement
 				throw new Error("Type of artifact is not valid!");
 		}
 	}
+	
+	@Override
+	public void setProperties() {}
 
 	public Boolean getActived() 
 	{

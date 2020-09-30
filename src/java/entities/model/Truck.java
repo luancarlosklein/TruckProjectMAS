@@ -10,7 +10,6 @@ public class Truck extends SimpleElement
 	private Boolean discharged;		// Informs when the truck is discharge
 	private CargoType cargoType;	// Defines the type of cargo transported by the truck
 	private Long unloadTime;		// The unloading time. How much time can be spend to unload the truck. 
-	private Boolean visible;		// Defines when the truck will be shown on the screen
 	
 	public Truck(Integer posX, Integer posY, Integer qtdThings, CargoType cargoType, Long unloadTime) 
 	{
@@ -20,22 +19,37 @@ public class Truck extends SimpleElement
 		this.cargoType = cargoType;
 		this.discharged = qtdThings <= 0;
 		this.unloadTime = unloadTime;
-		this.visible = true;
 	}
 	
 	public Truck(Integer posX, Integer posY) 
 	{	
 		super(posX, posY);
-		this.qtdThings = 0;
 		this.setName("truck_" + id);
-		this.visible = true;
-		this.unloadTime = 100000l;
-		this.cargoType = CargoType.COMMON;
+		visible = false;
+		unloadTime = 100000l;
+		cargoType = CargoType.COMMON;
 		
-		Random rand = new Random();
-		
+		Random rand = new Random();		
 		if(rand.nextBoolean())
+		{
 			this.cargoType = CargoType.FRAGILE;
+		}
+		setQtdThings(rand.nextInt(15));
+	}
+	
+	@Override
+	public void setProperties() 
+	{
+		visible = false;
+		unloadTime = 100000l;
+		cargoType = CargoType.COMMON;
+		
+		Random rand = new Random();		
+		if(rand.nextBoolean())
+		{
+			this.cargoType = CargoType.FRAGILE;
+		}
+		setQtdThings(rand.nextInt(15));
 	}
 
 	public Integer getQtdThings() 
@@ -62,16 +76,6 @@ public class Truck extends SimpleElement
 	public void setCargoType(CargoType cargoType) 
 	{
 		this.cargoType = cargoType;
-	}
-	
-	public Boolean getVisible() 
-	{
-		return visible;
-	}
-
-	public void setVisible(Boolean visible) 
-	{
-		this.visible = visible;
 	}
 
 	public Long getUnloadTime() 

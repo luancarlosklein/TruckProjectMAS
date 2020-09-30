@@ -27,11 +27,10 @@ public class initialize extends DefaultInternalAction
     @Override
     public Object execute(TransitionSystem ts, Unifier un, Term[] args) throws Exception 
     {
-    	Truck t = truckMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
-    	
-    	t.setQtdThings(10);
+    	Truck t = truckMap.get(Integer.parseInt(args[0].toString().split("_")[1]));    
     	
     	ts.getAg().addBel(Literal.parseLiteral("id(" + t.getId() + ")"));
+    	ts.getAg().addBel(Literal.parseLiteral("visible(" + t.isVisible() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("qtd_things(" + t.getQtdThings() + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("pos(" + t.getPos().x + ", " + t.getPos().y + ")"));
 		ts.getAg().addBel(Literal.parseLiteral("cargo_type(" + t.getCargoType().name().toLowerCase() + ")"));

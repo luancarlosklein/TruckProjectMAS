@@ -27,7 +27,8 @@
  */
 +cfp(CNPId, task(Type, Nb_boxes, Unload_Time))[source(Truck)]
 	:	provider(Truck, "requester_trucker") & 
-		specialization(My_specialty)
+		specialization(My_specialty) &
+		busy(false)
 		
 	<-	if(Type == fragile & (My_specialty == fragile_specialization | My_specialty == dual_specialization))
 		{
@@ -37,6 +38,11 @@
 		elif(Type == common & (My_specialty == common_specialization | My_specialty == dual_specialization))
 		{
 			!make_offer(CNPId, common, Nb_boxes, Unload_Time, Truck);
+		}
+		else
+		{
+			.send(Truck, tell, refuse(CNPId));
+			-cfp(CNPId,_)[source(Truck)];
 		}
 .
 
@@ -50,7 +56,7 @@
  * @param Truck: name of trucker that requested the service.
  */
 +!make_offer(CNPId, Cargo_type, Nb_boxes, Unload_Time, Truck): getMyName(Me)
-	<-	actions.worker.getTeamID(Me, Truck, TeamId);
+	<-	actions.worker.getTeamID(Me, CNPId, TeamId);
 		actions.generic.getTargetPosition(Truck, pos(X, Y));
 		.findall(depot(Name), depot(Name), Depots);
 		!getTheNearestTarget(Depots, pos(X, Y), Depot);
@@ -85,7 +91,9 @@
 		
 	<- 	if(Offers \== [])
       	{	
-	 		actions.worker.createTeam(TeamId, Me, Offers, Nb_boxes, Unload_Time, Team);
+	 		actions.worker.createTeam(TeamId, Me, Offers, Nb_boxes, Unload_Time, Team);	 		
+	 		.concat("ADD TEAM: ", TeamId, Message)
+	 		actions.worker.saveInFile(Me, Message);
 	 		!invite_team(TeamId, Team);
 		}
 		!check_team(TeamId);
@@ -117,18 +125,20 @@
 	<-	if(actions.worker.teamIsReady(TeamId, Me, Offers))
 		{
 			// check risk profile.
+			.concat("TEAM READY: ", TeamId, Message)
+			actions.worker.saveInFile(Me, Message);
 			actions.worker.proposeOffer(TeamId, Me, Offer);
 			.send(Truck, tell, proposal(CNPId, Offer));
 			+my_proposal(CNPId, Offer);
 				
 			if(Offers \== [])
 			{
-				!reject_offer(TeamId, Offers);
+				!reject_offers(TeamId, Offers);
 			}
 		}
 		else
 		{
-			.print("The team is not ready yet!");	
+			.print("The team ", TeamId," is not ready yet!");	
 		}
 .
 
@@ -137,12 +147,12 @@
  * @param TeamId: id of team.
  * @param Helpers: list of not selected helpers.
  */
-+!reject_offer(TeamId, [offer(_, Helper)|T])
++!reject_offers(TeamId, [offer(_, Helper)|T])
 	<-	.send(Helper, tell, reject_proposal(TeamId));
-		!reject_offer(TeamId, T);
+		!reject_offers(TeamId, T);
 .
 
-+!reject_offer(_,[]).
++!reject_offers(_,[]).
 
 /**
  * The helper informs that he won't join to team.
@@ -156,8 +166,10 @@
 		getMyName(Me) 
 		
 	<-	-proposal(TeamId, _)[source(Helper)];
-		.print("Removing ", Helper ," from team. He is busy.");
+		.print("Removing ", Helper ," from team ", TeamId ,". He is busy.");
 		actions.worker.deleteHelperFromTeam(TeamId, Me, Helper);
+		.concat("FIRING HELPER: ", Helper, Message);
+		actions.worker.saveInFile(Me, Message);
 		!invite_helpers(CNPId);
 .
 
@@ -173,8 +185,10 @@
 		getMyName(Me)
 		
 	<-	-proposal(TeamId, _)[source(Helper)];
-		.print(Helper ," was hired for the task.");
+		.print(Helper ," was hired to Team ", TeamId ,".");
 		actions.worker.hireHelper(TeamId, Me, Helper);
+		.concat("HIRING HELPER: ", Helper, Message);
+		actions.worker.saveInFile(Me, Message);
 		!check_team(TeamId);
 .
 
@@ -192,15 +206,18 @@
 		
 	<-	-+cnp_state(CNPId, contract);
 		-+busy(true);
-		+unloadTime(CNPId, 0);
-		+boxesUnloaded(CNPId, 0);
+		+unloadedBoxes(CNPId, 0);
+		+client(CNPId, Truck);
 		.send(Truck, tell, service(CNPId, started))
-		.print("I won the CNP!");
+		.print("I won the CNP ", CNPId);
 		actions.worker.getTeam(TeamId, Me, Team);
+		.print("My team: ", Team);
 		.length(Team, N_members);
-		+team_members(TeamId, N_members);
+		+number_reports(TeamId, N_members);
 		.findall(call(CNPId), my_proposal(CNPId, _), Calls);
 		!dispense_teams(CNPId, Calls);
+		actions.generic.getTime(Time);
+		+unloadTime(CNPId, Time);
 		!start_activities(TeamId, Team);
 .
 
@@ -208,8 +225,11 @@
  * The worker won the call, but he is doing another service for someone
  * @param CNPId: id of the call
  */
+ @w_cnp4 [atomic]
 +accept_proposal(CNPId)[source(Truck)]:	busy(true)
 	<-	.send(Truck, tell, service(CNPId, aborted));
+		!cancel_service(CNPId); 
+ 		!end_call(CNPId);
 .
 
 /**
@@ -245,12 +265,11 @@
  */
 +reject_proposal(CNPId)[source(Truck)]
 	:	provider(Truck, "requester_trucker") & 
-		team(CNPId, TeamId, _, _) &
 		getMyName(Me)
 		
-   	<-	-+cnp_state(TeamId, aborted);
-   		.print("I lost CNP ", CNPId, ".");
- 		!cancel_service(CNPId);  		
+   	<-	.print("I lost CNP ", CNPId, ".");
+ 		!cancel_service(CNPId); 
+ 		!end_call(CNPId);
 .
 
 /**
@@ -261,11 +280,11 @@
 	:	team(CNPId, TeamId, _, _) &
 		getMyName(Me)
 		
-	<-	-my_proposal(CNPId, _);
-   		-team(CNPId, TeamId, _, _);
-		-task(CNPId, _, _, _);
+	<-	.print("Deleting team: ", TeamId);
 		actions.worker.getTeam(TeamId, Me, Team);
    		actions.worker.deleteTeam(TeamId, Me);
+   		.concat("DELETE TEAM: ", TeamId, Message);
+   		actions.worker.saveInFile(Me, Message);
    		!break_contract(TeamId, Team);
 .
 
@@ -274,7 +293,7 @@
  * @param TeamId: id of team.
  * @param Rejected_helpers: list of helpers not selected to job.
  */
-+!break_contract(TeamId, [offer(_, Helper)|T])
++!break_contract(TeamId, [Helper|T])
 	<-	.send(Helper, tell, service(TeamId, canceled));
 		!break_contract(TeamId, T);
 .
@@ -288,38 +307,66 @@
  * @param Taken_boxes: number of boxes that the helper took from truck.
  * @param Time: Time that the helper took to perform the task.
  */
-@w_cnp4 [atomic]
-+report(TeamId, results(Delivered_boxes, Taken_boxes, Time))[source(Helper)]
-	: 	subscribe(Helper, "requester_worker") & 
-		cnp_state(TeamId, contract) & 
-		team(CNPId, TeamId, _, _) &
+@w_cnp5 [atomic]
++report(TeamId, results(Delivered_boxes, Taken_boxes, Task_time))[source(Helper)]
+	: 	team(CNPId, TeamId, _, _) &
+		cnp_state(CNPId, contract) &
+		client(CNPId, Truck) & 
 		getMyName(Me)		
 	
-	<-	?unloadTime(CNPId, T);
-		?boxesUnloaded(CNPId, Boxes);
-		?team_members(TeamId, N_members)
-		T = T + Time;
-		Boxes = Boxes + Delivered_boxes;
-		N_members = N_members - 1;		
+	<-	?unloadedBoxes(CNPId, Boxes);
+		?number_reports(TeamId, N_reports)
+		B = Boxes + Delivered_boxes;
+		N = N_reports - 1;		
 		// evaluate helper
 		
-		if(N_members == 0)
+		if(N == 0)
 		{
-			.send(Truck, tell, report(CNPId, results(Boxes, T)));
+			?unloadTime(CNPId, Stime);
+			actions.generic.getTime(Ftime);
+			T = Ftime - Stime;
+			.send(Truck, tell, report(CNPId, results(B, T)));
 			.print("The service was concluded, CNPId: ", CNPId);
-			-task(TeamId, CNPId, _, _);
-			-unloadTime(CNPId, _);
-			-boxesUnloaded(CNPId, _);
-			-team_members(TeamId, _);
-			-my_proposal(CNPId, _);
 			actions.worker.deleteTeam(TeamId, Me);
-			-+cnp_state(TeamId, finished);	
+			.concat("[TASK COMPLETED] DELETE TEAM: ", TeamId, Message);
+			actions.worker.saveInFile(Me, Message);
+			!end_call(CNPId);
+			!update_position;
 			-+busy(false);
 		}
 		else
 		{
-			-+unloadTime(CNPId, T);
-			-+boxesUnloaded(CNPId, Boxes);
-			-+team_members(N_members);	
+			-+unloadedBoxes(CNPId, B);
+			-+number_reports(TeamId, N);	
 		}
+.
+
+/*
+ * The position of work is changed randomly
+ */
+@w_cnp6 [atomic]
++!update_position: getMyName(Me)
+	<-	move_worker;
+		actions.generic.updateAgentPosition(Me);
+.
+
+/*
+ * The work cleans his memory about data from last call
+ */
++!end_call(CNPId): team(CNPId, TeamId, _, _)
+	<-	-report(TeamId,_)[source(_)];
+		-reject_proposal(CNPId)[source(_)];
+		-accept_proposal(CNPId)[source(_)];
+		-service(TeamId,_)[source(_)];
+		-number_reports(TeamId,_);
+		-unloadTime(CNPId,_);
+		-unloadedBoxes(CNPId,_);
+		-client(CNPId,_);
+		-my_proposal(CNPId,_);
+		-proposal(CNPId, _)[source(_)];
+		-refuse(CNPId)[source(_)];
+		-cnp_state(CNPId,_);
+		-team(CNPId, TeamId,_,_);
+		-task(CNPId,_,_,_);
+		-cfp(CNPId,_)[source(_)];
 .

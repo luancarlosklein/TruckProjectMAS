@@ -16,14 +16,17 @@ public abstract class SimpleElement
 	protected Integer id;
 	protected String name;
 	protected Location pos;
+	protected Boolean visible;
 	
 	public SimpleElement(Integer posX, Integer posY) 
 	{
-		super();
-		this.id = seqId.getAndIncrement();
+		this.id = seqId.getAndIncrement() + 1;
 		this.pos = new Location(posX, posY);
 		this.name = null;
+		this.visible = false;
 	}
+	
+	public abstract void setProperties();
 
 	public Integer getId() 
 	{
@@ -40,13 +43,24 @@ public abstract class SimpleElement
 		this.name = name;
 	}
 
-	public Location getPos() {
+	public Location getPos() 
+	{
 		return pos;
 	}
 
 	public void setPos(Location pos) {
 		this.pos.x = pos.x;
 		this.pos.y = pos.y;
+	}
+
+	public Boolean isVisible() 
+	{
+		return visible;
+	}
+
+	public void setVisible(Boolean visible) 
+	{
+		this.visible = visible;
 	}
 
 	@Override
@@ -80,7 +94,7 @@ public abstract class SimpleElement
 	@Override
 	public String toString() 
 	{
-		return "id=" + id + ", name=" + name + ", posX=" 
-				+ pos.x + "posX=" + pos.y;
+		return "id=" + id + ", name=" + name + ", visible=" + visible
+				+ ", posX=" + pos.x + "posX=" + pos.y;
 	}	
 }

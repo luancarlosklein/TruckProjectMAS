@@ -55,10 +55,6 @@ public class takeBoxes extends DefaultInternalAction
     		// Update the status of truck in the helper's mind
     		ts.getAg().delBel(Literal.parseLiteral("empty_truck(_)"));
     		ts.getAg().addBel(Literal.parseLiteral("empty_truck(true)"));
-    		
-    		// The helper can accept other contracts
-    		ts.getAg().delBel(Literal.parseLiteral("busy(_)"));
-    		ts.getAg().addBel(Literal.parseLiteral("busy(false)"));
     	}
         return true;
     }

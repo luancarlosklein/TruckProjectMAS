@@ -3,6 +3,7 @@ MAS discharge_truck
 	environment: environments.DischargeEnv(gui)
 
 	agents:
+		testa;
 		manager;
 		
 	aslSourcePath:

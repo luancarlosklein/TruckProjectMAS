@@ -18,12 +18,3 @@
 	<-	.df_register(Role);
 		.df_subscribe(Initiator);
 .
-		
-/**
- * The agent lost the CNP, so he must clear his memory
- * @param CNPId: id of required service 
- */
-@r2 +reject_proposal(CNPId)
-   <- .print("I lost CNP ", CNPId, ".");
-      -proposal(CNPId, _, _);
- .

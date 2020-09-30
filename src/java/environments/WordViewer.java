@@ -1,6 +1,5 @@
 package environments;
 
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -27,14 +26,13 @@ public class WordViewer extends GridWorldView
 	{		
         super(model, title, windowSize);
         this.model = model;
-        
         setVisible(true);
         repaint();
 	}
 	
     @Override
     public void draw(Graphics g, int x, int y, int object) 
-    {
+    {    	
     	// Drawing the obstacles (walls)
     	for(Location wall : model.getObstacles())
     		super.drawObstacle(g, wall.y, wall.x);
@@ -79,29 +77,43 @@ public class WordViewer extends GridWorldView
 	 */
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int code) 
-    {	
-    	int id = model.codeMapping().get(code);
-    	SimpleElement agent = model.getElement(id);
-    	
-    	drawBorders(g);
-    	
-    	if(agent.getClass().equals(Worker.class))
+    {   
+    	if(code > 0)
     	{
-    		super.drawAgent(g, x, y, Color.yellow, -1);
-            g.setColor(Color.black);
-            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("W" + agent.getId()));
-		}
-    	else if(agent.getClass().equals(Helper.class))
-    	{
-    		super.drawAgent(g, x, y, Color.blue, -1);
-            g.setColor(Color.white);
-            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("H" + agent.getId()));
-    	}
-    	else if(agent.getClass().equals(Truck.class))
-    	{
-    		super.drawAgent(g, x, y, Color.red, -1);
-            g.setColor(Color.white);
-            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("T" + agent.getId()));
+    		int id = model.codeMapping().get(code);
+        	SimpleElement agent = model.getElement(id);
+        	
+        	drawBorders(g);
+        	
+        	if(agent.getClass().equals(Worker.class))
+        	{
+        		super.drawAgent(g, x, y, Color.yellow, -1);
+                g.setColor(Color.black);
+                super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("W" + agent.getId()));
+    		}
+        	else if(agent.getClass().equals(Helper.class))
+        	{
+        		super.drawAgent(g, x, y, Color.blue, -1);
+                g.setColor(Color.white);
+                super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("H" + agent.getId()));
+        	}
+        	else if(agent.getClass().equals(Truck.class))
+        	{
+        		Truck t = (Truck) agent;
+        		
+        		if(t.isVisible())
+        		{
+    	    		super.drawAgent(g, x, y, Color.red, -1);
+    	            g.setColor(Color.white);
+    	            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("T" + agent.getId()));
+        		}
+        		else
+        		{
+        			super.drawAgent(g, x, y, Color.black, -1);
+    	            g.setColor(Color.white);
+    	            super.drawString(g, x, y, new Font("Arial", Font.BOLD, (int) (super.cellSizeH * 0.25)), ("T" + agent.getId()));
+        		}
+        	}	
     	}
     }
     
@@ -109,7 +121,7 @@ public class WordViewer extends GridWorldView
 	 *  This method draws artifacts as squares 
 	 */
     public void drawArtifact(Graphics g, int x, int y, Color c)
-    {    	
+    {   
     	g.setColor(c);
     	g.fillRect(x * super.cellSizeW, y * super.cellSizeH, super.cellSizeW, super.cellSizeH);
     }

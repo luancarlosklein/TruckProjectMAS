@@ -1,5 +1,6 @@
 package entities.model;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,6 +33,12 @@ public class Worker extends SimpleElement
 		this.teams = new HashMap<Integer, HelperTeam>();
 		
 		// Setting specialization and risk profiles
+		setProperties();
+	}
+	
+	@Override
+	public void setProperties() 
+	{
 		defineSpecialization();
 		defineRiskProfile();
 	}
@@ -54,7 +61,7 @@ public class Worker extends SimpleElement
 	public void addTeam(HelperTeam team) throws Exception
 	{
 		if(teams.containsKey(team.getId()))
-			throw new Exception("There is already a team registered with this id: " + team.getId());
+			throw new Exception("It wasn't possible insert a new team. There is already a team with this id: " + team.getId());
 		else
 			teams.put(team.getId(), team);
 	}
@@ -62,13 +69,14 @@ public class Worker extends SimpleElement
 	/**
 	 * Remove a team from the hash table. 
 	 * @param teamId: identifier of team which will be removed from hash table.
+	 * @throws IllegalAccessException 
 	 */
-	public void removeTeam(int teamId) throws Exception
+	public void removeTeam(int teamId) throws IllegalAccessException
 	{
 		if(teams.containsKey(teamId))
 			teams.remove(teamId);
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("It wasn't possible remove the team. There is no a team with this id: " + teamId);
 	}
 	
 	/**
@@ -76,15 +84,16 @@ public class Worker extends SimpleElement
 	 * A hired helper is a helper who received a confirmation from a worker to perform a service.
 	 * @param teamId: identifier of team where the helper is inserted.
 	 * @param helper: the helper.
+	 * @throws IllegalAccessException 
 	 */
-	public void hireHelper(int teamId, Helper helper)
+	public void hireHelper(int teamId, Helper helper) throws IllegalAccessException
 	{
 		if(teams.containsKey(teamId))
 			teams.get(teamId).hireMember(helper);
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("It wasn't possible hire the helper. There is no a team with this id: " + teamId);
 	}
-	
+
 	/**
 	 * Add a helper to a team.
 	 * @param teamId: identifier of team which the helper will be added.
@@ -100,7 +109,7 @@ public class Worker extends SimpleElement
 				throw new Exception("It is not possible to add the helper to team, the team is full.");
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("It wasn't possible add the helper. There is no a team with this id: " + teamId);
 	}
 
 	/**
@@ -115,10 +124,10 @@ public class Worker extends SimpleElement
 			HelperTeam team = teams.get(teamId);
 			
 			if(!team.removeHelper(helper))
-				throw new Error("It was not possible to remove the helper: " + helper.getName());
+				throw new Exception("It was not possible to remove the helper: " + helper.getName());
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("It wasn't possible to remove the helper. There is no a team with this id: " + teamId);
 	}
 	
 	/**
@@ -131,20 +140,21 @@ public class Worker extends SimpleElement
 		if(teams.containsKey(teamId))
 			return teams.get(teamId).teamIsFull();
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {teamIsFull} failed. There is no a team with this id: " + teamId);
 	}
 	
 	/**
 	 * Check if the team is ready to perform the service.
 	 * A team is ready if only if all members of team were hire.
 	 * @return true, if all members are hired, otherwise, false.
+	 * @throws IllegalAccessException 
 	 */
-	public boolean teamIsReady(int teamId)
+	public boolean teamIsReady(int teamId) throws IllegalAccessException
 	{
 		if(teams.containsKey(teamId))
 			return teams.get(teamId).teamIsReady();
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {teamIsReady} failed. There is not a team with this id: " + teamId);
 	}
 	
 	/**
@@ -157,7 +167,7 @@ public class Worker extends SimpleElement
 		if(teams.containsKey(teamId))
 			return teams.get(teamId).getMembers();
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {getTeamMembers} failed. There is not a team with this id: " + teamId);
 	}
 	
 	/**
@@ -177,7 +187,7 @@ public class Worker extends SimpleElement
 			return memberNames;
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {getTeamMemberNames} failed. There is not a team with this id: " + teamId);
 	}
 
 	/**
@@ -197,7 +207,7 @@ public class Worker extends SimpleElement
 			return terms;
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {getTeamMembersAsTermList} failed. There is not a team with this id: " + teamId);
 	}
 	
 	/**
@@ -217,7 +227,7 @@ public class Worker extends SimpleElement
 			return terms;
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {getReadyMembersAsTermList} failed. There is not a team with this id: " + teamId);
 	}
 
 	/**
@@ -237,33 +247,46 @@ public class Worker extends SimpleElement
 			return terms;
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {getNotReadyMembersAsTermList} failed. There is not a team with this id: " + teamId);
 	}
 	
 	/**
 	 * Define when a team is ready to perform the service.
 	 * @param teamId: identifier of team.
+	 * @throws IllegalAccessException 
 	 */
-	public void setTeamAsReady(int teamId)
+	public void setTeamAsReady(int teamId) throws IllegalAccessException
 	{
 		if(teams.containsKey(teamId))
 		{	
 			teams.get(teamId).setReady(true);
 		}
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {setTeamAsReady} failed. There is not a team with this id: " + teamId);
 	}
 	
 	/**
 	 * Show the team members on the screen.
 	 * @param teamId: identifier of team.
+	 * @throws IllegalAccessException 
 	 */
-	public void showTeam(int teamId)
+	public void showTeam(int teamId) throws IllegalAccessException
 	{
 		if(teams.containsKey(teamId))
 			teams.get(teamId).showTeam();
 		else
-			throw new IllegalAccessError("There is not a team with this id: " + teamId);
+			throw new IllegalAccessException("Operation {showTeam} failed. There is not a team with this id: " + teamId);
+	}
+	
+	/**
+	 * Show all teams on screen.
+	 */
+	public void showAllTeams()
+	{
+		for(HelperTeam team : teams.values())
+		{
+			team.showTeam();
+		}
 	}
 	
 	/**
@@ -339,6 +362,11 @@ public class Worker extends SimpleElement
 	public void setSpecialization(WorkerSpecialization specialization) 
 	{
 		this.specialization = specialization;
+	}
+	
+	public Collection<HelperTeam> getTeams()
+	{
+		return teams.values();
 	}
 
 	@Override

@@ -32,6 +32,7 @@ public class initialize extends DefaultInternalAction
     	Worker w = workerMap.get(Integer.parseInt(args[0].toString().split("_")[1]));
     	
     	ts.getAg().addBel(Literal.parseLiteral("pos(" + w.getPos().x + "," + w.getPos().y +")"));
+    	ts.getAg().addBel(Literal.parseLiteral("visible(" + w.isVisible() + ")"));
     	ts.getAg().addBel(Literal.parseLiteral("specialization(" + w.getSpecialization().name().toLowerCase() +")"));
     	ts.getAg().addBel(Literal.parseLiteral("risk_profile(" + w.getRiskProfile() +")"));
     

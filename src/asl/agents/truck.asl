@@ -5,32 +5,52 @@
 
 /* BEHAVIOR *************/
 
+count(0).
 !start.
 
 /**
  * Set initial beliefs for trucker
  */
-+!start: getMyName(Name)
-	<-	actions.trucker.initialize(Name);
++!start: getMyName(Me)
+	<-	actions.trucker.initialize(Me);
 		!register("requester_trucker");
+.
+
+/**
+ * Define when a truck can star the unload process.
+ */
++!unload: getMyName(Me) & visible(true)
+	<-	.print("Truck ", Me ," added on the system");
 		?cargo_type(Task_type);
 		?qtd_things(Number_of_boxes);
 		?unload_time(Unload_time);
-		!start_cnp("provider_worker", task(Task_type, Number_of_boxes, Unload_time))
+		!start_cnp("provider_worker", task(Task_type, Number_of_boxes, Unload_time));
 .
-	
+
++!unload: getMyName(Me) & visible(false).
+
 /**
  * Start the CNP.
  * @param Providers: define the class of agents that will provide the service.
  * @param Task: description of service.
  */	
-+!start_cnp(Providers, Task): getMyId(CNPId)
-	<-	+cnp_state(CNPId, propose);
-		+reset(CNPId, 0);
-		+task(CNPId, Task)
++!start_cnp(Providers, Task)
+	<-	!getNextCNPId(CNPId);
+		+cnp_state(CNPId, propose);
+		+task(CNPId, Task);
 		!call(CNPId, Task, Providers, Participants);
 		!bid(CNPId, Participants);
 		!contract(CNPId)
+.
+
+/**
+ * Generate an exclusive CNPId for the task
+ * @return CNPID
+ */	
+@t_1[atomic]
++!getNextCNPId(CNPId): getMyId(Id)
+	<-	actions.trucker.getNextCNPId(Id, CNPId);
+		.print("NEW CALL - CNPID: ", CNPId);
 .
 
 /**
@@ -51,16 +71,10 @@
       		actions.trucker.chooseBestOffer(Me, Offers, Winner);
       		!invite_worker(CNPId, Winner, Offers);
       	}
-      	else	// restart the call
+      	else	// end the call
       	{
-      		.print("It was not posible to find avaliable workers, a new call will be done.");
-      		?task(CNPId, Task);
-      		?reset(CNPId, Times);
-      		T = Times + 1;
-      		-+reset(CNPId, T);
-      		-cnp_state(CNPId, _);			
-			-task(CNPId, _)
-      		!start_cnp("provider_worker", Task)
+      		.print("It was not posible to find avaliable workers, getting away the system.");
+      		!end_call(CNPId);	
       	}
 .
 
@@ -73,7 +87,7 @@
 +!invite_worker(CNPId, Winner, [offer(_, Worker)|T]) 
 	<-	if(Worker == Winner)
 		{
-			.send(Worker, tell, accept_proposal(CNPId));		
+			.send(Worker, tell, accept_proposal(CNPId));
 		}
 		else
 		{
@@ -101,6 +115,7 @@
  */
 +service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers)
 	<-	-+cnp_state(CNPId, contract);
+		-proposal(CNPId, _)[source(Worker)];
 		!reject_offers(CNPId, Worker, Offers);
 .
 
@@ -127,9 +142,39 @@
  * @param results: performance data about the service execution.
  */
 +report(CNPId, results(Unload_Boxes, Time))[source(Woker)]
-	<-	.print("The worker has just finished the service ", Unload_Boxes, Time);
-		-task(CNPId, _);
-		-proposal(CNPId, _)[source(Worker)];
-		-+cnp_state(CNPId, finished);
+	<-	.print("The worker has just finished the service ");
+		.print("number of unload boxes: ", Unload_Boxes);
+		.print("unload time: ", Time);
+		?count(C);
+		K = C + 1;
+		-count(C);
+		+count(K);
+		
 		// evaluation process
+		!end_call(CNPId);
+.
+
+/*
+ * The truck go away (leaves the system)
+ */
++!end_call(CNPId): true
+	<-	-id(_);
+		-pos(_,_);
+		-qtd_things(_);
+		-cargo_type(_);
+		-visible(_);
+		-unload_time(_);
+		-service(CNPId,_)[source(_)];
+		-report(CNPId,_)[source(_)];
+		-proposal(CNPId, _)[source(_)];
+		-refuse(CNPId)[source(_)];
+		-cnp_state(CNPId,_);
+		-task(CNPId,_);
+		
+		?count(C);
+		if(C < 3)
+		{
+			.print("####### ROUND: ", C);
+			.send(manager, achieve, quit);
+		}
 .

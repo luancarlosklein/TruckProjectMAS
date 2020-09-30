@@ -1,10 +1,5 @@
-/modules/
-/discharge_truck/
-/agents/
-/environments/
-/entities/
 /actions/
-/views/
-/worker/
-/WordViewer.class
-/WorldModel.class
+/entities/
+/agents/
+/modules/
+/environments/

@@ -15,12 +15,12 @@
 /**
  * This rule computes the number of participants of a call for proposals
  * @param CNPId: id of required service
- * @return NP (number of participants) 
+ * @param NP (number of participants) 
  * */ 
 all_proposals_received(CNPId, NP) 
 	:-	.count(proposal(CNPId, _)[source(_)], NO) &		// number of proposals received
 		.count(refuse(CNPId)[source(_)], NR) &      	// number of refusals received
-		NP = NO + NR.
+		NP == (NO + NR).
 		
 /* PLANS *************/
 
@@ -52,7 +52,7 @@ all_proposals_received(CNPId, NP)
  * @return Plist (list of participants of calling) 
  */
 +!bid(CNPId, Plist)
-	<-	.wait(all_proposals_received(CNPId, .length(Plist)), 4000, _);
+	<-	.wait(all_proposals_received(CNPId, .length(Plist)));
 		.print("Participants: ", Plist).
 
 /**

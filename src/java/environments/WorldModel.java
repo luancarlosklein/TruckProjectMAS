@@ -5,12 +5,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import entities.enums.Constants;
 import entities.enums.WorldElements;
 import entities.model.Artifact;
-import entities.model.Helper;
 import entities.model.GridRoutes;
+import entities.model.Helper;
 import entities.model.SimpleElement;
 import entities.model.Truck;
 import entities.model.Worker;
@@ -24,11 +25,12 @@ import jason.environment.grid.Location;
  */
 
 public class WorldModel extends GridWorldModel
-{
+{	
 	private World world;
 	private Map<Integer, Integer> idMapping;
 	private Map<Integer, Integer> codeMapping;
 	private List<Location> obstacles;
+	
     private int stepCount;
 	
 	public WorldModel(World world)
@@ -270,7 +272,22 @@ public class WorldModel extends GridWorldModel
         if (view != null) 
         {
         	for(Truck t : world.getTruckMap().values())
-        		view.update(t.getPos().x, t.getPos().y);
+        	{
+        		if(agent.getPos() != t.getPos())
+        			setAgPos(getIdMapping().get(t.getId()), t.getPos());
+        	}
+
+        	for(Worker w : world.getWorkerMap().values())
+        	{
+        		if(agent.getPos() != w.getPos())
+        			setAgPos(getIdMapping().get(w.getId()), w.getPos());
+        	}
+        	
+        	for(Helper h : world.getHelperMap().values())
+        	{
+        		if(agent.getPos() != h.getPos())
+        			setAgPos(getIdMapping().get(h.getId()), h.getPos());
+        	}
         	
         	for(Artifact g : world.getGarageMap().values())
         		view.update(g.getPos().x, g.getPos().y);
@@ -282,6 +299,26 @@ public class WorldModel extends GridWorldModel
         		view.update(d.getPos().x, d.getPos().y);
         }
         return true;
+	}
+	
+	/**
+	 * An action, it is used to move the agents on the grid.
+	 * @code agentId: id of agent in .
+	 * @param tarPos: the target position of agent.
+	 */
+	public boolean moveWorker(Worker worker)
+	{
+		Random rand = new Random();
+		Location pos = new Location(rand.nextInt(width - 2), rand.nextInt(height - 2));
+		
+		while(!isFree(pos) || !isFreeOfObstacle(pos))
+		{
+			pos = new Location(rand.nextInt(width - 2), rand.nextInt(height - 2));
+		}
+		
+		setAgPos(getIdMapping().get(worker.getId()), pos);
+		worker.setPos(pos);
+		return true;
 	}
 
 	public World getWorld() 

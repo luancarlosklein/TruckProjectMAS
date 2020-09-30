@@ -5,7 +5,7 @@
 
 !start.
 
-/**
+/*
  * Set initial beliefs for helper
  */
 +!start: getMyName(Me)
@@ -16,95 +16,6 @@
 		?battery(Battery_default);
 		+current_safety(Safety_default);
 		+current_battery(Battery_default);
-		+carrying(0);
-.
-
- /* COMMUNICATION **********************/
-
-/**
- * Answer to call for proposal.
- * @param CNPId: id of required service.
- * @param Task: the service to be done.
- */
-+cfp(CNPId, Task)[source(Worker)]: provider(Worker, "requester_worker") & busy(false) & getMyName(Me)
-	<-	actions.helper.proposeOffer(Me, Offer);
-		+proposal(CNPId, Task, Offer);
-      	.send(Worker, tell, proposal(CNPId, Offer))
-.
-
-/**
- * The agent won the CNP and he must perform the requested task.
- * After won the CNP, the helper keeps waiting for the execution signal from worker.
- * @param CNPId: id of required service.
- */
-@h_cnp1 [atomic]
-+accept_proposal(CNPId)[source(Worker)]: provider(Worker, "requester_worker") & proposal(CNPId, _, _) & busy(false)
-	<-	.print("My proposal was accepted!");
-		+client(CNPId, Worker);
-		-+busy(true);
-		.send(Worker, tell, service(CNPId, accepted));
-.
-
-/**
- * The agent won the CNP, but he is already busy and must reject the service.
- * @param CNPId: id of required service.
- */		
-+accept_proposal(CNPId)[source(Worker)]: busy(true)
-<-	.print("My proposal was accepted, but I'm already busy.");
-	.send(Worker, tell, service(CNPId, aborted));
-.
-
-/**
- * Execution signal for the helper starts the service.
- * @param CNPId: id of required service.
- */
-+execute(CNPId)[source(Worker)]: client(CNPId, Client) & Client == Worker
-	<-	!start_service(CNPId);
-.
-
-/**
- * The helper is free to accept offers from other workers.
- * This situation represents the scenario where the worker lost the CNP.
- * Thus, he cancels the contract with helper.
- * @param CNPId: id of required service.
- * @param service_status: the current status of service.
- */ 
-+service(CNPId, canceled): proposal(CNPId, _, _)
-	<-	-+busy(false);
-		-client(CNPId, _);
-		-proposal(CNPId, _, _);
-.
-
-/**
- * The helper stars the service.
- * @param CNPId: id of required service.
- */	
-+!start_service(CNPId):	proposal(CNPId, task(Truck, Depot, Cargo_type), _)
-	<-	+truck(Truck);
-		+depot(Depot);
-		+empty_truck(false);
-		+cargo_type(Cargo_type);
-		+taken_boxes(0);
-		+delivered_boxes(0);
-		!goToTruck;
-.
-
-/**
- * The helper finishes the service and informs it to worker (requester).
- * @param CNPId: id of required service.
- */	
-+!finish_service(CNPId): delivered_boxes(Delivered_boxes) & taken_boxes(Taken_boxes) & client(CNPId, Client)
-	<-	.print("I finish my task! I'm going back to the depot.");
-		.print("Amount of boxes taken from truck: ", Taken_boxes);
-		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
-		.send(Client, tell, report(CNPId, results(Delivered_boxes, Taken_boxes, Time)));	
-		-+busy(false);
-		-client(CNPId, _);
-		-proposal(CNPId, _, _);
-		-truck(_);
-		-depot(_);
-		-empty_truck(_);
-		-cargo_type(_);
 .
 
 /* BEHAVIOR  **********************/
@@ -129,7 +40,7 @@
  */
 @h_b1[atomic]
 +!takeBoxesFrom(Truck): getMyName(Me)
-	<-	actions.helpers.takeBoxes(Me, Truck);
+	<-	actions.helper.takeBoxes(Me, Truck);
 .
 
 /**
@@ -148,7 +59,7 @@
 .
 
 // Check if the service was concluded.
-+!goToDepot: empty_truck(true) & proposal(CNPId, _, _) 
++!goToDepot: client(CNPId, _) & empty_truck(true)  
 	<-	!goToGarage;
 		!finish_service(CNPId);
 .
@@ -243,4 +154,144 @@
  */
 +at(somewhere): carrying(Carried_boxes) & Carried_boxes > 0
 	<- 	!checkAccident
+.
+
+ /* *************************************
+  * COMMUNICATION 
+  ***************************************/
+
+/**
+ * Answer to call for proposal.
+ * @param CNPId: id of required service.
+ * @param Task: the service to be done.
+ */
++cfp(CNPId, Task)[source(Worker)]
+	:	provider(Worker, "requester_worker") & 
+		getMyName(Me) &
+		busy(false)
+		
+	<-	actions.helper.proposeOffer(Me, Offer);
+		+proposal(CNPId, Task, Offer);
+      	.send(Worker, tell, proposal(CNPId, Offer))
+.
+
++cfp(CNPId, Task)[source(Worker)]: provider(Worker, "requester_worker") & busy(true)
+	<-	.send(Worker, tell, refuse(CNPId));
+		-cfp(CNPId,_)[source(Worker)];
+.
+
+/**
+ * The agent won the CNP and he must perform the requested task.
+ * After won the CNP, the helper keeps waiting for the execution signal from worker.
+ * @param CNPId: id of required service.
+ */
+@h_cnp1 [atomic]
++accept_proposal(CNPId)[source(Worker)]
+	:	provider(Worker, "requester_worker") & 
+		proposal(CNPId, _, _) & 
+		busy(false)
+		
+	<-	.print("My proposal was accepted by worker: ", Worker);
+		-+busy(true);
+		.send(Worker, tell, service(CNPId, accepted));
+.
+
+/**
+ * The agent won the CNP, but he is already busy and must reject the service.
+ * @param CNPId: id of required service.
+ */
+ @h_cnp2 [atomic]
++accept_proposal(CNPId)[source(Worker)]: busy(true)
+<-	.print("My proposal was accepted by ", Worker ,", but I'm already busy.");
+	.send(Worker, tell, service(CNPId, aborted));
+	!end_call(CNPId);
+.
+
+/**
+ * The agent lost the CNP, so he must clear his memory
+ * @param CNPId: id of required service 
+ */
+ @h_cnp3 [atomic]
++reject_proposal(CNPId)[source(Worker)]
+   <-	.print("I lost CNP ", CNPId, ".");
+   		!end_call(CNPId);
+ .
+
+/**
+ * Execution signal for the helper starts the service.
+ * @param CNPId: id of required service.
+ */
++execute(CNPId)[source(Worker)]
+	<-	+client(CNPId, Worker);
+		!start_service(CNPId);
+.
+
+/**
+ * The helper is free to accept offers from other workers.
+ * This situation represents the scenario where the worker lost the CNP.
+ * Thus, he cancels the contract with helper.
+ * @param CNPId: id of required service.
+ * @param service_status: the current status of service.
+ */ 
+ @h_cnp4 [atomic]
++service(CNPId, canceled)
+	<-	!end_call(CNPId);
+		-+busy(false);
+.
+
+/**
+ * The helper stars the service.
+ * @param CNPId: id of required service.
+ */	
++!start_service(CNPId):	proposal(CNPId, task(Truck, Depot, Cargo_type), _)
+	<-	+truck(Truck);
+		+depot(Depot);
+		+empty_truck(false);
+		+cargo_type(Cargo_type);
+		+taken_boxes(0);
+		+delivered_boxes(0);
+		actions.generic.getTime(Time);
+		+task_time(Time);
+		!goToTruck;
+.
+
+/**
+ * The helper finishes the service and informs it to worker (requester).
+ * @param CNPId: id of required service.
+ */
++!finish_service(CNPId)
+	:	delivered_boxes(Delivered_boxes) & 
+		taken_boxes(Taken_boxes) & 
+		client(CNPId, Client)
+		
+	<-	?task_time(Stime);
+		actions.generic.getTime(Ftime);
+		Time = Ftime - Stime;
+		.print("I finish my task! I'm going back to the depot.");
+		.print("Amount of boxes taken from truck: ", Taken_boxes);
+		.print("Amount of boxes delivered at the depot: ", Delivered_boxes);
+		.print("Time taken to do the task: ", Time);
+		.send(Client, tell, report(CNPId, results(Delivered_boxes, Taken_boxes, Time)));	
+		!end_call(CNPId);
+		-+busy(false);
+.
+
+/*
+ * The helper cleans his memory about data from last call
+ */
++!end_call(CNPId): true
+	<-	-truck(_);
+		-depot(_);
+		-empty_truck(_);
+		-cargo_type(_);
+		-taken_boxes(_);
+		-delivered_boxes(_);
+		-task_time(_);
+		-service(CNPId, _);
+		-client(CNPId,_);
+		-execute(CNPId)[source(_)];
+		-accept_proposal(CNPId)[source(_)];
+		-reject_proposal(CNPId)[source(_)];
+		-proposal(CNPId,_,_);
+		-cfp(CNPId,_)[source(_)];
 .

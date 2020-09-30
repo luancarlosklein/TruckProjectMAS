@@ -1,5 +1,8 @@
 package environments;
 
+import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import entities.model.Artifact;
 import entities.model.Helper;
 import entities.model.SimpleElement;
@@ -12,7 +15,9 @@ import jason.environment.Environment;
 
 public class DischargeEnv extends Environment
 {
+	public static AtomicInteger cnpid = new AtomicInteger();
 	public static WorldModel model;
+	private File debugFiles = new File("debugger/");
 	
 	@Override
 	public void init(String[] args) 
@@ -27,6 +32,10 @@ public class DischargeEnv extends Environment
 				WordViewer view  = new WordViewer(model, "Discharge Truck", 700);
 				model.setView(view);
 			}
+			
+			for(File file: debugFiles.listFiles()) 
+			    if (!file.isDirectory()) 
+			        file.delete();
 		} 
 		catch (Exception e) 
 		{
@@ -46,8 +55,22 @@ public class DischargeEnv extends Environment
 		clearPercepts("manager");
 		
 		// Start truckers
+		int count = 0;
+		
 		for(Truck t : model.getWorld().getTruckMap().values())
+		{
+			if(count < model.getWorld().getTruckMap().values().size() / 2.0)
+			{
+				t.setVisible(true);
+				count++;
+			}
+			else
+			{
+				t.setVisible(false);
+				model.getWorld().getTruckersOrder().add(t);
+			}
 			addPercept("manager", Literal.parseLiteral("add_trucker(" + t.getName() + ")"));
+		}
 		
 		// Start helpers
 		for(Helper h : model.getWorld().getHelperMap().values())
@@ -119,6 +142,11 @@ public class DischargeEnv extends Environment
         		return true;
         	}
         	return false;
+        }
+        if (action.getFunctor().equals("move_worker")) 
+        {
+        	Worker worker = model.getWorld().getWorkerMap().get(Integer.parseInt(agName.split("_")[1]));
+        	model.moveWorker(worker);
         }
         return true;
 	}
