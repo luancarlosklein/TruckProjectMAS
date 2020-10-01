@@ -177,4 +177,8 @@ count(0).
 			.print("####### ROUND: ", C);
 			.send(manager, achieve, quit);
 		}
+		else
+		{
+			.print("End of executions");
+		}
 .

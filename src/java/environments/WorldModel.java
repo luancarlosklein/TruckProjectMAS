@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import entities.enums.Constants;
 import entities.enums.WorldElements;
@@ -302,18 +301,17 @@ public class WorldModel extends GridWorldModel
 	}
 	
 	/**
-	 * An action, it is used to move the agents on the grid.
+	 * An action, it is used to move an agent over the grid.
 	 * @code agentId: id of agent in .
 	 * @param tarPos: the target position of agent.
 	 */
 	public boolean moveWorker(Worker worker)
 	{
-		Random rand = new Random();
-		Location pos = new Location(rand.nextInt(width - 2), rand.nextInt(height - 2));
+		Location pos = getFreePos();
 		
-		while(!isFree(pos) || !isFreeOfObstacle(pos))
+		while((pos.x <= 0 || pos.x >= width - 2) || (pos.y <= 0 || pos.y >= height - 2))
 		{
-			pos = new Location(rand.nextInt(width - 2), rand.nextInt(height - 2));
+			pos = getFreePos();
 		}
 		
 		setAgPos(getIdMapping().get(worker.getId()), pos);

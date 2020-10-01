@@ -24,6 +24,8 @@ public class Worker extends SimpleElement
 	private RiskProfile riskProfile;
 	private WorkerSpecialization specialization;
 	private Map<Integer, HelperTeam> teams;
+	private Integer seekRange;
+	private Integer proximity;
 	
 	public Worker(Integer posX, Integer posY) 
 	{
@@ -39,6 +41,9 @@ public class Worker extends SimpleElement
 	@Override
 	public void setProperties() 
 	{
+		Random rand = new Random();
+		this.seekRange = 5 + rand.nextInt(5);
+		this.proximity = 1 + rand.nextInt(3);
 		defineSpecialization();
 		defineRiskProfile();
 	}
@@ -367,6 +372,16 @@ public class Worker extends SimpleElement
 	public Collection<HelperTeam> getTeams()
 	{
 		return teams.values();
+	}
+
+	public Integer getSeekRange() 
+	{
+		return seekRange;
+	}
+
+	public Integer getProximity() 
+	{
+		return proximity;
 	}
 
 	@Override

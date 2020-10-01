@@ -78,7 +78,7 @@ public class WordViewer extends GridWorldView
     @Override
     public void drawAgent(Graphics g, int x, int y, Color c, int code) 
     {   
-    	if(code > 0)
+    	if(code >= 0)
     	{
     		int id = model.codeMapping().get(code);
         	SimpleElement agent = model.getElement(id);

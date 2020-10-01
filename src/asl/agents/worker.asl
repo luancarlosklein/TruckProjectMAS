@@ -43,6 +43,7 @@
 		{
 			.send(Truck, tell, refuse(CNPId));
 			-cfp(CNPId,_)[source(Truck)];
+			!update_position;
 		}
 .
 
@@ -60,7 +61,7 @@
 		actions.generic.getTargetPosition(Truck, pos(X, Y));
 		.findall(depot(Name), depot(Name), Depots);
 		!getTheNearestTarget(Depots, pos(X, Y), Depot);
-		+team(CNPId, TeamId, Truck, Depot);
+		+team(CNPId, TeamId, Truck, Depot, false);
 		+task(CNPId, Nb_boxes, Unload_Time, Cargo_type);
 		!start_cnp(CNPId);
 .
@@ -70,13 +71,55 @@
  * @param CNPId: id of the call.
  */
 +!start_cnp(CNPId)
-	: 	team(CNPId, TeamId, Truck, Depot) &
-		task(CNPId, Nb_boxes, Unload_Time, Cargo_type)
+	: 	team(CNPId, TeamId, Truck, Depot,_) &
+		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) &
+		getMyName(Me)
 		
-	<-	+cnp_state(CNPId, propose);
-		!call(TeamId, task(Truck, Depot, Cargo_type), "provider_helper", Participants_list);
-		!bid(TeamId, Participants_list);
-		!invite_helpers(CNPId);
+	<-	actions.worker.getHelpersNearby(Me, Nearby_Helpers);
+		.findall(Helper, friend(Helper), Friends);
+		actions.worker.concatToSet(Friends, Nearby_Helpers, Participants);
+		.print("participants: ", Participants, " CNPId: ", CNPId);
+		
+		if(Participants \== [])
+		{
+			+cnp_state(CNPId, propose);
+			!callNearby(TeamId, task(Truck, Depot, Cargo_type), Participants);
+			!bid(TeamId, Participants);
+			!invite_helpers(CNPId);			
+		}
+		else
+		{
+			.send(Truck, tell, refuse(CNPId));
+			-team(CNPId,_,_,_,_);
+			-task(CNPId,_,_,_);
+			-cfp(CNPId,_)[source(_)];
+			!update_position;
+		}
+.
+
+/**
+ * Send the call for proposal to possible participants 
+ * @param CNPId: id of required service
+ * @param Task: the service to be done
+ * @param Participants: list of participants for the calling
+ */  
++!callNearby(CNPId, Task, Participants)
+	<-	.print("Waiting for participants: ", Task, "...");
+		.wait(2000);
+		.print("Sending call for proposal to ", Participants);
+		.send(Participants, tell, cfp(CNPId, Task));
+.
+
+/**
+ * When worker receives a proposal or refuse from a helper, this worker adds the helper as a friend.
+ * A friend is a helper with who the worker interacted at least once.
+ */
++proposal(_,_)[source(Helper)]: not friend(Helper)
+	<-	+friend(Helper);
+.
+
++refuse(_)[source(Helper)]:  not friend(Helper)
+	<-	+friend(Helper);
 .
 
 /**
@@ -84,7 +127,7 @@
  * @param CNPId: id of the call.
  */
 +!invite_helpers(CNPId)
-	:	team(CNPId, TeamId, Truck, Depot) &
+	:	team(CNPId, TeamId, Truck, Depot, Status) &
 		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) & 	
 		getReceivedOffers(TeamId, Offers) & 		
 		getMyName(Me)
@@ -96,7 +139,20 @@
 	 		actions.worker.saveInFile(Me, Message);
 	 		!invite_team(TeamId, Team);
 		}
-		!check_team(TeamId);
+		
+		if(Offers == [] & Status == false)
+		{
+			.send(Truck, tell, refuse(CNPId));
+			-team(CNPId,_,_,_,_);
+			-task(CNPId,_,_,_);
+			-cnp_state(CNPId,_);
+			-refuse(CNPId)[source(_)];
+			-cfp(CNPId,_)[source(_)];
+		}
+		else
+		{
+			!check_team(TeamId);
+		}
 .
 
 /**
@@ -117,7 +173,7 @@
  * @param TeamId: id of team that will be hired to perform the task (it is a exclusive id).
  */
 +!check_team(TeamId)
-	: 	team(CNPId, TeamId, Truck, Depot) &
+	: 	team(CNPId, TeamId, Truck, Depot,_) &
 		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) & 
 		getReceivedOffers(TeamId, Offers) &
 		getMyName(Me)
@@ -130,6 +186,7 @@
 			actions.worker.proposeOffer(TeamId, Me, Offer);
 			.send(Truck, tell, proposal(CNPId, Offer));
 			+my_proposal(CNPId, Offer);
+			-+team(CNPId, TeamId, Truck, Depot, true)
 				
 			if(Offers \== [])
 			{
@@ -161,7 +218,7 @@
  */
  @w_cnp1 [atomic]
 +service(TeamId, aborted)[source(Helper)]
-	: 	team(CNPId, TeamId, Truck, Depot) &
+	: 	team(CNPId, TeamId, Truck, Depot,_) &
 		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) &
 		getMyName(Me) 
 		
@@ -180,7 +237,7 @@
  */
  @w_cnp2 [atomic]
 +service(TeamId, accepted)[source(Helper)]
-	: 	team(CNPId, TeamId, Truck, Depot) &
+	: 	team(CNPId, TeamId, Truck, Depot,_) &
 		task(CNPId, Nb_boxes, Unload_Time, Cargo_type) &
 		getMyName(Me)
 		
@@ -200,7 +257,7 @@
 +accept_proposal(CNPId)[source(Truck)]
 	:	busy(false) &
 		provider(Truck, "requester_trucker") & 
-		team(CNPId, TeamId, _, _) &
+		team(CNPId, TeamId, _, _, _) &
 		getMyName(Me) &
 		getReceivedOffers(CNPId, Offers)
 		
@@ -264,12 +321,17 @@
  * @param CNPId: id of required service 
  */
 +reject_proposal(CNPId)[source(Truck)]
-	:	provider(Truck, "requester_trucker") & 
+	:	provider(Truck, "requester_trucker") &
+		team(CNPId, TeamId, _, _, _) & 
 		getMyName(Me)
 		
    	<-	.print("I lost CNP ", CNPId, ".");
  		!cancel_service(CNPId); 
+// 		actions.worker.deleteTeam(TeamId, Me);
+//   		.concat("DELETE TEAM: ", TeamId, Message);
+//   		actions.worker.saveInFile(Me, Message);
  		!end_call(CNPId);
+ 		!update_position;
 .
 
 /**
@@ -277,7 +339,7 @@
  * @param CNPId: id of the call 
  */
 +!cancel_service(CNPId)
-	:	team(CNPId, TeamId, _, _) &
+	:	team(CNPId, TeamId, _, _, _) &
 		getMyName(Me)
 		
 	<-	.print("Deleting team: ", TeamId);
@@ -309,7 +371,7 @@
  */
 @w_cnp5 [atomic]
 +report(TeamId, results(Delivered_boxes, Taken_boxes, Task_time))[source(Helper)]
-	: 	team(CNPId, TeamId, _, _) &
+	: 	team(CNPId, TeamId, _, _, _) &
 		cnp_state(CNPId, contract) &
 		client(CNPId, Truck) & 
 		getMyName(Me)		
@@ -353,7 +415,7 @@
 /*
  * The work cleans his memory about data from last call
  */
-+!end_call(CNPId): team(CNPId, TeamId, _, _)
++!end_call(CNPId): team(CNPId, TeamId, _, _, _)
 	<-	-report(TeamId,_)[source(_)];
 		-reject_proposal(CNPId)[source(_)];
 		-accept_proposal(CNPId)[source(_)];
@@ -366,7 +428,7 @@
 		-proposal(CNPId, _)[source(_)];
 		-refuse(CNPId)[source(_)];
 		-cnp_state(CNPId,_);
-		-team(CNPId, TeamId,_,_);
+		-team(CNPId, TeamId,_,_,_);
 		-task(CNPId,_,_,_);
 		-cfp(CNPId,_)[source(_)];
 .
