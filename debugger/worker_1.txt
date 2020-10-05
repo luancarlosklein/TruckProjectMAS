@@ -1,0 +1,23 @@
+TIME(1601918233744),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 15"):
+
+TIME(1601918266075),MESSAGE("ADD TEAM: 126"):
+- HelperTeam [id=126, isReady=false, teamSize=0, team={}] 
+
+TIME(1601918268086),MESSAGE("UPDATE TEAM: 126"):
+- HelperTeam [id=126, isReady=false, teamSize=2, team={helper_3(hired: false);helper_4(hired: false)}] 
+
+TIME(1601918268094),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=126, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: false)}] 
+
+TIME(1601918268095),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=126, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1601918268096),MESSAGE("TEAM READY: 126"):
+- HelperTeam [id=126, isReady=true, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1601918289368),MESSAGE("DELETE TEAM: 126"):
+
+TIME(1601918289371),MESSAGE("[TASK COMPLETED]"):
+
+TIME(1601918291380),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 35"):
+

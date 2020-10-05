@@ -153,6 +153,11 @@ public class HelperTeam
 		this.ready = ready;
 	}
 
+	public void setTeamSize(Integer teamSize) 
+	{
+		this.teamSize = teamSize;
+	}
+
 	@Override
 	public int hashCode() 
 	{

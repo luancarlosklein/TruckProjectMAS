@@ -29,8 +29,10 @@ public class deleteTeam extends DefaultInternalAction
 		NumberTerm teamId = (NumberTerm) args[0]; 
 		Worker worker = workerMap.get(Integer.parseInt(args[1].toString().split("_")[1]));
 		
-		// Updating the helper status, the helper becomes a member of team.		
-		worker.removeTeam((int) teamId.solve());
+		// Updating the helper status, the helper becomes a member of team.
+		if(worker.containsTeam((int) teamId.solve()))
+			worker.removeTeam((int) teamId.solve());
+		
         return true;
     }
 }

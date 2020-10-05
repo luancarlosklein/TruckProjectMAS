@@ -36,7 +36,11 @@ public class teamIsReady extends DefaultInternalAction
 		int id = (int) teamId.solve();
 		boolean ready = worker.teamIsReady((int) teamId.solve());
 		
-		if(ready && offers.isEmpty())
+		if(!worker.teamIsFull((int) teamId.solve()) && !offers.isEmpty())
+		{
+			return false;
+		}
+		else if(ready && offers.isEmpty())
 		{
 			worker.setTeamAsReady(id);
 			return true;

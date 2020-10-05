@@ -73,7 +73,7 @@ count(0).
       	}
       	else	// end the call
       	{
-      		.print("It was not posible to find avaliable workers, getting away the system.");
+      		.print("It was not posible to find avaliable workers, going out the system.");
       		!end_call(CNPId);	
       	}
 .
@@ -88,6 +88,7 @@ count(0).
 	<-	if(Worker == Winner)
 		{
 			.send(Worker, tell, accept_proposal(CNPId));
+			-proposal(CNPId, _)[source(Worker)];
 		}
 		else
 		{
@@ -103,8 +104,7 @@ count(0).
  * @param status: service aborted, the worker is already doing another service for someone.
  */
 +service(CNPId, aborted)[source(Worker)]
-	<-	-proposal(CNPId, _)[source(Worker)];
-		!contract(CNPId);
+	<-	!contract(CNPId);
 .
 
 /**
@@ -115,7 +115,6 @@ count(0).
  */
 +service(CNPId, started)[source(Worker)]: getReceivedOffers(CNPId, Offers)
 	<-	-+cnp_state(CNPId, contract);
-		-proposal(CNPId, _)[source(Worker)];
 		!reject_offers(CNPId, Worker, Offers);
 .
 
@@ -128,6 +127,7 @@ count(0).
 +!reject_offers(CNPId, Winner, [offer(_, Worker)|T])
 	<-	if(Winner \== Worker)
 		{
+			.print("Rejecting: ", Worker);
 			.send(Worker, tell, reject_proposal(CNPId));
 			-proposal(CNPId, _)[source(Worker)];			
 		}

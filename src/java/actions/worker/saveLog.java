@@ -14,8 +14,9 @@ import jason.asSyntax.Term;
 /**
  * This action saves the data about a worker in a txt file.
  * This action is used to debug the behavior of a worker. 
+ * Each file is created in debugger folder (PATH: debugger/agent_name.txt).
  */
-public class saveInFile extends DefaultInternalAction 
+public class saveLog extends DefaultInternalAction 
 {
 	private static final long serialVersionUID = 1L;
 	private Map<Integer, Worker> workerMap = DischargeEnv.model.getWorld().getWorkerMap();

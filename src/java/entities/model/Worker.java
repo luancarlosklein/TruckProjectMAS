@@ -163,6 +163,19 @@ public class Worker extends SimpleElement
 	}
 	
 	/**
+	 * Get a team.
+	 * @param teamId: identifier of team.
+	 * @return a team.
+	 */
+	public HelperTeam getTeam(int teamId) throws Exception
+	{
+		if(teams.containsKey(teamId))
+			return teams.get(teamId);
+		else
+			throw new IllegalAccessException("Operation {getTeam} failed. There is not a team with this id: " + teamId);
+	}
+	
+	/**
 	 * Get the members of a team.
 	 * @param teamId: identifier of team.
 	 * @return a set of all member of the team.
@@ -383,6 +396,8 @@ public class Worker extends SimpleElement
 	{
 		return proximity;
 	}
+	
+	
 
 	@Override
 	public String toString() 

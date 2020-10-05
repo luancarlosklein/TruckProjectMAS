@@ -1,15 +1,33 @@
-TIME(1601555115610),MESSAGE("ADD TEAM: 217"):
-- HelperTeam [id=217, isReady=false, teamSize=2, team={helper_4(hired: false);helper_5(hired: false)}] 
+TIME(1601918233766),MESSAGE("ADD TEAM: 215"):
+- HelperTeam [id=215, isReady=false, teamSize=0, team={}] 
 
-TIME(1601555115617),MESSAGE("HIRING HELPER: helper_4"):
-- HelperTeam [id=217, isReady=false, teamSize=2, team={helper_4(hired: true);helper_5(hired: false)}] 
+TIME(1601918235785),MESSAGE("UPDATE TEAM: 215"):
+- HelperTeam [id=215, isReady=false, teamSize=2, team={helper_3(hired: false)}] 
 
-TIME(1601555115623),MESSAGE("HIRING HELPER: helper_5"):
-- HelperTeam [id=217, isReady=false, teamSize=2, team={helper_4(hired: true);helper_5(hired: true)}] 
+TIME(1601918235802),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=215, isReady=false, teamSize=2, team={helper_3(hired: true)}] 
 
-TIME(1601555115624),MESSAGE("TEAM READY: 217"):
-- HelperTeam [id=217, isReady=true, teamSize=2, team={helper_4(hired: true);helper_5(hired: true)}] 
+TIME(1601918235803),MESSAGE("TEAM READY: 215"):
+- HelperTeam [id=215, isReady=true, teamSize=2, team={helper_3(hired: true)}] 
 
-TIME(1601555115627),MESSAGE("TEAM READY: 217"):
-- HelperTeam [id=217, isReady=true, teamSize=2, team={helper_4(hired: true);helper_5(hired: true)}] 
+TIME(1601918264057),MESSAGE("DELETE TEAM: 215"):
+
+TIME(1601918264060),MESSAGE("[TASK COMPLETED]"):
+
+TIME(1601918266074),MESSAGE("[TASK REFUSED - LACK OF SPECIALIZATION] - CNPId: 26"):
+
+TIME(1601918291381),MESSAGE("ADD TEAM: 235"):
+- HelperTeam [id=235, isReady=false, teamSize=0, team={}] 
+
+TIME(1601918293390),MESSAGE("UPDATE TEAM: 235"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: false);helper_4(hired: false)}] 
+
+TIME(1601918293398),MESSAGE("HIRING HELPER: helper_3"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: false)}] 
+
+TIME(1601918293399),MESSAGE("HIRING HELPER: helper_4"):
+- HelperTeam [id=235, isReady=false, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
+
+TIME(1601918293400),MESSAGE("TEAM READY: 235"):
+- HelperTeam [id=235, isReady=true, teamSize=2, team={helper_3(hired: true);helper_4(hired: true)}] 
 

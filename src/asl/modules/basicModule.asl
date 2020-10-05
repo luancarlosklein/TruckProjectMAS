@@ -14,8 +14,6 @@ getMyPosition(X, Y) :- pos(X, Y).
 // Get the number of offers received
 getReceivedOffers(CNPId, Offers) :- .findall(offer(Offer, Agent), proposal(CNPId, Offer)[source(Agent)], Offers).
 
-/* PLANS *************/
-
 /**
  * Move the agent from an initial position to a target position.
  * The agents moves step by step (a position at time). 
